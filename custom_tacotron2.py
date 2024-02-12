@@ -230,7 +230,13 @@ class Tacotron2(BaseTacotron):
         return embeddings
 
     def forward(  # pylint: disable=dangerous-default-value=None
-        self, text, text_lengths, mel_specs=None, mel_lengths=None, aux_input={"speaker_ids": None, "d_vectors": None}, spk_emb1=None
+        self,
+        text,
+        text_lengths,
+        mel_specs=None,
+        mel_lengths=None,
+        aux_input={"speaker_ids": None, "d_vectors": None},
+        spk_emb1=None,
     ):
         """Forward pass for training with Teacher Forcing.
 
@@ -258,11 +264,11 @@ class Tacotron2(BaseTacotron):
         if self.use_speaker_embedding or self.use_d_vector_file:
             if not self.use_d_vector_file:
                 # B x 1 x speaker_embed_dim
-                #NEW USE SPK_EMB1 TO CONCAT
+                # NEW USE SPK_EMB1 TO CONCAT
                 spk_emb1 = torch.stack(spk_emb1, dim=0)
                 embedded_speakers = spk_emb1.to("cuda")
                 # embedded_speakers = self.speaker_embedding(aux_input["speaker_ids"])[:, None]
-
+                ###
             else:
                 # B x 1 x speaker_embed_dim
                 embedded_speakers = torch.unsqueeze(aux_input["d_vectors"], 1)
@@ -380,13 +386,20 @@ class Tacotron2(BaseTacotron):
             else:
                 embedded_speakers = aux_input["d_vectors"]
 
+            print(encoder_outputs.shape)
+            print(embedded_speakers.shape)
             spk_emb1 = torch.stack(spk_emb1, dim=0)
             if torch.cuda.is_available():
                 embedded_speakers = spk_emb1.to("cuda")
             else:
                 embedded_speakers = spk_emb1
             encoder_outputs = self._concat_speaker_embedding(encoder_outputs, embedded_speakers)
+            # embedded_speakers = embedded_speakers.permute(1, 0, 2)
+            # encoder_outputs = torch.cat((encoder_outputs, embedded_speakers), dim=0)
+            # exit()
 
+        # print(encoder_outputs)
+        # print(encoder_outputs.shape)
         decoder_outputs, alignments, stop_tokens = self.decoder.inference(encoder_outputs)
         postnet_outputs = self.postnet(decoder_outputs)
         postnet_outputs = decoder_outputs + postnet_outputs
