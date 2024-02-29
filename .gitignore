@@ -105,25 +105,8 @@ data/
 input/
 saved/
 datasets/
-libriTTS/
-runs/
-vocoder/
-tts_model/
-wandb/
-model/
-output/
-.transformers/
 
 # editor, os cache directory
 .vscode/
 .idea/
 __MACOSX/
-
-#playground
-torch_playground.py
-
-#encoders
-encoderwav2vec2/
-featureextractorwav2vec2/
-#CLAAUDIA
-slurm*
