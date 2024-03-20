@@ -6,19 +6,6 @@ from itertools import repeat
 from collections import OrderedDict
 
 
-def get_LIBRITTS(root: str | Path, url: str):
-    '''
-    Gets the LIBRITTS dataset.
-    root (str or Path): Path to the directory where the dataset is found or downloaded.
-    url (str, optional): The URL to download the dataset from,
-        or the type of the dataset to dowload. Allowed type values are "dev-clean", "dev-other", "test-clean", "test-other", "train-clean-100", "train-clean-360" and
-        "train-other-500". (default: "train-clean-100")
-    '''
-    from torchaudio.datasets import LIBRITTS
-
-    return LIBRITTS(root, url)
-
-
 def ensure_dir(dirname):
     dirname = Path(dirname)
     if not dirname.is_dir():
