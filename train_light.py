@@ -25,7 +25,7 @@ class ResNetModule(pl.LightningModule):
         self.resnet.conv1 = torch.nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
         num_features = self.resnet.fc.in_features
         self.resnet.fc = nn.Linear(num_features, num_classes)
-        self.validation_step_outputs = []  # Empty list to store outputs
+        self.test_step_outputs = []  # Empty list to store outputs
 
     def forward(self, x):
         return self.resnet(x)
@@ -48,11 +48,11 @@ class ResNetModule(pl.LightningModule):
         correct = (preds == y).sum().item()
         accuracy = torch.tensor(correct / len(batch))
         output = {"test_loss": loss, "test_accuracy": accuracy}
-        self.validation_step_outputs.append(output)
+        self.test_step_outputs.append(output)
         return output
 
     def on_test_epoch_end(self):
-        outputs = self.validation_step_outputs
+        outputs = self.test_step_outputs
         
         # Calculate aggregate metrics, log them, or perform any other actions
         test_loss = torch.stack([x['test_loss'] for x in outputs]).mean()
@@ -61,7 +61,7 @@ class ResNetModule(pl.LightningModule):
         self.log('test_accuracy', test_accuracy)
         
         # Clear the list for the next epoch
-        self.validation_step_outputs = []
+        self.test_step_outputs = []
 
 model = ResNetModule(10) # TODO : UPDATE
 train_dataloader = DataLoader(mnist_train, batch_size=64, shuffle=True) # TODO : UPDATE
