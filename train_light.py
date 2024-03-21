@@ -22,29 +22,42 @@ class ResNetModule(pl.LightningModule):
         
         # save hyper-parameters to self.hparams (auto-logged by W&B)
         self.save_hyperparameters()
+    
+    def _loss_acc_step(self, batch, batch_idx):
+        x, y = batch
+        
+        # Compute loss
+        logits = self(x)
+        loss = F.cross_entropy(logits, y)
+        
+        # Compute accuracy
+        preds = torch.argmax(logits, dim=1)
+        correct = (preds == y).sum().item()
+        accuracy = correct / len(y)
+        
+        return loss, accuracy
 
     def forward(self, x):
         return self.resnet(x)
 
     def training_step(self, batch, batch_idx):
-        x, y = batch
-        y_hat = self(x)
-        loss = F.cross_entropy(y_hat, y)
+        loss, accuracy = self._loss_acc_step(batch, batch_idx)
+        
+        # Log
         self.log('train_loss', loss)
+        self.log('train_accuracy', accuracy)
+        
         return loss
 
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=self.lr)
     
     def test_step(self, batch, batch_idx):
-        x, y = batch
-        logits = self(x)
-        loss = F.cross_entropy(logits, y)
-        preds = torch.argmax(logits, dim=1)
-        correct = (preds == y).sum().item()
-        accuracy = correct / len(y)
+        loss, accuracy = self._loss_acc_step(batch, batch_idx)
+        
         output = {"test_loss": loss, "test_accuracy": accuracy}
         self.test_step_outputs.append(output)
+        
         return output
 
     def on_test_epoch_end(self):
@@ -53,6 +66,8 @@ class ResNetModule(pl.LightningModule):
         # Calculate aggregate metrics, log them, or perform any other actions
         test_loss = torch.stack([x['test_loss'] for x in outputs]).mean()
         test_accuracy = torch.tensor([x['test_accuracy'] for x in outputs]).mean()
+        
+        # Log
         self.log('test_loss', test_loss)
         self.log('test_accuracy', test_accuracy)
         
