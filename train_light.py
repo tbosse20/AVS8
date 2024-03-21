@@ -1,13 +1,10 @@
 import pytorch_lightning as pl
-import torch
 from pytorch_lightning.loggers import WandbLogger
-import torchvision
-from torch.utils.data import DataLoader, random_split
-from torchvision import datasets, transforms
+from torch.utils.data import DataLoader, Subset
+from torchvision import transforms, datasets
 import wandb
 import models, importlib
 
-# Initialize wandb
 wandb.init(
     project = "AVSP8",
     
@@ -25,10 +22,10 @@ def main():
 
     # Data
     transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
-    mnist_train = torchvision.datasets.MNIST(root="./data", train=True, download=False, transform=transform)
-    mnist_train = torch.utils.data.Subset(mnist_train, range(10))
-    mnist_test = torchvision.datasets.MNIST(root="./data", train=False, download=False, transform=transform)
-    mnist_test = torch.utils.data.Subset(mnist_test, range(10))
+    mnist_train = datasets.MNIST(root="./data", train=True, download=False, transform=transform)
+    mnist_train = Subset(mnist_train, range(10))
+    mnist_test = datasets.MNIST(root="./data", train=False, download=False, transform=transform)
+    mnist_test = Subset(mnist_test, range(10))
 
     model = getattr(importlib.import_module('models'), wandb.config.model)()
     model.lr = wandb.config['learning_rate']
