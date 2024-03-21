@@ -1,14 +1,14 @@
 import pytorch_lightning as pl
 import torch
-from pytorch_lightning.loggers import TensorBoardLogger
+from pytorch_lightning.loggers import WandbLogger
 import torchvision.models as models
 import torchvision
 from torch.utils.data import DataLoader, random_split
 from torchvision import datasets, transforms
 import torch.nn as nn
 import torch.nn.functional as F
-import torchvision.models as models
-    
+import wandb
+
 class ResNetModule(pl.LightningModule):
     def __init__(self, num_classes=1000):
         super().__init__()
@@ -19,6 +19,9 @@ class ResNetModule(pl.LightningModule):
         self.resnet.fc = nn.Linear(num_features, num_classes)
         
         self.test_step_outputs = []
+        
+        # save hyper-parameters to self.hparams (auto-logged by W&B)
+        self.save_hyperparameters()
 
     def forward(self, x):
         return self.resnet(x)
@@ -31,7 +34,7 @@ class ResNetModule(pl.LightningModule):
         return loss
 
     def configure_optimizers(self):
-        return torch.optim.Adam(self.parameters(), lr=1e-3)
+        return torch.optim.Adam(self.parameters(), lr=self.lr)
     
     def test_step(self, batch, batch_idx):
         x, y = batch
@@ -39,7 +42,7 @@ class ResNetModule(pl.LightningModule):
         loss = F.cross_entropy(logits, y)
         preds = torch.argmax(logits, dim=1)
         correct = (preds == y).sum().item()
-        accuracy = torch.tensor(correct / len(batch))
+        accuracy = correct / len(y)
         output = {"test_loss": loss, "test_accuracy": accuracy}
         self.test_step_outputs.append(output)
         return output
@@ -49,12 +52,24 @@ class ResNetModule(pl.LightningModule):
         
         # Calculate aggregate metrics, log them, or perform any other actions
         test_loss = torch.stack([x['test_loss'] for x in outputs]).mean()
-        test_accuracy = torch.stack([x['test_accuracy'] for x in outputs]).mean()
+        test_accuracy = torch.tensor([x['test_accuracy'] for x in outputs]).mean()
         self.log('test_loss', test_loss)
         self.log('test_accuracy', test_accuracy)
         
         # Clear the list for the next epoch
         self.test_step_outputs = []
+
+    
+# Initialize wandb
+wandb.init(
+    project =   "AVSP8",
+    
+    # track hyperparameters and run metadata
+    config = {
+        "learning_rate":    1e-3,
+        "epochs":           5,
+    }
+)
 
 def main():
 
@@ -63,23 +78,22 @@ def main():
     # Data
     transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
     mnist_train = torchvision.datasets.MNIST(root="./data", train=True, download=False, transform=transform)
-    mnist_train = torch.utils.data.Subset(mnist_train, range(10))
+    # mnist_train = torch.utils.data.Subset(mnist_train, range(10))
     mnist_test = torchvision.datasets.MNIST(root="./data", train=False, download=False, transform=transform)
-    mnist_test = torch.utils.data.Subset(mnist_test, range(10))
+    # mnist_test = torch.utils.data.Subset(mnist_test, range(10))
 
     model = ResNetModule(10) # TODO : UPDATE
+    model.lr = wandb.config['learning_rate']
     train_dataloader = DataLoader(mnist_train, batch_size=64, shuffle=True) # TODO : UPDATE
     # val_dataloader = None # TODO : UPDATE
     test_dataloader = DataLoader(mnist_test, batch_size=1000, shuffle=False) # TODO : UPDATE
 
-    logger = TensorBoardLogger("logs/", name="AVS8")
-
     trainer = pl.Trainer(
-        max_epochs=5,
+        max_epochs=wandb.config['epochs'],
         accelerator="cpu",
-        deterministic=True,
+        # deterministic=True,
         log_every_n_steps=100,
-        logger=logger
+        logger=WandbLogger(log_model="all"),
     )
 
     trainer.fit(model, train_dataloader)
@@ -88,6 +102,8 @@ def main():
     # Print the test accuracy
     print(f'Test Loss: {test_results[0]["test_loss"]:.4f}')
     print(f'Test Accuracy: {test_results[0]["test_accuracy"]:.4f}')
+    
+    wandb.finish()
 
 if __name__ == '__main__':
     main()
