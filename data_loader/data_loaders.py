@@ -1,36 +1,94 @@
 from torchaudio.datasets import LIBRITTS
 from torch.utils.data import random_split, DataLoader
-from torch import Generator
+import lightning as L
+import os
 
-
-def LIBRITTS_Dataset(root, train_url ="train-clean-100", test=False, test_url="test-clean", download=False):
+class LIBRITTS_Dataset(L.LightningDataModule):
     '''
-    Function that fetches LIBRITTS dataset.
-    :root: Root directory of the dataset
-    :train_url: Which train set to use
-    :test: Fetch test set
-    :test_url: Which test set to use
-    :download: Download the dataset from web
-
-    Return -> train_set or train_set, test_set
+    Dataset class. 
+    Handles dataset downloading, preparing, splitting and loading.
     '''
-    train_set = LIBRITTS(root, url=train_url, download=download)
-    if not test:
-        return train_set
-    test_set = LIBRITTS(root, url=test_url, download=download)
-    return train_set, test_set
+    def __init__(self,
+                data_dir: str = "./data",
+                train_url: str = "train-clean-100",
+                test_url: str = "test-clean",
+                train_ratio: float = 0.8,
+                batch_size: int = 32,
+                num_workers: int = 4):
+        super().__init__()
+        self.data_dir = data_dir
+        self.train_url = train_url
+        self.test_url = test_url
+        self.train_ratio = train_ratio
+        self.batch_size = batch_size
+        self.num_workers = num_workers
 
+    def prepare_data(self):
+        LIBRITTS(root=self.data_dir, url=self.train_url, download=True)
+        LIBRITTS(root=self.data_dir, url=self.test_url, download=True)
 
-def train_valid_split(train_set, train_ratio=0.8, random_seed=42):
+    def setup(self, stage: str):
+        if stage == "fit":
+            libritts_full = LIBRITTS(root=self.data_dir, url=self.train_url)
+            self.libritts_train, self.libritts_val = random_split(libritts_full, [self.train_ratio, 1-self.train_ratio])
+        
+        if stage == "test":
+            self.libritts_test = LIBRITTS(root=self.data_dir, url=self.test_url)
+
+    def train_dataloader(self):
+        return DataLoader(self.libritts_train,
+                          self.batch_size,
+                          num_workers=self.num_workers)
     
-    seed = Generator().manual_seed(random_seed)
-    train_set, valid_set = random_split(train_set, [train_ratio, 1-train_ratio], generator=seed)
+    def val_dataloader(self):
+        return DataLoader(self.libritts_val,
+                          self.batch_size,
+                          num_workers=self.num_workers)
+    
+    def test_dataloader(self):
+        return DataLoader(self.libritts_test,
+                          self.batch_size,
+                          num_workers=self.num_workers)
 
-    return train_set, valid_set
+
+if __name__ == "__main__":
+    work_dir = os.getcwd()
+    dataset_dir = os.path.join(work_dir, "data")
+    ds = LIBRITTS_Dataset(data_dir=dataset_dir)
+    ds.prepare_data()
+    ds.setup(stage="fit")
+    train_data = ds.train_dataloader()
+    print(next(iter(train_data)))
 
 
-def load_data(data, batch_size, shuffle=True, num_workers=4):
-    return DataLoader(data, batch_size, shuffle=shuffle, num_workers=num_workers)
+# def LIBRITTS_Dataset(root, train_url ="train-clean-100", test=False, test_url="test-clean", download=False):
+#     '''
+#     Function that fetches LIBRITTS dataset.
+#     :root: Root directory of the dataset
+#     :train_url: Which train set to use
+#     :test: Fetch test set
+#     :test_url: Which test set to use
+#     :download: Download the dataset from web
+
+#     Return -> train_set or train_set, test_set
+#     '''
+#     train_set = LIBRITTS(root, url=train_url, download=download)
+#     if not test:
+#         return train_set
+#     test_set = LIBRITTS(root, url=test_url, download=download)
+#     return train_set, test_set
+
+
+# def train_valid_split(train_set, train_ratio=0.8, random_seed=42):
+    
+#     seed = Generator().manual_seed(random_seed)
+#     train_set, valid_set = random_split(train_set, [train_ratio, 1-train_ratio], generator=seed)
+
+#     return train_set, valid_set
+
+
+# def load_data(data, batch_size, shuffle=True, num_workers=4):
+#     return DataLoader(data, batch_size, shuffle=shuffle, num_workers=num_workers)
 # print(train_loader)
 
 
