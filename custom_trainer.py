@@ -2180,3 +2180,4 @@ class Trainer:
     def _is_apex_available() -> bool:
         """Check if Nvidia's APEX is available."""
         return importlib.util.find_spec("apex") is not None
+

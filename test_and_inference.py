@@ -1,5 +1,5 @@
 import os
-from dataset import dataset_util
+from custom_dataset import dataset_util
 from custom_tacotron2 import Tacotron2
 from TTS.tts.utils.speakers import SpeakerManager
 import wandb

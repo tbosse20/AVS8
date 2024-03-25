@@ -61,9 +61,7 @@ class TTSDataset(Dataset):
         compute_energy: bool = False,
         f0_cache_path: str = None,
         energy_cache_path: str = None,
-        #NEW CHANGES FALSE TO TRUE
-        return_wav: bool = True,
-        #####
+        return_wav: bool = False,
         batch_group_size: int = 0,
         min_text_len: int = 0,
         max_text_len: int = float("inf"),
@@ -167,7 +165,6 @@ class TTSDataset(Dataset):
         #NEW EMBEDDING AND FEAT EXTRACTOR
         self.feat_extractor = AutoFeatureExtractor.from_pretrained(os.path.join(os.getcwd(), "featureextractorwav2vec2"))
         self.spk_emb_model = Wav2Vec2ForXVector.from_pretrained(os.path.join(os.getcwd(),"encoderwav2vec2"))
-
 
         if self.tokenizer.use_phonemes:
             self.phoneme_dataset = PhonemeDataset(
@@ -550,7 +547,6 @@ class TTSDataset(Dataset):
                     wav_padded[i, :, : w.shape[0]] = torch.from_numpy(w)
                 wav_padded.transpose_(1, 2)
 
-            ###
             # format F0
             if self.compute_f0:
                 pitch = prepare_data(batch["pitch"])
@@ -975,4 +971,35 @@ class EnergyDataset:
         return energy
 
     def denormalize(self, energy):
-        zero_idxs = np.where(energy == 0.0)[0]# coding: utf-8
+        zero_idxs = np.where(energy == 0.0)[0]
+        energy *= self.std
+        energy += self.mean
+        energy[zero_idxs] = 0.0
+        return energy
+
+    def compute_or_load(self, wav_file, audio_unique_name):
+        """
+        compute energy and return a numpy array of energy values
+        """
+        energy_file = self.create_energy_file_path(audio_unique_name, self.cache_path)
+        if not os.path.exists(energy_file):
+            energy = self._compute_and_save_energy(self.ap, wav_file, energy_file)
+        else:
+            energy = np.load(energy_file)
+        return energy.astype(np.float32)
+
+    def collate_fn(self, batch):
+        audio_unique_name = [item["audio_unique_name"] for item in batch]
+        energys = [item["energy"] for item in batch]
+        energy_lens = [len(item["energy"]) for item in batch]
+        energy_lens_max = max(energy_lens)
+        energys_torch = torch.LongTensor(len(energys), energy_lens_max).fill_(self.get_pad_id())
+        for i, energy_len in enumerate(energy_lens):
+            energys_torch[i, :energy_len] = torch.LongTensor(energys[i])
+        return {"audio_unique_name": audio_unique_name, "energy": energys_torch, "energy_lens": energy_lens}
+
+    def print_logs(self, level: int = 0) -> None:
+        indent = "\t" * level
+        print("\n")
+        print(f"{indent}> energyDataset ")
+        print(f"{indent}| > Number of instances : {len(self.samples)}")
