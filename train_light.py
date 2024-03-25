@@ -14,10 +14,10 @@ wandb.init(
         "learning_rate":    1e-3,
         "epochs":           5,
         "accelerator":      "cpu",
-        "input_dim":        1,                      # 
-        "output_dim":       1,                      # 
-        "hidden_dim":       256,                    # 
-        "num_layers":       2,                      # 
+        "input_dim":        1,
+        "output_dim":       1,
+        "hidden_dim":       256,
+        "num_layers":       2,
         "encoder":          encoders.Encoder(),
         "decoder":          decoders.Decoder(),
     }

@@ -75,9 +75,6 @@ class Seq2Seq(pl.LightningModule):
         # Clear the list for the next epoch
         self.test_step_outputs = []
 
-    # def __repr__(self):
-    #     return self._get_name()
-
 if __name__ == '__main__':
     
     input_dim = 1  # Size of the vocabulary for the source language
@@ -96,7 +93,7 @@ if __name__ == '__main__':
     train_loader = ds.train_dataloader()
     valid_loader = ds.val_dataloader()
     test_loader = ds.test_dataloader()
-
+    
     encoder = encoders.Encoder(input_dim, hidden_dim, num_layers)
     decoder = decoders.Decoder(input_dim, hidden_dim, output_dim, num_layers)
     criterion = nn.MSELoss()

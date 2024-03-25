@@ -37,11 +37,12 @@ if __name__ == '__main__':
     ds.setup()
 
     audios, labels = next(iter(ds.test_dataloader()))
-    print(f'"Audios" shape: {audios.shape}')
     
+    dummy_input = torch.randn(3, 10, 1)
+    audios = dummy_input
     embedding = encoders.Encoder(1, 256, 2)(audios)
     
     decoder = Decoder(1, 256, 1, 2)
     output = decoder(embedding)
-    print(output)
-    print(output.shape)
+    print(f'Output: {output}')
+    print(f'Output shape: {output.shape}')
