@@ -1,5 +1,5 @@
 from torchaudio.datasets import LIBRITTS
-from torch.utils.data import random_split, DataLoader
+from torch.utils.data import random_split, DataLoader, Dataset
 import lightning as L
 import os
 
@@ -24,16 +24,16 @@ class LIBRITTS_Dataset(L.LightningDataModule):
         self.num_workers = num_workers
 
     def prepare_data(self):
-        LIBRITTS(root=self.data_dir, url=self.train_url, download=True)
-        LIBRITTS(root=self.data_dir, url=self.test_url, download=True)
+        CustomLIBRITTS(root=self.data_dir, url=self.train_url, download=True)
+        CustomLIBRITTS(root=self.data_dir, url=self.test_url, download=True)
 
     def setup(self, stage: str):
         if stage == "fit":
-            libritts_full = LIBRITTS(root=self.data_dir, url=self.train_url)
+            libritts_full = CustomLIBRITTS(root=self.data_dir, url=self.train_url)
             self.libritts_train, self.libritts_val = random_split(libritts_full, [self.train_ratio, 1-self.train_ratio])
         
         if stage == "test":
-            self.libritts_test = LIBRITTS(root=self.data_dir, url=self.test_url)
+            self.libritts_test = CustomLIBRITTS(root=self.data_dir, url=self.test_url)
 
     def train_dataloader(self):
         return DataLoader(self.libritts_train,
@@ -50,6 +50,16 @@ class LIBRITTS_Dataset(L.LightningDataModule):
                           self.batch_size,
                           num_workers=self.num_workers)
 
+class CustomLIBRITTS(Dataset):
+    def __init__(self, root, url, download=False):
+        self.libritts_dataset = LIBRITTS(root=root, url=url, download=download)
+
+    def __len__(self):
+        return len(self.libritts_dataset)
+
+    def __getitem__(self, idx):
+        waveform, sample_rate, original_text, normalized_text, speaker_id, chapter_id, utterance_id = self.libritts_dataset[idx]
+        return waveform, normalized_text
 
 if __name__ == "__main__":
     work_dir = os.getcwd()
