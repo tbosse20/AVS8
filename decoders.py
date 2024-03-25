@@ -1,7 +1,9 @@
 import torch.nn as nn
-import torchvision.models as models
-from Seq2Seq import Seq2Seq
 import torch
+import torch
+import os
+from data_loader.data_loaders import LIBRITTS_Dataset
+import encoders
 
 class Decoder(nn.Module):
     def __init__(self, input_dim, hidden_dim, output_dim, num_layers):
@@ -24,3 +26,22 @@ class Decoder(nn.Module):
 
     def __repr__(self):
         return self._get_name()
+    
+if __name__ == '__main__':
+    
+    work_dir = os.getcwd()
+    dataset_dir = os.path.join(work_dir, "data")
+    
+    ds = LIBRITTS_Dataset(data_dir=dataset_dir, batch_size=1) 
+    ds.prepare_data()
+    ds.setup()
+
+    audios, labels = next(iter(ds.test_dataloader()))
+    print(f'"Audios" shape: {audios.shape}')
+    
+    embedding = encoders.Encoder(1, 256, 2)(audios)
+    
+    decoder = Decoder(1, 256, 1, 2)
+    output = decoder(embedding)
+    print(output)
+    print(output.shape)

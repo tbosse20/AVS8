@@ -27,13 +27,10 @@ class LIBRITTS_Dataset(L.LightningDataModule):
         CustomLIBRITTS(root=self.data_dir, url=self.train_url, download=True)
         CustomLIBRITTS(root=self.data_dir, url=self.test_url, download=True)
 
-    def setup(self, stage: str):
-        if stage == "fit":
-            libritts_full = CustomLIBRITTS(root=self.data_dir, url=self.train_url)
-            self.libritts_train, self.libritts_val = random_split(libritts_full, [self.train_ratio, 1-self.train_ratio])
-        
-        if stage == "test":
-            self.libritts_test = CustomLIBRITTS(root=self.data_dir, url=self.test_url)
+    def setup(self):
+        libritts_full = CustomLIBRITTS(root=self.data_dir, url=self.train_url)
+        self.libritts_train, self.libritts_val = random_split(libritts_full, [self.train_ratio, 1-self.train_ratio])
+        self.libritts_test = CustomLIBRITTS(root=self.data_dir, url=self.test_url)
 
     def train_dataloader(self):
         return DataLoader(self.libritts_train, self.batch_size, num_workers=self.num_workers)

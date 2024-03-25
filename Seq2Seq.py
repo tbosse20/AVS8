@@ -1,6 +1,10 @@
 
 import pytorch_lightning as pl
 import torch
+import decoders, encoders
+import os
+from data_loader.data_loaders import LIBRITTS_Dataset
+import torch.nn as nn
 
 class Seq2Seq(pl.LightningModule):
     def __init__(self, encoder, decoder, criterion):
@@ -75,4 +79,40 @@ class Seq2Seq(pl.LightningModule):
     #     return self._get_name()
 
 if __name__ == '__main__':
-    Seq2Seq()
+    
+    input_dim = 1  # Size of the vocabulary for the source language
+    output_dim = 1  # Size of the vocabulary for the target language
+    hidden_dim = 256  # Hidden dimension size for the LSTM units
+    num_layers = 2  # Number of layers in the LSTM encoder and decoder
+
+    pl.seed_everything(42, workers=True)
+    
+    work_dir = os.getcwd()
+    dataset_dir = os.path.join(work_dir, "data")
+    ds = LIBRITTS_Dataset(data_dir=dataset_dir, batch_size=1) 
+    ds.prepare_data()
+    ds.setup()
+    
+    train_loader = ds.train_dataloader()
+    valid_loader = ds.val_dataloader()
+    test_loader = ds.test_dataloader()
+
+    encoder = encoders.Encoder(input_dim, hidden_dim, num_layers)
+    decoder = decoders.Decoder(input_dim, hidden_dim, output_dim, num_layers)
+    criterion = nn.MSELoss()
+    
+    model = Seq2Seq(encoder, decoder, criterion)
+    model.lr = 1e-3
+
+    trainer = pl.Trainer(
+        max_epochs=2,
+        accelerator="cpu",
+        log_every_n_steps=100,
+    )
+
+    trainer.fit(model, train_loader, valid_loader)
+    test_results = trainer.test(model, dataloaders=test_loader, verbose=True)
+
+    # Print the test accuracy
+    print(f'Test Loss: {test_results[0]["test_loss"]:.4f}')
+    print(f'Test Accuracy: {test_results[0]["test_accuracy"]:.4f}')
