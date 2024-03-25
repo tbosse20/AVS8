@@ -2,7 +2,6 @@
 # import collections
 # import torch
 # import numpy as np
-from data_loader.data_loaders import LIBRITTS_Dataset, train_valid_split, load_data
 # import model.loss as module_loss
 # import model.metric as module_metric
 # import model.model as module_arch
@@ -10,6 +9,7 @@ from data_loader.data_loaders import LIBRITTS_Dataset, train_valid_split, load_d
 # from trainer import Trainer
 # from utils import prepare_device
 # from torch.utils.data import DataLoader
+from data_loader.data_loaders import LIBRITTS_Dataset, train_valid_split, load_data
 import os
 
 
@@ -18,9 +18,10 @@ data_dir = os.path.join(current_dir, "data")
 
 train_set, test_set = LIBRITTS_Dataset(data_dir, test=True)
 train_set, valid_set = train_valid_split(train_set)
-train_loader, valid_loader, test_loader = [load_data(x, 16) for x in [train_set, valid_set, test_set]]
 
-# print(next(iter(train_loader)))
+# train_loader, valid_loader, test_loader = (load_data(x, 1) for x in [train_set, valid_set, test_set])
+
+print(next(iter(train_set)))
 
 # # fix random seeds for reproducibility
 # SEED = 123
