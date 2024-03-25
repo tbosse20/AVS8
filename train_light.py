@@ -7,20 +7,20 @@ from data_loader.data_loaders import LIBRITTS_Dataset
 import os
 import torch.nn as nn
 
+config = {
+    "learning_rate":    1e-3,
+    "epochs":           5,
+    "accelerator":      "cpu",
+    "input_dim":        1,
+    "output_dim":       1,
+    "hidden_dim":       256,
+    "num_layers":       2,
+    "encoder":          encoders.Encoder(),
+    "decoder":          decoders.Decoder(),
+}
 wandb.init(
     project = "AVSP8",
-    
-    config = {
-        "learning_rate":    1e-3,
-        "epochs":           5,
-        "accelerator":      "cpu",
-        "input_dim":        1,
-        "output_dim":       1,
-        "hidden_dim":       256,
-        "num_layers":       2,
-        "encoder":          encoders.Encoder(),
-        "decoder":          decoders.Decoder(),
-    }
+    config = config
 )
 
 def main():
@@ -40,22 +40,22 @@ def main():
 
     encoder = getattr(
         importlib.import_module('encoders'),
-        wandb.config.encoder)(
-            wandb.config.input_dim, wandb.config.hidden_dim,
-            wandb.config.num_layers)
+        config.encoder)(
+            config.input_dim, config.hidden_dim,
+            config.num_layers)
     decoder = getattr(
         importlib.import_module('decoders'),
-        wandb.config.decoder)(
-            wandb.config.input_dim, wandb.config.hidden_dim,
-            wandb.config.output_dim, wandb.config.num_layers)
+        config.decoder)(
+            config.input_dim, config.hidden_dim,
+            config.output_dim, config.num_layers)
     criterion = nn.MSELoss()
 
     model = Seq2Seq(encoder, decoder, criterion)
-    model.lr = wandb.config['learning_rate']
+    model.lr = config['learning_rate']
 
     trainer = pl.Trainer(
-        max_epochs=wandb.config.epochs,
-        accelerator=wandb.config.accelerator,
+        max_epochs=config.epochs,
+        accelerator=config.accelerator,
         deterministic=True,
         logger=WandbLogger(log_model="all"),
     )
