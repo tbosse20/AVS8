@@ -1,8 +1,8 @@
 import torch.nn as nn
 import torchvision.models as models
-from Pipeline import Pipeline
+from Seq2Seq import Seq2Seq
 
-class ResNet18(Pipeline):
+class ResNet18():
     def __init__(self, num_classes=1000):
         super().__init__()
         
@@ -19,7 +19,7 @@ class ResNet18(Pipeline):
     def forward(self, x):
         return self.resnet(x)
     
-class NewCNN(Pipeline):
+class NewCNN(Seq2Seq):
     pass
 
 if __name__ == '__main__':
