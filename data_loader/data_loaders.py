@@ -27,28 +27,19 @@ class LIBRITTS_Dataset(L.LightningDataModule):
         CustomLIBRITTS(root=self.data_dir, url=self.train_url, download=True)
         CustomLIBRITTS(root=self.data_dir, url=self.test_url, download=True)
 
-    def setup(self, stage: str):
-        if stage == "fit":
-            libritts_full = CustomLIBRITTS(root=self.data_dir, url=self.train_url)
-            self.libritts_train, self.libritts_val = random_split(libritts_full, [self.train_ratio, 1-self.train_ratio])
-        
-        if stage == "test":
-            self.libritts_test = CustomLIBRITTS(root=self.data_dir, url=self.test_url)
+    def setup(self):
+        libritts_full = CustomLIBRITTS(root=self.data_dir, url=self.train_url)
+        self.libritts_train, self.libritts_val = random_split(libritts_full, [self.train_ratio, 1-self.train_ratio])
+        self.libritts_test = CustomLIBRITTS(root=self.data_dir, url=self.test_url)
 
     def train_dataloader(self):
-        return DataLoader(self.libritts_train,
-                          self.batch_size,
-                          num_workers=self.num_workers)
+        return DataLoader(self.libritts_train, self.batch_size, num_workers=self.num_workers)
     
     def val_dataloader(self):
-        return DataLoader(self.libritts_val,
-                          self.batch_size,
-                          num_workers=self.num_workers)
+        return DataLoader(self.libritts_val, self.batch_size, num_workers=self.num_workers)
     
     def test_dataloader(self):
-        return DataLoader(self.libritts_test,
-                          self.batch_size,
-                          num_workers=self.num_workers)
+        return DataLoader(self.libritts_test, self.batch_size, num_workers=self.num_workers)
 
 class CustomLIBRITTS(Dataset):
     def __init__(self, root, url, download=False):
@@ -64,11 +55,14 @@ class CustomLIBRITTS(Dataset):
 if __name__ == "__main__":
     work_dir = os.getcwd()
     dataset_dir = os.path.join(work_dir, "data")
-    ds = LIBRITTS_Dataset(data_dir=dataset_dir)
+    # TODO : More than 1 batch doesn't match audio size
+    ds = LIBRITTS_Dataset(data_dir=dataset_dir, batch_size=1) 
     ds.prepare_data()
     ds.setup(stage="fit")
     train_data = ds.train_dataloader()
-    print(next(iter(train_data)))
+    audios, labels = next(iter(train_data))
+    print(f'{audios=}')
+    print(f'{labels=}')
 
 
 # def LIBRITTS_Dataset(root, train_url ="train-clean-100", test=False, test_url="test-clean", download=False):
@@ -100,7 +94,6 @@ if __name__ == "__main__":
 # def load_data(data, batch_size, shuffle=True, num_workers=4):
 #     return DataLoader(data, batch_size, shuffle=shuffle, num_workers=num_workers)
 # print(train_loader)
-
 
 # class MnistDataLoader(BaseDataLoader):
 #     """

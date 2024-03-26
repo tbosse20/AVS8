@@ -1,48 +1,67 @@
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
-from torch.utils.data import DataLoader, Subset
-from torchvision import transforms, datasets
 import wandb
-import models, importlib
+import model.encoders, model.decoders, importlib
+from Seq2Seq import Seq2Seq
+from data_loader.data_loaders import LIBRITTS_Dataset
+import os
+import torch.nn as nn
 
+config = {
+    "learning_rate":    1e-3,
+    "epochs":           5,
+    "accelerator":      "cpu",
+    "input_dim":        1,
+    "output_dim":       1,
+    "hidden_dim":       256,
+    "num_layers":       2,
+    "encoder":          model.encoders.Encoder(),
+    "decoder":          model.decoders.Decoder(),
+}
 wandb.init(
     project = "AVSP8",
-    
-    config = {
-        "learning_rate":    1e-3,
-        "epochs":           5,
-        "accelerator":      "cpu",
-        "model":            models.ResNet18()
-    }
+    config = config
 )
 
 def main():
 
     pl.seed_everything(42, workers=True)
+    
+    work_dir = os.getcwd()
+    dataset_dir = os.path.join(work_dir, "data")
+    
+    ds = LIBRITTS_Dataset(data_dir=dataset_dir, batch_size=1) 
+    ds.prepare_data()
+    ds.setup()
+    
+    train_loader = ds.train_dataloader()
+    valid_loader = ds.val_dataloader()
+    test_loader = ds.test_dataloader()
 
-    # Data
-    transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
-    mnist_train = datasets.MNIST(root="./data", train=True, download=False, transform=transform)
-    mnist_train = Subset(mnist_train, range(10))
-    mnist_test = datasets.MNIST(root="./data", train=False, download=False, transform=transform)
-    mnist_test = Subset(mnist_test, range(10))
+    encoder = getattr(
+        importlib.import_module('encoders'),
+        config.encoder)(
+            config.input_dim, config.hidden_dim,
+            config.num_layers)
+    decoder = getattr(
+        importlib.import_module('decoders'),
+        config.decoder)(
+            config.input_dim, config.hidden_dim,
+            config.output_dim, config.num_layers)
+    criterion = nn.MSELoss()
 
-    model = getattr(importlib.import_module('models'), wandb.config.model)()
-    model.lr = wandb.config['learning_rate']
-    train_dataloader = DataLoader(mnist_train, batch_size=64, shuffle=True) # TODO : UPDATE
-    # val_dataloader = None # TODO : UPDATE
-    test_dataloader = DataLoader(mnist_test, batch_size=1000, shuffle=False) # TODO : UPDATE
+    model = Seq2Seq(encoder, decoder, criterion)
+    model.lr = config['learning_rate']
 
     trainer = pl.Trainer(
-        max_epochs=wandb.config['epochs'],
-        accelerator=wandb.config['accelerator'],
-        # deterministic=True,
-        log_every_n_steps=1,
+        max_epochs=config.epochs,
+        accelerator=config.accelerator,
+        deterministic=True,
         logger=WandbLogger(log_model="all"),
     )
 
-    trainer.fit(model, train_dataloader)
-    test_results = trainer.test(model, dataloaders=test_dataloader, verbose=True)
+    trainer.fit(model, train_loader, valid_loader)
+    test_results = trainer.test(model, dataloaders=test_loader, verbose=True)
 
     # Print the test accuracy
     print(f'Test Loss: {test_results[0]["test_loss"]:.4f}')
