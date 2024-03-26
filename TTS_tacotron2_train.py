@@ -3,47 +3,44 @@ import os
 from trainer import Trainer, TrainerArgs
 
 from TTS.config.shared_configs import BaseAudioConfig
-from TTS.tts.configs.glow_tts_config import GlowTTSConfig
+from TTS.tts.configs.tacotron2_config import Tacotron2Config
 from TTS.tts.configs.shared_configs import BaseDatasetConfig
 from TTS.tts.datasets import load_tts_samples
-from TTS.tts.models.glow_tts import GlowTTS
+from TTS.tts.models.tacotron2 import Tacotron2
 from TTS.tts.utils.speakers import SpeakerManager
 from TTS.tts.utils.text.tokenizer import TTSTokenizer
 from TTS.utils.audio import AudioProcessor
 
 # set experiment paths
 output_path = os.path.dirname(os.path.abspath(__file__))
-dataset_path = os.path.join(output_path, "../VCTK/")
+dataset_path = os.path.join(output_path, "libriTTS")
 
 # download the dataset if not downloaded
 if not os.path.exists(dataset_path):
-    from TTS.utils.downloaders import download_vctk
+    from TTS.utils.downloaders import download_libri_tts
 
-    download_vctk(dataset_path)
+    download_libri_tts(dataset_path, subset="libri-tts-clean-100") #這裡是Ollie做的
 
+print("downloaded data")
 # define dataset config
-dataset_config = BaseDatasetConfig(formatter="vctk", meta_file_train="", path=dataset_path)
+dataset_config = BaseDatasetConfig(formatter="libri_tts", meta_file_train="", path=dataset_path)
 
 # define audio config
 # ❗ resample the dataset externally using `TTS/bin/resample.py` and set `resample=False` for faster training
-audio_config = BaseAudioConfig(sample_rate=22050, resample=True, do_trim_silence=True, trim_db=23.0)
+audio_config = BaseAudioConfig(sample_rate=24000, resample=False, do_trim_silence=False)
 
 # define model config
-config = GlowTTSConfig(
-    batch_size=64,
-    eval_batch_size=16,
-    num_loader_workers=4,
-    num_eval_loader_workers=4,
-    precompute_num_workers=4,
+config = Tacotron2Config(
+    batch_size=4,
+    eval_batch_size=4,
+    num_loader_workers=0,
+    num_eval_loader_workers=0,
+    precompute_num_workers=0,
     run_eval=True,
     test_delay_epochs=-1,
-    epochs=1000,
-    text_cleaner="phoneme_cleaners",
-    use_phonemes=True,
-    phoneme_language="en-us",
-    phoneme_cache_path=os.path.join(output_path, "phoneme_cache"),
-    print_step=25,
-    print_eval=False,
+    epochs=1,
+    print_step=1,
+    print_eval=True,
     mixed_precision=True,
     output_path=output_path,
     datasets=[dataset_config],
@@ -83,8 +80,9 @@ speaker_manager.set_ids_from_data(train_samples + eval_samples, parse_key="speak
 config.num_speakers = speaker_manager.num_speakers
 
 # init model
-model = GlowTTS(config, ap, tokenizer, speaker_manager=speaker_manager)
+model = Tacotron2(config, ap, tokenizer, speaker_manager=speaker_manager)
 
+print("start training  ")
 # INITIALIZE THE TRAINER
 # Trainer provides a generic API to train all the 🐸TTS models with all its perks like mixed-precision training,
 # distributed training, etc.
