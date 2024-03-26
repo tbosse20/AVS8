@@ -6,40 +6,38 @@ from Seq2Seq import Seq2Seq
 from data_loader.data_loaders import LIBRITTS_Dataset
 import os
 import torch.nn as nn
-from config import config, information
+from config import config
+import inspect
 
-wandb.init(
-    project = "AVSP8",
-    config = config
-)
+# wandb.init(
+#     project = "AVSP8",
+#     config = config
+# )
 
 def main():
 
     # Set the seed for reproducibility
     pl.seed_everything(42, workers=True)
     
+    # Setup the dataset and dataloaders
     work_dir = os.getcwd()
-    dataset_dir = os.path.join(work_dir, information.data_dir)
-    
-    ds = LIBRITTS_Dataset(data_dir=dataset_dir, batch_size=config.batch_size) 
+    dataset_dir = os.path.join(work_dir, config.data_loader.data_dir)
+    ds = LIBRITTS_Dataset(data_dir=dataset_dir, batch_size=config.data_loader.batch_size) 
     ds.prepare_data()
     ds.setup()
-    
-    # Get the train, validation and test dataloaders from the dataset
     train_loader, valid_loader, test_loader = ds.train_dataloader(), ds.val_dataloader(), ds.test_dataloader()
 
     # Get the encoder class from the encoders module
     encoders = importlib.import_module('encoders')
-    encoder_class = getattr(encoders, config.encoder)
-    encoder = encoder_class(
-        config.input_dim, config.hidden_dim, config.num_layers)
-    
+    encoder_class = getattr(encoders, config.model.encoder)
+    encoder_args = list(inspect.signature(encoder).parameters)
+    encoder_parameters = {k: v for k, v in config.model.parameters.items() if k in encoder_args}
+    encoder = encoder_class(**encoder_parameters)
+
     # Get the decoder class from the decoders module
     decoders = importlib.import_module('decoders')
-    decoder_class = getattr(decoders, config.decoder)
-    decoder = decoder_class(
-        config.input_dim, config.hidden_dim,
-        config.output_dim, config.num_layers)
+    decoder_class = getattr(decoders, config.model.decoder)
+    decoder = decoder_class(**config.model.parameters)
     
     # Define the loss function
     criterion = nn.MSELoss()
@@ -50,10 +48,8 @@ def main():
 
     # Create the trainer
     trainer = pl.Trainer(
-        max_epochs=config.epochs,
-        accelerator=config.accelerator,
-        deterministic=True,
-        logger=WandbLogger(log_model="all"),
+        **config.trainer,
+        # logger=WandbLogger(log_model="all"),
     )
 
     # Fit and test the model

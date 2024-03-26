@@ -1,18 +1,32 @@
-import model.encoders, model.decoders
+import encoders, decoders
+from types import SimpleNamespace
 
-config = {
-    "learning_rate":    1e-3,
-    "epochs":           5,
-    "accelerator":      "cpu",
-    "input_dim":        1,
-    "output_dim":       1,
-    "hidden_dim":       256,
-    "num_layers":       2,
-    "encoder":          model.encoders.Encoder(),
-    "decoder":          model.decoders.Decoder(),
-    "batch_size":       32,
-}
+def dict_to_namespace(d):
+    """Recursively convert dictionary into SimpleNamespace."""
+    namespace = SimpleNamespace(**d)
+    for key, value in d.items():
+        if isinstance(value, dict):
+            setattr(namespace, key, dict_to_namespace(value))
+    return namespace
 
-information = {
-    "data_dir": "./data",
-}
+config = dict_to_namespace({
+    "trainer": {
+        "learning_rate":    1e-3,
+        "epochs":           5,
+        "accelerator":      "cpu",
+    },
+    "model": {
+        "encoder":          encoders.Encoder,
+        "decoder":          decoders.Decoder,
+        "parameters": {
+            "input_dim":        1,
+            "output_dim":       1,
+            "hidden_dim":       256,
+            "num_layers":       2,
+        },
+    },
+    "data_loader": {
+        "batch_size":   32,
+        "data_dir": "./data",
+    },
+})

@@ -58,10 +58,9 @@ class CustomLIBRITTS(Dataset):
 if __name__ == "__main__":
     work_dir = os.getcwd()
     dataset_dir = os.path.join(work_dir, "data")
-    # TODO : More than 1 batch doesn't match audio size
     ds = LIBRITTS_Dataset(data_dir=dataset_dir, batch_size=1) 
     ds.prepare_data()
-    ds.setup(stage="fit")
+    ds.setup()
     train_data = ds.train_dataloader()
     audios, labels = next(iter(train_data))
     print(f'{audios=}')
