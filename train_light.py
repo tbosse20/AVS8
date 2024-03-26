@@ -1,7 +1,7 @@
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
 import wandb
-import encoders, decoders, importlib
+import model.encoders, model.decoders, importlib
 from Seq2Seq import Seq2Seq
 from data_loader.data_loaders import LIBRITTS_Dataset
 import os
@@ -15,8 +15,8 @@ config = {
     "output_dim":       1,
     "hidden_dim":       256,
     "num_layers":       2,
-    "encoder":          encoders.Encoder(),
-    "decoder":          decoders.Decoder(),
+    "encoder":          model.encoders.Encoder(),
+    "decoder":          model.decoders.Decoder(),
 }
 wandb.init(
     project = "AVSP8",
