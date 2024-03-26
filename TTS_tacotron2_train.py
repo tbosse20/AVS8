@@ -12,8 +12,9 @@ from TTS.tts.utils.text.tokenizer import TTSTokenizer
 from TTS.utils.audio import AudioProcessor
 
 # set experiment paths
-output_path = os.path.dirname(os.path.abspath(__file__))
-dataset_path = os.path.join(output_path, "libriTTS")
+current_path = os.path.dirname(os.path.abspath(__file__))
+output_path = os.path.join(current_path, "runs")
+dataset_path = os.path.join(current_path, "libriTTS")
 
 # download the dataset if not downloaded
 if not os.path.exists(dataset_path):
@@ -41,7 +42,7 @@ config = Tacotron2Config(
     epochs=1,
     print_step=1,
     print_eval=True,
-    mixed_precision=True,
+    mixed_precision=False,
     output_path=output_path,
     datasets=[dataset_config],
     use_speaker_embedding=True,
