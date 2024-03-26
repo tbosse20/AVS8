@@ -1,5 +1,10 @@
-torch>=1.1
-torchvision
-numpy
-tqdm
-tensorboard>=1.14
+lightning==2.2.1
+numpy==1.22.0
+pandas==1.5.3
+pytorch_lightning==2.1.4
+torch==2.2.1
+torchaudio==2.2.1
+torchvision==0.15.0.dev20230314
+tqdm==4.65.0
+TTS==0.22.0
+wandb==0.16.2
