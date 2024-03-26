@@ -35,6 +35,9 @@ class LIBRITTS_Dataset(L.LightningDataModule):
         if stage == "test":
             self.libritts_test = LIBRITTS(root=self.data_dir, url=self.test_url)
 
+    def custom_collate():
+        pass
+
     def train_dataloader(self):
         return DataLoader(self.libritts_train,
                           self.batch_size,
