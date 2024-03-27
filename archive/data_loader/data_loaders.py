@@ -2,6 +2,8 @@ from torchaudio.datasets import LIBRITTS
 from torch.utils.data import random_split, DataLoader, Dataset
 import lightning as L
 import os
+import torch
+
 
 class LIBRITTS_Dataset(L.LightningDataModule):
     '''
@@ -32,11 +34,19 @@ class LIBRITTS_Dataset(L.LightningDataModule):
         self.libritts_train, self.libritts_val = random_split(libritts_full, [self.train_ratio, 1-self.train_ratio])
         self.libritts_test = CustomLIBRITTS(root=self.data_dir, url=self.test_url)
 
-    def custom_collate():
-        pass
+    def custom_collate(self, batch):
+        audios, labels = zip(*batch)
 
+        # Find the maximum length of audio samples in the batch
+        max_audio_length = max(len(audio[0]) for audio in audios)
+        # Pad audio sequences to the maximum length in the batch
+        padded_audios = [torch.nn.functional.pad(audio[0], (0, max_audio_length - len(audio[0]))) for audio in audios]
+        padded_audios = torch.stack(padded_audios)      
+
+        return padded_audios, labels
+    
     def train_dataloader(self):
-        return DataLoader(self.libritts_train, self.batch_size, num_workers=self.num_workers)
+        return DataLoader(self.libritts_train, self.batch_size, num_workers=self.num_workers, collate_fn=self.custom_collate)
     
     def val_dataloader(self):
         return DataLoader(self.libritts_val, self.batch_size, num_workers=self.num_workers)
@@ -58,12 +68,12 @@ class CustomLIBRITTS(Dataset):
 if __name__ == "__main__":
     work_dir = os.getcwd()
     dataset_dir = os.path.join(work_dir, "data")
-    ds = LIBRITTS_Dataset(data_dir=dataset_dir, batch_size=1) 
+    ds = LIBRITTS_Dataset(data_dir=dataset_dir, batch_size=8, num_workers=1) 
     ds.prepare_data()
     ds.setup()
     train_data = ds.train_dataloader()
     audios, labels = next(iter(train_data))
-    print(f'{audios=}')
+    print(f'{audios.shape=}')
     print(f'{labels=}')
 
 
