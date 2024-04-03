@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 
 # %%
 # Load audio file example and compute mel spectrogram
+# Will plot it as well
 
 # Load audio file example
 audio_file = '84_121123_000069_000000.wav'
@@ -22,6 +23,8 @@ plt.colorbar()
 plt.savefig('mel_spectrogram.png')
 
 # %%
+# Make encoder and decoder using Tacotron2 model
+# Taken as "Tacotron2().encoder" and "Tacotron2().decoder"
 
 from TTS.tts.configs.tacotron2_config import Tacotron2Config
 from TTS.tts.models.tacotron2 import Tacotron2
