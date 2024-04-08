@@ -10,10 +10,14 @@ from TTS.tts.models.tacotron2 import Tacotron2
 from TTS.tts.utils.speakers import SpeakerManager
 from TTS.tts.utils.text.tokenizer import TTSTokenizer
 from TTS.utils.audio import AudioProcessor
+from TTS.api import load_config
 
 
 VOCODER_MODEL = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
 VOCODER_CONFIG = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/config.json"
+
+TACO_MODEL = "/home/putak/.local/share/tts/tts_models--en--ek1--tacotron2/model_file.pth"
+TACO_CONFIG = "/home/putak/.local/share/tts/tts_models--en--ek1--tacotron2/config.json"
 
 # voc_config_from_path = load_config(VOCODER_CONFIG)
 
@@ -43,26 +47,28 @@ dataset_config = BaseDatasetConfig(formatter="libri_tts", meta_file_train="", pa
 audio_config = BaseAudioConfig(sample_rate=24000, resample=False, do_trim_silence=False)
 
 # define model config
-config = Tacotron2Config(
-    batch_size=4,
-    eval_batch_size=4,
-    num_loader_workers=0,
-    num_eval_loader_workers=0,
-    precompute_num_workers=0,
-    run_eval=True,
-    test_delay_epochs=-1,
-    epochs=1,
-    print_step=1,
-    print_eval=True,
-    mixed_precision=False,
-    output_path=output_path,
-    datasets=[dataset_config],
-    use_speaker_embedding=True,
-    min_text_len=0,
-    max_text_len=500,
-    min_audio_len=0,
-    max_audio_len=500000,
-)
+config = load_config(TACO_CONFIG)
+# config = Tacotron2Config(
+#     batch_size=4,
+#     eval_batch_size=4,
+#     num_loader_workers=0,
+#     num_eval_loader_workers=0,
+#     precompute_num_workers=0,
+#     run_eval=True,
+#     test_delay_epochs=-1,
+#     epochs=1,
+#     print_step=1,
+#     print_eval=True,
+#     mixed_precision=False,
+#     output_path=output_path,
+#     datasets=[dataset_config],
+#     use_speaker_embedding=True,
+#     min_text_len=0,
+#     max_text_len=500,
+#     min_audio_len=0,
+#     max_audio_len=500000,
+#     double_decoder_consistency=True,
+# )
 
 # INITIALIZE THE AUDIO PROCESSOR
 # Audio processor is used for feature extraction and audio I/O.
@@ -94,7 +100,10 @@ config.num_speakers = speaker_manager.num_speakers
 
 # init model
 model = Tacotron2(config, ap, tokenizer, speaker_manager=speaker_manager)
+model.load_checkpoint(config=TACO_CONFIG, checkpoint_path=TACO_MODEL)
 
+# voice = model.inference("My name is Jeff.")
+# quit()
 print("start training  ")
 # INITIALIZE THE TRAINER
 # Trainer provides a generic API to train all the 🐸TTS models with all its perks like mixed-precision training,
