@@ -22,8 +22,8 @@ from TTS.config import load_config
 
 
 #NEW PATH#
-VOCODER_CONFIG_PATH = "/home/putak/.local/share/tts/vocoder_models--universal--libri-tts--fullband-melgan/config.json"
-VOCODER_MODEL = "/home/putak/.local/share/tts/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
+VOCODER_CONFIG_PATH = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/config.json"
+VOCODER_MODEL = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
 
 class Tacotron2(BaseTacotron):
     """Tacotron2 model implementation inherited from :class:`TTS.tts.models.base_tacotron.BaseTacotron`.
