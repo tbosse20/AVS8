@@ -108,6 +108,7 @@ datasets/
 libriTTS/
 runs/
 vocoder/
+tts_model/
 
 # editor, os cache directory
 .vscode/

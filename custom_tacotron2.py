@@ -18,11 +18,10 @@ from TTS.tts.utils.visual import plot_alignment, plot_spectrogram
 from TTS.utils.capacitron_optimizer import CapacitronOptimizer
 #NEW IMPORTS#
 from TTS.vocoder.models.gan import GAN
-from TTS.config import load_config
-
+from TTS.vocoder.configs import FullbandMelganConfig
 
 #NEW PATH#
-VOCODER_CONFIG_PATH = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/config.json"
+# VOCODER_CONFIG_PATH = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/config.json" 
 VOCODER_MODEL = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
 
 class Tacotron2(BaseTacotron):
@@ -106,8 +105,9 @@ class Tacotron2(BaseTacotron):
         self.decoder.prenet.dropout_at_inference = self.prenet_dropout_at_inference
 
         #NEW VOCODER#
-        self.vocoder = GAN(load_config(VOCODER_CONFIG_PATH))
-        self.vocoder.load_checkpoint(config=load_config(VOCODER_CONFIG_PATH), checkpoint_path=VOCODER_MODEL, eval=True)
+        vocoder_config = FullbandMelganConfig()
+        self.vocoder = GAN(vocoder_config)
+        self.vocoder.load_checkpoint(config=vocoder_config, checkpoint_path=VOCODER_MODEL, eval=True)
         
 
         # global style token layers
@@ -230,6 +230,7 @@ class Tacotron2(BaseTacotron):
         postnet_outputs = postnet_outputs.permute(0, 2, 1)
         print("POSTENET OUTPUTS: ", postnet_outputs.shape)
         postnet_outputs = self.vocoder.inference(postnet_outputs)
+
         if self.bidirectional_decoder:
             decoder_outputs_backward, alignments_backward = self._backward_pass(mel_specs, encoder_outputs, input_mask)
             outputs["alignments_backward"] = alignments_backward

@@ -16,8 +16,8 @@ from TTS.api import load_config
 VOCODER_MODEL = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
 VOCODER_CONFIG = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/config.json"
 
-TACO_MODEL = "/home/putak/.local/share/tts/tts_models--en--ek1--tacotron2/model_file.pth"
-TACO_CONFIG = "/home/putak/.local/share/tts/tts_models--en--ek1--tacotron2/config.json"
+TACO_MODEL = "./tts_model/tts_models--en--ek1--tacotron2/model_file.pth"
+TACO_CONFIG = "./tts_model/tts_models--en--ek1--tacotron2/config.json"
 
 # voc_config_from_path = load_config(VOCODER_CONFIG)
 
@@ -99,18 +99,18 @@ speaker_manager.set_ids_from_data(train_samples + eval_samples, parse_key="speak
 config.num_speakers = speaker_manager.num_speakers
 
 # init model
-model = Tacotron2(config, ap, tokenizer, speaker_manager=speaker_manager)
+model = Tacotron2(config, ap, tokenizer, speaker_manager=None)
 model.load_checkpoint(config=TACO_CONFIG, checkpoint_path=TACO_MODEL)
 
-# voice = model.inference("My name is Jeff.")
+voice = model.inference("My name is Jeff.")
 # quit()
-print("start training  ")
-# INITIALIZE THE TRAINER
-# Trainer provides a generic API to train all the 🐸TTS models with all its perks like mixed-precision training,
-# distributed training, etc.
-trainer = Trainer(
-    TrainerArgs(), config, output_path, model=model, train_samples=train_samples, eval_samples=eval_samples
-)
+# print("start training  ")
+# # INITIALIZE THE TRAINER
+# # Trainer provides a generic API to train all the 🐸TTS models with all its perks like mixed-precision training,
+# # distributed training, etc.
+# trainer = Trainer(
+#     TrainerArgs(), config, output_path, model=model, train_samples=train_samples, eval_samples=eval_samples
+# )
 
-# AND... 3,2,1... 🚀
-trainer.fit()
+# # AND... 3,2,1... 🚀
+# trainer.fit()
