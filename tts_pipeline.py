@@ -10,10 +10,6 @@ from TTS.tts.models.tacotron2 import Tacotron2
 from TTS.tts.utils.speakers import SpeakerManager
 from TTS.tts.utils.text.tokenizer import TTSTokenizer
 from TTS.utils.audio import AudioProcessor
-from TTS.vocoder.models.gan import GAN
-from TTS.config import load_config
-from TTS.vocoder.models.fullband_melgan_generator import FullbandMelganGenerator
-
 
 
 VOCODER_MODEL = "/home/putak/.local/share/tts/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
