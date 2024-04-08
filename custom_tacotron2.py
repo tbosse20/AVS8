@@ -25,8 +25,8 @@ import torchaudio
 #####
 
 #NEW PATH#
-VOCODER_CONFIG_PATH = "/home/putak/.local/share/tts/vocoder_models--universal--libri-tts--fullband-melgan/config.json"
-VOCODER_MODEL = "/home/putak/.local/share/tts/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
+VOCODER_CONFIG_PATH = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/config.json"
+VOCODER_MODEL = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
 #####
 
 class Tacotron2(BaseTacotron):
@@ -235,6 +235,7 @@ class Tacotron2(BaseTacotron):
         postnet_outputs = postnet_outputs.permute(0, 2, 1)
         # print("POSTENET OUTPUTS: ", postnet_outputs.shape)
         postnet_outputs = self.vocoder.inference(postnet_outputs)
+        torchaudio.save("output.wav", postnet_outputs, 22050)
         #####
         if self.bidirectional_decoder:
             decoder_outputs_backward, alignments_backward = self._backward_pass(mel_specs, encoder_outputs, input_mask)

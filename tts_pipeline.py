@@ -7,11 +7,14 @@ from TTS.tts.configs.tacotron2_config import Tacotron2Config
 from TTS.tts.configs.shared_configs import BaseDatasetConfig
 from TTS.tts.datasets import load_tts_samples
 from TTS.tts.models.tacotron2 import Tacotron2
+# from custom_tacotron2 import Tacotron2
 from TTS.tts.utils.speakers import SpeakerManager
 from TTS.tts.utils.text.tokenizer import TTSTokenizer
 from TTS.utils.audio import AudioProcessor
 from TTS.api import load_config
-
+from TTS.tts.utils.synthesis import synthesis
+from TTS.vocoder.models.gan import GAN
+import torchaudio
 
 VOCODER_MODEL = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
 VOCODER_CONFIG = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/config.json"
@@ -96,13 +99,20 @@ train_samples, eval_samples = load_tts_samples(
 # it maps speaker-id to speaker-name in the model and data-loader
 speaker_manager = SpeakerManager()
 speaker_manager.set_ids_from_data(train_samples + eval_samples, parse_key="speaker_name")
-config.num_speakers = speaker_manager.num_speakers
 
 # init model
-model = Tacotron2(config, ap, tokenizer, speaker_manager=None)
+model = Tacotron2(config, ap, tokenizer, speaker_manager=speaker_manager)
 model.load_checkpoint(config=TACO_CONFIG, checkpoint_path=TACO_MODEL)
 
-voice = model.inference("My name is Jeff.")
+output = synthesis(model=model, text="My name is Jeff.", CONFIG=config, use_cuda=False)
+output = output['outputs']['model_outputs']
+
+vocoder = GAN(load_config(VOCODER_CONFIG))
+vocoder.load_checkpoint(config=load_config(VOCODER_CONFIG), checkpoint_path=VOCODER_MODEL, eval=True)
+postnet_outputs = vocoder.inference(output)
+torchaudio.save("output.wav", postnet_outputs, 22050)
+
+# voice = model.inference("My name is Jeff")
 # quit()
 # print("start training  ")
 # # INITIALIZE THE TRAINER
@@ -112,5 +122,5 @@ voice = model.inference("My name is Jeff.")
 #     TrainerArgs(), config, output_path, model=model, train_samples=train_samples, eval_samples=eval_samples
 # )
 
-# # AND... 3,2,1... 🚀
+# AND... 3,2,1... 🚀
 # trainer.fit()
