@@ -18,11 +18,16 @@ from TTS.tts.utils.visual import plot_alignment, plot_spectrogram
 from TTS.utils.capacitron_optimizer import CapacitronOptimizer
 #NEW IMPORTS#
 from TTS.vocoder.models.gan import GAN
-from TTS.vocoder.configs import FullbandMelganConfig
+from TTS.config import load_config
+from TTS.api import save_wav
+import numpy as np
+import torchaudio
+#####
 
 #NEW PATH#
-# VOCODER_CONFIG_PATH = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/config.json" 
-VOCODER_MODEL = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
+VOCODER_CONFIG_PATH = "/home/putak/.local/share/tts/vocoder_models--universal--libri-tts--fullband-melgan/config.json"
+VOCODER_MODEL = "/home/putak/.local/share/tts/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
+#####
 
 class Tacotron2(BaseTacotron):
     """Tacotron2 model implementation inherited from :class:`TTS.tts.models.base_tacotron.BaseTacotron`.
@@ -105,10 +110,10 @@ class Tacotron2(BaseTacotron):
         self.decoder.prenet.dropout_at_inference = self.prenet_dropout_at_inference
 
         #NEW VOCODER#
-        vocoder_config = FullbandMelganConfig()
-        self.vocoder = GAN(vocoder_config)
-        self.vocoder.load_checkpoint(config=vocoder_config, checkpoint_path=VOCODER_MODEL, eval=True)
-        
+        self.vocoder = GAN(load_config(VOCODER_CONFIG_PATH))
+        self.vocoder.load_checkpoint(config=load_config(VOCODER_CONFIG_PATH), checkpoint_path=VOCODER_MODEL, eval=True)
+        #####
+    
 
         # global style token layers
         if self.gst and self.use_gst:
@@ -228,9 +233,9 @@ class Tacotron2(BaseTacotron):
         decoder_outputs, postnet_outputs, alignments = self.shape_outputs(decoder_outputs, postnet_outputs, alignments)
         #NEW INFERENCE USING VOCODER#
         postnet_outputs = postnet_outputs.permute(0, 2, 1)
-        print("POSTENET OUTPUTS: ", postnet_outputs.shape)
+        # print("POSTENET OUTPUTS: ", postnet_outputs.shape)
         postnet_outputs = self.vocoder.inference(postnet_outputs)
-
+        #####
         if self.bidirectional_decoder:
             decoder_outputs_backward, alignments_backward = self._backward_pass(mel_specs, encoder_outputs, input_mask)
             outputs["alignments_backward"] = alignments_backward
@@ -251,7 +256,7 @@ class Tacotron2(BaseTacotron):
             }
         )
         ########
-        print(f"{outputs['model_outputs'].shape=}, {outputs['decoder_outputs'].shape=}, {outputs['alignments'].shape=}, {outputs['stop_tokens'].shape=}")
+        # print(f"{outputs['model_outputs'].shape=}, {outputs['decoder_outputs'].shape=}, {outputs['alignments'].shape=}, {outputs['stop_tokens'].shape=}")
         ########
         return outputs
 
@@ -311,6 +316,12 @@ class Tacotron2(BaseTacotron):
         postnet_outputs = self.postnet(decoder_outputs)
         postnet_outputs = decoder_outputs + postnet_outputs
         decoder_outputs, postnet_outputs, alignments = self.shape_outputs(decoder_outputs, postnet_outputs, alignments)
+        #NEW INFERENCE USING VOCODER#
+        postnet_outputs = postnet_outputs.permute(0, 2, 1)
+        # print("POSTENET OUTPUTS: ", postnet_outputs.shape)
+        postnet_outputs = self.vocoder.inference(postnet_outputs)
+        torchaudio.save("output.wav", postnet_outputs, 22050)
+        #####
         outputs = {
             "model_outputs": postnet_outputs,
             "decoder_outputs": decoder_outputs,
