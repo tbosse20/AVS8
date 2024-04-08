@@ -12,8 +12,8 @@ from TTS.tts.utils.text.tokenizer import TTSTokenizer
 from TTS.utils.audio import AudioProcessor
 
 
-VOCODER_MODEL = "/home/putak/.local/share/tts/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
-VOCODER_CONFIG = "/home/putak/.local/share/tts/vocoder_models--universal--libri-tts--fullband-melgan/config.json"
+VOCODER_MODEL = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
+VOCODER_CONFIG = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/config.json"
 
 # voc_config_from_path = load_config(VOCODER_CONFIG)
 

@@ -107,6 +107,7 @@ saved/
 datasets/
 libriTTS/
 runs/
+vocoder/
 
 # editor, os cache directory
 .vscode/
