@@ -22,14 +22,6 @@ VOCODER_CONFIG = "./vocoder/vocoder_models--universal--libri-tts--fullband-melga
 TACO_MODEL = "./tts_model/tts_models--en--ek1--tacotron2/model_file.pth"
 TACO_CONFIG = "./tts_model/tts_models--en--ek1--tacotron2/config.json"
 
-# voc_config_from_path = load_config(VOCODER_CONFIG)
-
-
-# voc_model = GAN(voc_config_from_path)
-
-# print(voc_model.model_d)
-# print(voc_model.model_g)
-
 # set experiment paths
 current_path = os.path.dirname(os.path.abspath(__file__))
 output_path = os.path.join(current_path, "runs")
@@ -107,12 +99,11 @@ model.load_checkpoint(config=TACO_CONFIG, checkpoint_path=TACO_MODEL)
 output = synthesis(model=model, text="My name is Jeff.", CONFIG=config, use_cuda=False)
 output = output['outputs']['model_outputs']
 
-vocoder = GAN(load_config(VOCODER_CONFIG))
-vocoder.load_checkpoint(config=load_config(VOCODER_CONFIG), checkpoint_path=VOCODER_MODEL, eval=True)
+vocoder = GAN(VOCODER_CONFIG)
+vocoder.load_checkpoint(config=VOCODER_CONFIG, checkpoint_path=VOCODER_MODEL, eval=True)
 
 output = output.permute(0,2,1)
 postnet_outputs = vocoder.inference(output)
-
 torchaudio.save("output.wav", postnet_outputs[0], 22050)
 
 # voice = model.inference("My name is Jeff")
@@ -121,9 +112,9 @@ torchaudio.save("output.wav", postnet_outputs[0], 22050)
 # # INITIALIZE THE TRAINER
 # # Trainer provides a generic API to train all the 🐸TTS models with all its perks like mixed-precision training,
 # # distributed training, etc.
-# trainer = Trainer(
-#     TrainerArgs(), config, output_path, model=model, train_samples=train_samples, eval_samples=eval_samples
-# )
+trainer = Trainer(
+    TrainerArgs(), config, output_path, model=model, train_samples=train_samples, eval_samples=eval_samples
+)
 
 # AND... 3,2,1... 🚀
 # trainer.fit()
