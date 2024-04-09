@@ -1,7 +1,7 @@
 import os
 
 from trainer import Trainer, TrainerArgs
-
+import numpy as np
 from TTS.config.shared_configs import BaseAudioConfig
 from TTS.tts.configs.tacotron2_config import Tacotron2Config
 from TTS.tts.configs.shared_configs import BaseDatasetConfig
@@ -109,8 +109,11 @@ output = output['outputs']['model_outputs']
 
 vocoder = GAN(load_config(VOCODER_CONFIG))
 vocoder.load_checkpoint(config=load_config(VOCODER_CONFIG), checkpoint_path=VOCODER_MODEL, eval=True)
+
+output = output.permute(0,2,1)
 postnet_outputs = vocoder.inference(output)
-torchaudio.save("output.wav", postnet_outputs, 22050)
+
+torchaudio.save("output.wav", postnet_outputs[0], 22050)
 
 # voice = model.inference("My name is Jeff")
 # quit()
