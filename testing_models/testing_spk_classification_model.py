@@ -12,7 +12,7 @@ processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-base-960h")
 model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-base-960h")
 
 # Load audio file
-audio_file_path = "/media/sameerhashmi36/New_drive_hdd/Aalborg_University_Lectures/AVS8/main_project/AVS8/libriTTS/LibriTTS/train-clean-100/60/121082/60_121082_000003_000000.wav"
+audio_file_path = "../libriTTS/LibriTTS/train-clean-100/60/121082/60_121082_000003_000000.wav"
 audio_input, source_sample_rate = sf.read(audio_file_path)
 print("audio_input: ", audio_input.shape)
 print("source_sample_rate ",source_sample_rate)
