@@ -19,9 +19,10 @@ from TTS.utils.capacitron_optimizer import CapacitronOptimizer
 #NEW IMPORTS#
 from TTS.vocoder.models.gan import GAN
 from TTS.config import load_config
-from TTS.api import save_wav
 import numpy as np
 import torchaudio
+from librosa.core import resample
+from transformers import AutoFeatureExtractor, Wav2Vec2ForXVector
 #####
 
 #NEW PATH#
@@ -83,6 +84,12 @@ class Tacotron2(BaseTacotron):
 
         # embedding layer
         self.embedding = nn.Embedding(self.num_chars, 512, padding_idx=0)
+        #NEW EMBEDDING#
+        self.feature_extractor = AutoFeatureExtractor.from_pretrained("anton-l/wav2vec2-base-superb-sv"), 
+        self.spk_emb_model = Wav2Vec2ForXVector.from_pretrained("anton-l/wav2vec2-base-superb-sv")
+        self.embedding = self.spk_embedding()
+        #####
+
 
         # base model layers
         self.encoder = Encoder(self.encoder_in_features)
@@ -113,7 +120,6 @@ class Tacotron2(BaseTacotron):
         self.vocoder = GAN(load_config(VOCODER_CONFIG_PATH))
         self.vocoder.load_checkpoint(config=load_config(VOCODER_CONFIG_PATH), checkpoint_path=VOCODER_MODEL, eval=True)
         #####
-    
 
         # global style token layers
         if self.gst and self.use_gst:
@@ -167,9 +173,19 @@ class Tacotron2(BaseTacotron):
         mel_outputs = mel_outputs.transpose(1, 2)
         mel_outputs_postnet = mel_outputs_postnet.transpose(1, 2)
         return mel_outputs, mel_outputs_postnet, alignments
+    
+    def spk_embedding(self, audio, sr:int = 16000) -> torch.Tensor:
+    
+        audio = resample(np.array(audio), orig_sr=sr, target_sr=16000)
+        inputs = self.feature_extractor(audio, sampling_rate=16000, return_tensors="pt")
+        with torch.no_grad():
+            embeddings = self.spk_emb_model(**inputs).embeddings
+        embeddings = torch.nn.functional.normalize(embeddings, dim=-1).cpu()
+    
+        return embeddings
 
-    def forward(  # pylint: disable=dangerous-default-value
-        self, text, text_lengths, mel_specs=None, mel_lengths=None, aux_input={"speaker_ids": None, "d_vectors": None}
+    def forward(  # pylint: disable=dangerous-default-value=None
+        self, text, text_lengths, mel_specs=None, mel_lengths=None, aux_input={"speaker_ids": None, "d_vectors": None}, raw_audio=None
     ):
         """Forward pass for training with Teacher Forcing.
 
@@ -180,6 +196,7 @@ class Tacotron2(BaseTacotron):
             mel_lengths: :math:`[B]`
             aux_input: 'speaker_ids': :math:`[B, 1]` and  'd_vectors': :math:`[B, C]`
         """
+        #NEW AUDIO FROM MEL SPECTOGRAM
         aux_input = self._format_aux_input(aux_input)
         outputs = {"alignments_backward": None, "decoder_outputs_backward": None}
         # compute mask for padding
@@ -197,6 +214,7 @@ class Tacotron2(BaseTacotron):
             if not self.use_d_vector_file:
                 # B x 1 x speaker_embed_dim
                 embedded_speakers = self.speaker_embedding(aux_input["speaker_ids"])[:, None]
+                embedded_speakers = self.embedding(raw_audio, sr=16000)
             else:
                 # B x 1 x speaker_embed_dim
                 embedded_speakers = torch.unsqueeze(aux_input["d_vectors"], 1)
@@ -353,9 +371,12 @@ class Tacotron2(BaseTacotron):
         stop_target_lengths = batch["stop_target_lengths"]
         speaker_ids = batch["speaker_ids"]
         d_vectors = batch["d_vectors"]
-
+        #THIS IS NEW#
+        raw_audio = batch["wav"]
+        print("RAW AUDIO: ", raw_audio.shape)
+        #####
         aux_input = {"speaker_ids": speaker_ids, "d_vectors": d_vectors}
-        outputs = self.forward(text_input, text_lengths, mel_input, mel_lengths, aux_input)
+        outputs = self.forward(text_input, text_lengths, mel_input, mel_lengths, aux_input, raw_audio)
 
         # set the [alignment] lengths wrt reduction factor for guided attention
         if mel_lengths.max() % self.decoder.r != 0:

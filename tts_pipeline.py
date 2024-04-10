@@ -94,10 +94,10 @@ speaker_manager.set_ids_from_data(train_samples + eval_samples, parse_key="speak
 
 # init model
 model = Tacotron2(config, ap, tokenizer, speaker_manager=speaker_manager)
-# model.load_checkpoint(config=TACO_CONFIG, checkpoint_path=TACO_MODEL)
+model.load_checkpoint(config=TACO_CONFIG, checkpoint_path=TACO_MODEL)
 
-# output = synthesis(model=model, text="My name is Jeff.", CONFIG=config, use_cuda=False)
-# output = output['outputs']['model_outputs']
+output = synthesis(model=model, text="My name is Jeff.", CONFIG=config, use_cuda=False)
+output = output['outputs']['model_outputs']
 
 vocoder = GAN(VOCODER_CONFIG)
 vocoder.load_checkpoint(config=VOCODER_CONFIG, checkpoint_path=VOCODER_MODEL, eval=True)
