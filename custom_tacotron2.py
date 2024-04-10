@@ -87,7 +87,7 @@ class Tacotron2(BaseTacotron):
         #NEW EMBEDDING#
         self.feature_extractor = AutoFeatureExtractor.from_pretrained("anton-l/wav2vec2-base-superb-sv"), 
         self.spk_emb_model = Wav2Vec2ForXVector.from_pretrained("anton-l/wav2vec2-base-superb-sv")
-        self.embedding = self.spk_embedding
+        # self.embedding = self.spk_embedding
         #####
 
 
@@ -214,7 +214,7 @@ class Tacotron2(BaseTacotron):
             if not self.use_d_vector_file:
                 # B x 1 x speaker_embed_dim
                 embedded_speakers = self.speaker_embedding(aux_input["speaker_ids"])[:, None]
-                embedded_speakers = self.embedding(raw_audio, sr=16000)
+                embedded_speakers = self.spk_embedding(raw_audio, sr=16000)
             else:
                 # B x 1 x speaker_embed_dim
                 embedded_speakers = torch.unsqueeze(aux_input["d_vectors"], 1)
@@ -363,6 +363,7 @@ class Tacotron2(BaseTacotron):
             batch ([Dict]): A dictionary of input tensors.
             criterion ([type]): Callable criterion to compute model loss.
         """
+        print(batch)
         text_input = batch["text_input"]
         text_lengths = batch["text_lengths"]
         mel_input = batch["mel_input"]
@@ -372,8 +373,8 @@ class Tacotron2(BaseTacotron):
         speaker_ids = batch["speaker_ids"]
         d_vectors = batch["d_vectors"]
         #THIS IS NEW#
-        raw_audio = batch["wav"]
-        print("RAW AUDIO: ", raw_audio.shape)
+        raw_audio = batch["waveform"]
+        print("RAW AUDIO: ", type(raw_audio))
         #####
         aux_input = {"speaker_ids": speaker_ids, "d_vectors": d_vectors}
         outputs = self.forward(text_input, text_lengths, mel_input, mel_lengths, aux_input, raw_audio)

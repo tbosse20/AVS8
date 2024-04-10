@@ -6,7 +6,7 @@ from TTS.config.shared_configs import BaseAudioConfig
 from TTS.tts.configs.tacotron2_config import Tacotron2Config
 from TTS.tts.configs.shared_configs import BaseDatasetConfig
 from TTS.tts.datasets import load_tts_samples
-# from TTS.tts.models.tacotron2 import Tacotron2
+from TTS.tts.models.tacotron2 import Tacotron2
 from custom_tacotron2 import Tacotron2
 from TTS.tts.utils.speakers import SpeakerManager
 from TTS.tts.utils.text.tokenizer import TTSTokenizer
@@ -42,28 +42,28 @@ dataset_config = BaseDatasetConfig(formatter="libri_tts", meta_file_train="", pa
 audio_config = BaseAudioConfig(sample_rate=24000, resample=False, do_trim_silence=False)
 
 # define model config
-config = load_config(TACO_CONFIG)
-# config = Tacotron2Config(
-#     batch_size=4,
-#     eval_batch_size=4,
-#     num_loader_workers=0,
-#     num_eval_loader_workers=0,
-#     precompute_num_workers=0,
-#     run_eval=True,
-#     test_delay_epochs=-1,
-#     epochs=1,
-#     print_step=1,
-#     print_eval=True,
-#     mixed_precision=False,
-#     output_path=output_path,
-#     datasets=[dataset_config],
-#     use_speaker_embedding=True,
-#     min_text_len=0,
-#     max_text_len=500,
-#     min_audio_len=0,
-#     max_audio_len=500000,
-#     double_decoder_consistency=True,
-# )
+# config = load_config(TACO_CONFIG)
+config = Tacotron2Config(
+    batch_size=4,
+    eval_batch_size=4,
+    num_loader_workers=0,
+    num_eval_loader_workers=0,
+    precompute_num_workers=0,
+    run_eval=True,
+    test_delay_epochs=-1,
+    epochs=1,
+    print_step=1,
+    print_eval=True,
+    mixed_precision=False,
+    output_path=output_path,
+    datasets=[dataset_config],
+    use_speaker_embedding=True,
+    min_text_len=0,
+    max_text_len=500,
+    min_audio_len=0,
+    max_audio_len=500000,
+    double_decoder_consistency=True,
+)
 
 # INITIALIZE THE AUDIO PROCESSOR
 # Audio processor is used for feature extraction and audio I/O.
@@ -94,17 +94,17 @@ speaker_manager.set_ids_from_data(train_samples + eval_samples, parse_key="speak
 
 # init model
 model = Tacotron2(config, ap, tokenizer, speaker_manager=speaker_manager)
-model.load_checkpoint(config=TACO_CONFIG, checkpoint_path=TACO_MODEL)
+# model.load_checkpoint(config=TACO_CONFIG, checkpoint_path=TACO_MODEL)
 
-output = synthesis(model=model, text="My name is Jeff.", CONFIG=config, use_cuda=False)
-output = output['outputs']['model_outputs']
+# output = synthesis(model=model, text="My name is Jeff.", CONFIG=config, use_cuda=False)
+# output = output['outputs']['model_outputs']
 
-vocoder = GAN(VOCODER_CONFIG)
-vocoder.load_checkpoint(config=VOCODER_CONFIG, checkpoint_path=VOCODER_MODEL, eval=True)
+# vocoder = GAN(VOCODER_CONFIG)
+# vocoder.load_checkpoint(config=VOCODER_CONFIG, checkpoint_path=VOCODER_MODEL, eval=True)
 
-output = output.permute(0,2,1)
-postnet_outputs = vocoder.inference(output)
-torchaudio.save("output.wav", postnet_outputs[0], 22050)
+# output = output.permute(0,2,1)
+# postnet_outputs = vocoder.inference(output)
+# torchaudio.save("output.wav", postnet_outputs[0], 22050)
 
 # voice = model.inference("My name is Jeff")
 # quit()
@@ -117,4 +117,4 @@ trainer = Trainer(
 )
 
 # AND... 3,2,1... 🚀
-# trainer.fit()
+trainer.fit() 
