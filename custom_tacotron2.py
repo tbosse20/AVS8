@@ -87,7 +87,7 @@ class Tacotron2(BaseTacotron):
         #NEW EMBEDDING#
         self.feature_extractor = AutoFeatureExtractor.from_pretrained("anton-l/wav2vec2-base-superb-sv"), 
         self.spk_emb_model = Wav2Vec2ForXVector.from_pretrained("anton-l/wav2vec2-base-superb-sv")
-        self.embedding = self.spk_embedding()
+        self.embedding = self.spk_embedding
         #####
 
 
