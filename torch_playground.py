@@ -22,7 +22,7 @@ def spk_embedding(audio, sr:int = 16000, feature_extractor = AutoFeatureExtracto
 
 # Load audio using torchaudio.load() or any other method
 # audio, sr = load("/Users/chengyulin/Desktop/CSIE/Aalborg/Project/AVS8/libriTTS/LibriTTS/train-clean-100/1624/142933/1624_142933_000005_000002.wav")
-file_name = "/Users/chengyulin/Desktop/CSIE/Aalborg/Project/AVS8/libriTTS/LibriTTS/train-clean-100/1624/142933/1624_142933_000005_000002.wav"
+file_name = "/Users/chengyulin/Desktop/CSIE/Aalborg/Project/AVS8/libriTTS/LibriTTS/train-clean-100/8238/283452/8238_283452_000006_000000.wav"
 audio, sr = load(file_name)
 # audio, _ = librosa.load(file_name)
 embeddings = spk_embedding(audio)

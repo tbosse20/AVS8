@@ -15,6 +15,7 @@ from TTS.utils.audio.numpy_transforms import compute_energy as calculate_energy
 #NEW IMPORTS
 import torchaudio
 from librosa.core import resample
+from librosa.util import fix_length
 from transformers import AutoFeatureExtractor, Wav2Vec2ForXVector
 #####
 
@@ -439,22 +440,12 @@ class TTSDataset(Dataset):
 
             # convert list of dicts to dict of lists
             batch = {k: [dic[k] for dic in batch] for k in batch[0]}
-            #NEW ADD WAVEFORMS
-            # print("WAVE CHECK:", len(batch["wav"]))
-            # for w in batch["wav"]:
-            #     print("SHAPE:", w.shape)
-            #     print("\n", type(w))
-            #     print(len(w))
-            #     print(w)
-            #     print(np.expand_dims(w, axis=0).shape)
-            # spk_embeddings_list = [spk_embedding(np.expand_dims(w, axis=0)) for w in batch["wav"]]
+            #NEW ADD SPK_EMBEDDING
             spk_embeddings_list = []
-            for wave_file in batch["item_idx"]:
-                print(wave_file)
-                audio, _ = torchaudio.load(wave_file)
-                embeddings = spk_embedding(audio)
+            for w in batch["wav"]:
+                w = fix_length(w, size=437765)
+                embeddings = spk_embedding(w)
                 spk_embeddings_list.append(embeddings)
-            print(spk_embeddings_list)
             #####
             # get language ids from language names
             if self.language_id_mapping is not None:
@@ -541,6 +532,7 @@ class TTSDataset(Dataset):
                     wav_padded[i, :, : w.shape[0]] = torch.from_numpy(w)
                 wav_padded.transpose_(1, 2)
 
+            ###
             # format F0
             if self.compute_f0:
                 pitch = prepare_data(batch["pitch"])
