@@ -21,8 +21,8 @@ from TTS.vocoder.models.gan import GAN
 from TTS.config import load_config
 import numpy as np
 import torchaudio
-from librosa.core import resample
-from transformers import AutoFeatureExtractor, Wav2Vec2ForXVector
+# from librosa.core import resample
+# from transformers import AutoFeatureExtractor, Wav2Vec2ForXVector
 #####
 
 #NEW PATH#
@@ -85,8 +85,8 @@ class Tacotron2(BaseTacotron):
         # embedding layer
         self.embedding = nn.Embedding(self.num_chars, 512, padding_idx=0)
         #NEW EMBEDDING#
-        self.feature_extractor = AutoFeatureExtractor.from_pretrained("anton-l/wav2vec2-base-superb-sv"), 
-        self.spk_emb_model = Wav2Vec2ForXVector.from_pretrained("anton-l/wav2vec2-base-superb-sv")
+        # self.feature_extractor = AutoFeatureExtractor.from_pretrained("anton-l/wav2vec2-base-superb-sv")
+        # self.spk_emb_model = Wav2Vec2ForXVector.from_pretrained("anton-l/wav2vec2-base-superb-sv")
         # self.embedding = self.spk_embedding
         #####
 
@@ -174,15 +174,15 @@ class Tacotron2(BaseTacotron):
         mel_outputs_postnet = mel_outputs_postnet.transpose(1, 2)
         return mel_outputs, mel_outputs_postnet, alignments
     
-    def spk_embedding(self, audio, sr:int = 16000) -> torch.Tensor:
+    # def spk_embedding(self, audio, sr:int = 16000) -> torch.Tensor:
+    #     print("SHAPE OF AUDIO PASTE TO SPKKKK:", type(audio))
+    #     audio = resample(np.array(audio), orig_sr=sr, target_sr=16000)
+    #     inputs = self.feature_extractor(audio, sampling_rate=16000, return_tensors="pt")
+    #     with torch.no_grad():
+    #         embeddings = self.spk_emb_model(**inputs).embeddings
+    #     embeddings = torch.nn.functional.normalize(embeddings, dim=-1).cpu()
     
-        audio = resample(np.array(audio), orig_sr=sr, target_sr=16000)
-        inputs = self.feature_extractor(audio, sampling_rate=16000, return_tensors="pt")
-        with torch.no_grad():
-            embeddings = self.spk_emb_model(**inputs).embeddings
-        embeddings = torch.nn.functional.normalize(embeddings, dim=-1).cpu()
-    
-        return embeddings
+    #     return embeddings
 
     def forward(  # pylint: disable=dangerous-default-value=None
         self, text, text_lengths, mel_specs=None, mel_lengths=None, aux_input={"speaker_ids": None, "d_vectors": None}, raw_audio=None
@@ -373,8 +373,8 @@ class Tacotron2(BaseTacotron):
         speaker_ids = batch["speaker_ids"]
         d_vectors = batch["d_vectors"]
         #THIS IS NEW#
-        raw_audio = batch["waveform"]
-        print("RAW AUDIO: ", type(raw_audio))
+        raw_audio = batch["spk_emb"]
+        print("\n\nRAWWWWWWW AUDIO: ", type(raw_audio))
         #####
         aux_input = {"speaker_ids": speaker_ids, "d_vectors": d_vectors}
         outputs = self.forward(text_input, text_lengths, mel_input, mel_lengths, aux_input, raw_audio)

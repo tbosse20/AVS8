@@ -10,10 +10,8 @@ import numpy as np
 
 def spk_embedding(audio, sr:int = 16000, feature_extractor = AutoFeatureExtractor.from_pretrained("anton-l/wav2vec2-base-superb-sv"), 
                   model = Wav2Vec2ForXVector.from_pretrained("anton-l/wav2vec2-base-superb-sv")) -> torch.Tensor:
+    
     audio = resample(np.array(audio), orig_sr=sr, target_sr=16000)
-
-
-
     inputs = feature_extractor(audio, sampling_rate=16000, return_tensors="pt")
 
     with torch.no_grad():
