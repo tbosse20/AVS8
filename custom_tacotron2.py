@@ -363,7 +363,7 @@ class Tacotron2(BaseTacotron):
             batch ([Dict]): A dictionary of input tensors.
             criterion ([type]): Callable criterion to compute model loss.
         """
-        print(batch)
+        print(batch.keys())
         text_input = batch["text_input"]
         text_lengths = batch["text_lengths"]
         mel_input = batch["mel_input"]
