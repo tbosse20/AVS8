@@ -13,6 +13,7 @@ from TTS.tts.utils.data import prepare_data, prepare_stop_target, prepare_tensor
 from TTS.utils.audio import AudioProcessor
 from TTS.utils.audio.numpy_transforms import compute_energy as calculate_energy
 #NEW IMPORTS
+import torchaudio
 from librosa.core import resample
 from transformers import AutoFeatureExtractor, Wav2Vec2ForXVector
 #####
@@ -439,14 +440,21 @@ class TTSDataset(Dataset):
             # convert list of dicts to dict of lists
             batch = {k: [dic[k] for dic in batch] for k in batch[0]}
             #NEW ADD WAVEFORMS
-            print("WAVE CHECK:", len(batch["wav"]))
-            print(batch["wav"][0])
-            for w in batch["wav"]:
-                print("SHAPE:", w.shape)
-                print("\n", type(w))
-                print(len(w))
-                print(w)
-            spk_embeddings_list = [spk_embedding(w) for w in batch["wav"]]
+            # print("WAVE CHECK:", len(batch["wav"]))
+            # for w in batch["wav"]:
+            #     print("SHAPE:", w.shape)
+            #     print("\n", type(w))
+            #     print(len(w))
+            #     print(w)
+            #     print(np.expand_dims(w, axis=0).shape)
+            # spk_embeddings_list = [spk_embedding(np.expand_dims(w, axis=0)) for w in batch["wav"]]
+            spk_embeddings_list = []
+            for wave_file in batch["item_idx"]:
+                print(wave_file)
+                audio, _ = torchaudio.load(wave_file)
+                embeddings = spk_embedding(audio)
+                spk_embeddings_list.append(embeddings)
+            print(spk_embeddings_list)
             #####
             # get language ids from language names
             if self.language_id_mapping is not None:
@@ -578,7 +586,7 @@ class TTSDataset(Dataset):
                 "energy": energy,
                 "language_ids": language_ids,
                 "audio_unique_names": batch["audio_unique_name"],
-                "spk_emb": spk_embeddings_list,
+                "spk_emb": spk_embeddings_list, #NEW here
             }
 
         raise TypeError(
