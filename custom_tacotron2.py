@@ -21,8 +21,10 @@ from TTS.vocoder.models.gan import GAN
 from TTS.config import load_config
 import numpy as np
 import torchaudio
-# from librosa.core import resample
-# from transformers import AutoFeatureExtractor, Wav2Vec2ForXVector
+from librosa.core import resample
+from transformers import AutoFeatureExtractor, Wav2Vec2ForXVector
+from librosa.util import fix_length
+
 #####
 
 #NEW PATH#
@@ -113,6 +115,10 @@ class Tacotron2(BaseTacotron):
         #NEW VOCODER#
         self.vocoder = GAN(load_config(VOCODER_CONFIG_PATH))
         self.vocoder.load_checkpoint(config=load_config(VOCODER_CONFIG_PATH), checkpoint_path=VOCODER_MODEL, eval=True)
+
+        #NEW SPK EMBEDDING#
+        self.spk_emb_model = Wav2Vec2ForXVector.from_pretrained("anton-l/wav2vec2-base-superb-sv")
+        self.feature_extractor = AutoFeatureExtractor.from_pretrained("anton-l/wav2vec2-base-superb-sv")
         #####
 
         # global style token layers
@@ -168,15 +174,21 @@ class Tacotron2(BaseTacotron):
         mel_outputs_postnet = mel_outputs_postnet.transpose(1, 2)
         return mel_outputs, mel_outputs_postnet, alignments
     
-    # def spk_embedding(self, audio, sr:int = 16000) -> torch.Tensor:
-    #     print("SHAPE OF AUDIO PASTE TO SPKKKK:", type(audio))
-    #     audio = resample(np.array(audio), orig_sr=sr, target_sr=16000)
-    #     inputs = self.feature_extractor(audio, sampling_rate=16000, return_tensors="pt")
-    #     with torch.no_grad():
-    #         embeddings = self.spk_emb_model(**inputs).embeddings
-    #     embeddings = torch.nn.functional.normalize(embeddings, dim=-1).cpu()
+    def spk_embedding(self, audio_batch, sr:int = 24000) -> torch.Tensor:
+        wav_lengths = [w.shape[1] for w in audio_batch]
+        max_wav_len = max(wav_lengths)
+        embeddings = []
+        for audio in audio_batch:
+            audio = resample(np.array(audio), orig_sr=sr, target_sr=16000)
+            audio = fix_length(audio, size=int(max_wav_len*1.5))
+            inputs = self.feature_extractor(audio, sampling_rate=16000, return_tensors="pt")
+            with torch.no_grad():
+                embedding = self.spk_emb_model(**inputs).embeddings
+            embedding = torch.nn.functional.normalize(embedding, dim=-1).cpu()
+            embeddings.append(embedding)
+        embeddings = torch.stack(embeddings)
     
-    #     return embeddings
+        return embeddings
 
     def forward(  # pylint: disable=dangerous-default-value=None
         self, text, text_lengths, mel_specs=None, mel_lengths=None, aux_input={"speaker_ids": None, "d_vectors": None}, raw_audio=None
@@ -243,7 +255,13 @@ class Tacotron2(BaseTacotron):
         # B x T_out x mel_dim -- B x T_out x mel_dim -- B x T_out//r x T_in
         decoder_outputs, postnet_outputs, alignments = self.shape_outputs(decoder_outputs, postnet_outputs, alignments)
         #NEW INFERENCE USING VOCODER#
-        
+        vocoder_input = postnet_outputs.permute(0, 2, 1)
+        # print("POSTENET OUTPUTS: ", postnet_outputs.shape)
+        vocoder_output = self.vocoder.inference(vocoder_input)
+        print(f"{vocoder_output.shape=}")
+        spk_embedding2_output = self.spk_embedding(vocoder_output)
+
+        outputs["spk_emb2"] = spk_embedding2_output
         #####
         if self.bidirectional_decoder:
             decoder_outputs_backward, alignments_backward = self._backward_pass(mel_specs, encoder_outputs, input_mask)
@@ -262,6 +280,7 @@ class Tacotron2(BaseTacotron):
                 "alignments": alignments,
                 "stop_tokens": stop_tokens,
                 "capacitron_vae_outputs": capacitron_vae_outputs,
+                "spk_emb2": spk_embedding2_output,
             }
         )
         ########
