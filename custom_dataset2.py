@@ -441,9 +441,11 @@ class TTSDataset(Dataset):
             # convert list of dicts to dict of lists
             batch = {k: [dic[k] for dic in batch] for k in batch[0]}
             #NEW ADD SPK_EMBEDDING
+            wav_lengths = [w.shape[0] for w in batch["wav"]]
+            max_wav_len = max(wav_lengths)
             spk_embeddings_list = []
             for w in batch["wav"]:
-                w = fix_length(w, size=437765)
+                w = fix_length(w, size=max_wav_len)
                 embeddings = spk_embedding(w)
                 spk_embeddings_list.append(embeddings)
             #####

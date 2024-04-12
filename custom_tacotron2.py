@@ -84,12 +84,6 @@ class Tacotron2(BaseTacotron):
 
         # embedding layer
         self.embedding = nn.Embedding(self.num_chars, 512, padding_idx=0)
-        #NEW EMBEDDING#
-        # self.feature_extractor = AutoFeatureExtractor.from_pretrained("anton-l/wav2vec2-base-superb-sv")
-        # self.spk_emb_model = Wav2Vec2ForXVector.from_pretrained("anton-l/wav2vec2-base-superb-sv")
-        # self.embedding = self.spk_embedding
-        #####
-
 
         # base model layers
         self.encoder = Encoder(self.encoder_in_features)
@@ -214,7 +208,6 @@ class Tacotron2(BaseTacotron):
             if not self.use_d_vector_file:
                 # B x 1 x speaker_embed_dim
                 embedded_speakers = self.speaker_embedding(aux_input["speaker_ids"])[:, None]
-                embedded_speakers = self.spk_embedding(raw_audio, sr=16000)
             else:
                 # B x 1 x speaker_embed_dim
                 embedded_speakers = torch.unsqueeze(aux_input["d_vectors"], 1)
@@ -250,10 +243,7 @@ class Tacotron2(BaseTacotron):
         # B x T_out x mel_dim -- B x T_out x mel_dim -- B x T_out//r x T_in
         decoder_outputs, postnet_outputs, alignments = self.shape_outputs(decoder_outputs, postnet_outputs, alignments)
         #NEW INFERENCE USING VOCODER#
-        postnet_outputs = postnet_outputs.permute(0, 2, 1)
-        # print("POSTENET OUTPUTS: ", postnet_outputs.shape)
-        postnet_outputs = self.vocoder.inference(postnet_outputs)
-        # torchaudio.save("output.wav", postnet_outputs, 22050)
+        
         #####
         if self.bidirectional_decoder:
             decoder_outputs_backward, alignments_backward = self._backward_pass(mel_specs, encoder_outputs, input_mask)
@@ -363,7 +353,6 @@ class Tacotron2(BaseTacotron):
             batch ([Dict]): A dictionary of input tensors.
             criterion ([type]): Callable criterion to compute model loss.
         """
-        print(batch.keys())
         text_input = batch["text_input"]
         text_lengths = batch["text_lengths"]
         mel_input = batch["mel_input"]
@@ -374,7 +363,6 @@ class Tacotron2(BaseTacotron):
         d_vectors = batch["d_vectors"]
         #THIS IS NEW#
         raw_audio = batch["spk_emb"]
-        print("\n\nRAWWWWWWW AUDIO: ", type(raw_audio))
         #####
         aux_input = {"speaker_ids": speaker_ids, "d_vectors": d_vectors}
         outputs = self.forward(text_input, text_lengths, mel_input, mel_lengths, aux_input, raw_audio)
