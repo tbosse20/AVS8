@@ -411,6 +411,8 @@ class Tacotron2(BaseTacotron):
                 alignment_lengths,
                 None if outputs["alignments_backward"] is None else outputs["alignments_backward"].float(),
                 text_lengths,
+                ###NEW###
+                outputs["spk_emb2"],
             )
 
         # compute alignment error (the lower the better )
