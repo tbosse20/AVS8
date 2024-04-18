@@ -362,9 +362,13 @@ class TacotronLoss(torch.nn.Module):
         # pylint: disable=not-callable
         self.criterion_st = BCELossMasked(pos_weight=torch.tensor(self.stopnet_pos_weight)) if c.stopnet else None
 
+        ## NEW
         # spk_emb sim loss
         self.criterion_spkemb = nn.CosineSimilarity(dim=1, eps=1e-6)
-        
+        # infoNCE loss
+        # self.criterion_infoNCE
+        ####
+
         # For dev pruposes only
         self.criterion_capacitron_reconstruction_loss = nn.L1Loss(reduction="sum")
 
