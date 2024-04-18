@@ -27,3 +27,60 @@ audio, sr = load(file_name)
 # audio, _ = librosa.load(file_name)
 embeddings = spk_embedding(audio)
 print(embeddings.shape)
+
+import torch
+import random
+
+def mask_tensor(tensor, num_zeros):
+    """
+    Randomly masks a 1D PyTorch tensor with zeros for a specified number of zeros.
+
+    Args:
+    - tensor: Input 1D PyTorch tensor
+    - num_zeros: Number of zeros to mask
+
+    Returns:
+    - masked_tensor: Tensor with randomly masked zeros
+    """
+
+    # Get the length of the input tensor
+    tensor_length = tensor.size(1)
+
+    # Create a copy of the input tensor
+    masked_tensor = tensor.clone()
+
+    # Generate random indices to mask
+    zero_indices = random.sample(range(tensor_length), num_zeros)
+
+    # Mask the selected indices with zeros
+    masked_tensor[:, zero_indices] = 0
+
+    return masked_tensor
+
+# Example usage:
+input_tensor = torch.rand(1,10)
+print(input_tensor.shape)
+print(input_tensor.size(1))
+num_zeros_to_mask = 3
+masked_result = mask_tensor(input_tensor, num_zeros_to_mask)
+print("Input Tensor:", input_tensor)
+print("Masked Tensor:", masked_result)
+
+###########################-_____________-------######3
+# what_does_troch_Stack_do = []
+# for i in range(5):
+    # what_does_troch_Stack_do.append(torch.rand(1,10))
+# print(torch.stack(what_does_troch_Stack_do).shape)
+
+# normal_list = [1,2,3,4]
+# print(normal_list[::-1])
+
+# Assuming tensor is your tensor of shape [4, 1, 512]
+tensor = torch.randn(4, 1, 512)
+
+print(tensor.shape)
+# Reverse along the first dimension
+reversed_tensor = torch.flip(tensor, [0])
+
+print("SQUEEZE:", torch.squeeze(tensor, dim=1).shape)
+print(reversed_tensor.shape)  # Output: torch.Size([4, 1, 512])

@@ -258,9 +258,8 @@ class Tacotron2(BaseTacotron):
         vocoder_input = postnet_outputs.permute(0, 2, 1)
         # print("POSTENET OUTPUTS: ", postnet_outputs.shape)
         vocoder_output = self.vocoder.inference(vocoder_input)
-        print(f"{vocoder_output.shape=}")
-        spk_embedding2_output = self.spk_embedding(vocoder_output)
 
+        spk_embedding2_output = self.spk_embedding(vocoder_output)
         outputs["spk_emb2"] = spk_embedding2_output
         #####
         if self.bidirectional_decoder:
@@ -411,6 +410,11 @@ class Tacotron2(BaseTacotron):
                 alignment_lengths,
                 None if outputs["alignments_backward"] is None else outputs["alignments_backward"].float(),
                 text_lengths,
+                #NEW INPUT TO LOSS FOR INFONCE LOSS WE NEED SPEAKER_IDS
+                speaker_ids,
+                raw_audio, #spk_emb1, for some reason called raw_audio (:
+                outputs["spk_emb2"],
+                #####
             )
 
         # compute alignment error (the lower the better )

@@ -10,6 +10,9 @@ from TTS.tts.utils.helpers import sequence_mask
 from TTS.tts.utils.ssim import SSIMLoss as _SSIMLoss
 from TTS.utils.audio.torch_transforms import TorchSTFT
 
+#NEW IMPORTS
+from info_nce import InfoNCE, info_nce
+import random
 
 # pylint: disable=abstract-method
 # relates https://github.com/pytorch/pytorch/issues/42305
@@ -336,8 +339,9 @@ class TacotronLoss(torch.nn.Module):
         self.postnet_alpha = c.postnet_loss_alpha
         self.decoder_ssim_alpha = c.decoder_ssim_alpha
         self.postnet_ssim_alpha = c.postnet_ssim_alpha
-        self.spk_emb_sim_alpha = c.spk_emb_sim_alpha
-        self.infoNCE_alpha = c.infoNCE_alpha
+        #NEW Had to comment this out?
+        # self.spk_emb_sim_alpha = c.spk_emb_sim_alpha
+        self.infoNCE_alpha = 0.2     # c.infoNCE_alpha
         self.config = c
 
         # postnet and decoder loss
@@ -380,6 +384,11 @@ class TacotronLoss(torch.nn.Module):
         alignment_lens,
         alignments_backwards,
         input_lens,
+        #NEW PARAMS FOR INFONCE
+        speaker_ids,
+        spk_emb1,
+        spk_emb2,
+        #####
     ):
         # decoder outputs linear or mel spectrograms for Tacotron and Tacotron2
         # the target should be set acccordingly
@@ -403,7 +412,32 @@ class TacotronLoss(torch.nn.Module):
         loss = self.decoder_alpha * decoder_loss + self.postnet_alpha * postnet_loss
         return_dict["decoder_loss"] = decoder_loss
         return_dict["postnet_loss"] = postnet_loss
+        
+        #NEW GET INFONCE LOSS
+        masked_spk_emb2 = []
+        masked_percent = 0.2
+        for emb in spk_emb2:
+            tensor_length = emb.size(1)
+            masked_tensor = emb.clone()
+            # Generate random indices to mask
+            zero_indices = random.sample(range(tensor_length), int(masked_percent * tensor_length))
+            masked_tensor[:, zero_indices] = 0
+            masked_spk_emb2.append(masked_tensor)
 
+        #fix shapes
+        masked_spk_emb2 = torch.stack(masked_spk_emb2)
+        spk_emb2 = torch.squeeze(spk_emb2, 1)
+        masked_spk_emb2 = torch.squeeze(masked_spk_emb2, 1)
+
+        infonce_loss = InfoNCE()
+        if len(set(speaker_ids)) == len(speaker_ids):
+
+            infonce_loss_output = infonce_loss(spk_emb2, masked_spk_emb2, torch.flip(spk_emb2, [0]))
+        
+        loss += infonce_loss_output * self.infoNCE_alpha
+        print("INFONCE LOSSSSSSSSSSSSSSSS:", infonce_loss_output)
+        #####
+                
         if self.use_capacitron_vae:
             # extract capacitron vae infos
             posterior_distribution, prior_distribution, beta = capacitron_vae_outputs

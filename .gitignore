@@ -114,3 +114,6 @@ tts_model/
 .vscode/
 .idea/
 __MACOSX/
+
+#playground
+.torch_playground.py

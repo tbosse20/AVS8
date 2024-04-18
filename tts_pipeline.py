@@ -63,6 +63,7 @@ config = Tacotron2Config(
     min_audio_len=0,
     max_audio_len=500000,
     double_decoder_consistency=True,
+    # infoNCE_alpha=0.2,
 )
 
 # INITIALIZE THE AUDIO PROCESSOR
