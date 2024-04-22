@@ -191,7 +191,7 @@ class Tacotron2(BaseTacotron):
         return embeddings
 
     def forward(  # pylint: disable=dangerous-default-value=None
-        self, text, text_lengths, mel_specs=None, mel_lengths=None, aux_input={"speaker_ids": None, "d_vectors": None}, raw_audio=None
+        self, text, text_lengths, mel_specs=None, mel_lengths=None, aux_input={"speaker_ids": None, "d_vectors": None}, spk_emb1=None
     ):
         """Forward pass for training with Teacher Forcing.
 
@@ -380,10 +380,11 @@ class Tacotron2(BaseTacotron):
         speaker_ids = batch["speaker_ids"]
         d_vectors = batch["d_vectors"]
         #THIS IS NEW#
-        raw_audio = batch["spk_emb"]
+        spk_emb1 = batch["spk_emb"]
+        pos_emb = batch["pos_emb"]
         #####
         aux_input = {"speaker_ids": speaker_ids, "d_vectors": d_vectors}
-        outputs = self.forward(text_input, text_lengths, mel_input, mel_lengths, aux_input, raw_audio)
+        outputs = self.forward(text_input, text_lengths, mel_input, mel_lengths, aux_input, spk_emb1)
 
         # set the [alignment] lengths wrt reduction factor for guided attention
         if mel_lengths.max() % self.decoder.r != 0:
@@ -393,6 +394,9 @@ class Tacotron2(BaseTacotron):
         else:
             alignment_lengths = mel_lengths // self.decoder.r
 
+        speaker_emb_dict = {}
+        for speaker_id, spk_emb2 in zip(speaker_ids, outputs["spk_emb2"]):
+            speaker_emb_dict[speaker_id] = spk_emb2
         # compute loss
         with autocast(enabled=False):  # use float32 for the criterion
             loss_dict = criterion(
@@ -411,9 +415,10 @@ class Tacotron2(BaseTacotron):
                 None if outputs["alignments_backward"] is None else outputs["alignments_backward"].float(),
                 text_lengths,
                 #NEW INPUT TO LOSS FOR INFONCE LOSS WE NEED SPEAKER_IDS
-                speaker_ids,
-                raw_audio, #spk_emb1, for some reason called raw_audio (:
+                speaker_emb_dict,
+                spk_emb1,
                 outputs["spk_emb2"],
+                pos_emb,
                 #####
             )
 

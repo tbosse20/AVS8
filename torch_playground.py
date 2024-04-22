@@ -78,6 +78,7 @@ print("Masked Tensor:", masked_result)
 
 # Assuming tensor is your tensor of shape [4, 1, 512]
 tensor = torch.stack([torch.randn(1, 512) for x in range(4)], dim=0)
+print("HAHAHA", tensor.shape)
 
 
 # # Reverse along the first dimension
@@ -101,3 +102,19 @@ print(f"{torch.sum(weird_cos, dim=0)[0]}")
 # plt.xlabel('Embedding Index')
 # plt.ylabel('Embedding Index')
 # plt.show()
+
+
+def find_duplicates(lst):
+    duplicates = []
+    seen = set()
+    for i, item in enumerate(lst):
+        if item in seen:
+            duplicates.append(i)
+        else:
+            seen.add(item)
+    return duplicates
+
+# Example usage:
+my_list = [1, 2, 3, 4, 2, 5, 3, 6]
+duplicate_indices = find_duplicates(my_list)
+print(duplicate_indices)

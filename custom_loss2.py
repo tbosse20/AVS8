@@ -341,8 +341,8 @@ class TacotronLoss(torch.nn.Module):
         self.postnet_ssim_alpha = c.postnet_ssim_alpha
         #NEW Had to comment this out?
         # self.spk_emb_sim_alpha = c.spk_emb_sim_alpha
-        self.infoNCE_alpha = 0.2     # c.infoNCE_alpha
-        self.similarity_loss_alpha = 0.2
+        self.infoNCE_alpha = 0.25     # c.infoNCE_alpha
+        self.similarity_loss_alpha = 0.25
         #####
         self.config = c
 
@@ -394,6 +394,7 @@ class TacotronLoss(torch.nn.Module):
         speaker_ids,
         spk_emb1,
         spk_emb2,
+        pos_emb,
         #####
     ):
         # decoder outputs linear or mel spectrograms for Tacotron and Tacotron2
@@ -420,32 +421,25 @@ class TacotronLoss(torch.nn.Module):
         return_dict["postnet_loss"] = postnet_loss
         
         #NEW GET COS SIM LOSS
-        spk_emb1 = torch.stack(spk_emb1, dim=0)
+        spk_emb1 = torch.stack(spk_emb1, dim=0) # [4, 1, 512]
         sim_loss = self.criterion_spkemb(spk_emb1, spk_emb2)
-        normalized_sim_loss_sum = torch.sum((sim_loss - 1) / 2, dim=0)
+        normalized_sim_loss_sum = torch.sum(-(sim_loss - 1) / 2, dim=0)
 
         loss += self.similarity_loss_alpha * normalized_sim_loss_sum[0]
         #####
 
         #NEW GET INFONCE LOSS
-        masked_spk_emb2 = []
-        masked_percent = 0.2
-        for emb in spk_emb2:
-            tensor_length = emb.size(1)
-            masked_tensor = emb.clone()
-            # Generate random indices to mask
-            zero_indices = random.sample(range(tensor_length), int(masked_percent * tensor_length))
-            masked_tensor[:, zero_indices] = 0
-            masked_spk_emb2.append(masked_tensor)
 
         #fix shapes
-        masked_spk_emb2 = torch.stack(masked_spk_emb2)
+        pos_emb = torch.stack(pos_emb, dim=0)
+        pos_emb = torch.squeeze(pos_emb, 1)
+        print("HEREHEREHREHREHR POS EMB SHAPE HIHI:", pos_emb.shape)
         spk_emb2 = torch.squeeze(spk_emb2, 1)
         masked_spk_emb2 = torch.squeeze(masked_spk_emb2, 1)
 
         if len(set(speaker_ids)) == len(speaker_ids):
 
-            infonce_loss_output = self.infonce_loss(spk_emb2, masked_spk_emb2, torch.flip(spk_emb2, [0]))
+            infonce_loss_output = self.infonce_loss(spk_emb2, pos_emb, torch.flip(spk_emb2, [0]))
         
         loss += infonce_loss_output * self.infoNCE_alpha
         #####
