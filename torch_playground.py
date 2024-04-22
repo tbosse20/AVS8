@@ -22,14 +22,15 @@ def spk_embedding(audio, sr:int = 16000, feature_extractor = AutoFeatureExtracto
 
 # Load audio using torchaudio.load() or any other method
 # audio, sr = load("/Users/chengyulin/Desktop/CSIE/Aalborg/Project/AVS8/libriTTS/LibriTTS/train-clean-100/1624/142933/1624_142933_000005_000002.wav")
-file_name = "/Users/chengyulin/Desktop/CSIE/Aalborg/Project/AVS8/libriTTS/LibriTTS/train-clean-100/8238/283452/8238_283452_000006_000000.wav"
-audio, sr = load(file_name)
-# audio, _ = librosa.load(file_name)
-embeddings = spk_embedding(audio)
-print(embeddings.shape)
+# file_name = "/Users/chengyulin/Desktop/CSIE/Aalborg/Project/AVS8/libriTTS/LibriTTS/train-clean-100/8238/283452/8238_283452_000006_000000.wav"
+# audio, sr = load(file_name)
+# # audio, _ = librosa.load(file_name)
+# embeddings = spk_embedding(audio)
+# print(embeddings.shape)
 
 import torch
 import random
+
 
 def mask_tensor(tensor, num_zeros):
     """
@@ -76,11 +77,27 @@ print("Masked Tensor:", masked_result)
 # print(normal_list[::-1])
 
 # Assuming tensor is your tensor of shape [4, 1, 512]
-tensor = torch.randn(4, 1, 512)
+tensor = torch.stack([torch.randn(1, 512) for x in range(4)], dim=0)
 
-print(tensor.shape)
-# Reverse along the first dimension
-reversed_tensor = torch.flip(tensor, [0])
 
-print("SQUEEZE:", torch.squeeze(tensor, dim=1).shape)
-print(reversed_tensor.shape)  # Output: torch.Size([4, 1, 512])
+# # Reverse along the first dimension
+# reversed_tensor = torch.flip(tensor, [0])
+
+# print("SQUEEZE:", torch.squeeze(tensor, dim=1).shape)
+# print(reversed_tensor.shape)  # Output: torch.Size([4, 1, 512])
+
+# import matplotlib.pyplot as plt
+
+# # Calculate cosine similarity between embeddings
+cos_sim = torch.nn.CosineSimilarity(dim=2)
+cos_sim = cos_sim(tensor, tensor)
+print(cos_sim.shape)
+weird_cos = (cos_sim -1) / 2
+print(f"{torch.sum(weird_cos, dim=0)[0]}")
+# Plot the cosine similarity matrix
+# plt.imshow(cos_sim, cmap='hot', interpolation='nearest')
+# plt.colorbar()
+# plt.title('Cosine Similarity Matrix')
+# plt.xlabel('Embedding Index')
+# plt.ylabel('Embedding Index')
+# plt.show()

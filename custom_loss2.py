@@ -342,6 +342,8 @@ class TacotronLoss(torch.nn.Module):
         #NEW Had to comment this out?
         # self.spk_emb_sim_alpha = c.spk_emb_sim_alpha
         self.infoNCE_alpha = 0.2     # c.infoNCE_alpha
+        self.similarity_loss_alpha = 0.2
+        #####
         self.config = c
 
         # postnet and decoder loss
@@ -362,11 +364,11 @@ class TacotronLoss(torch.nn.Module):
         # pylint: disable=not-callable
         self.criterion_st = BCELossMasked(pos_weight=torch.tensor(self.stopnet_pos_weight)) if c.stopnet else None
 
-        ## NEW
+        #NEW LOSS 
         # spk_emb sim loss
-        self.criterion_spkemb = nn.CosineSimilarity(dim=1, eps=1e-6)
+        self.criterion_spkemb = nn.CosineSimilarity(dim=2)
         # infoNCE loss
-        # self.criterion_infoNCE
+        self.infonce_loss = InfoNCE()
         ####
 
         # For dev pruposes only
@@ -417,6 +419,14 @@ class TacotronLoss(torch.nn.Module):
         return_dict["decoder_loss"] = decoder_loss
         return_dict["postnet_loss"] = postnet_loss
         
+        #NEW GET COS SIM LOSS
+        spk_emb1 = torch.stack(spk_emb1, dim=0)
+        sim_loss = self.criterion_spkemb(spk_emb1, spk_emb2)
+        normalized_sim_loss_sum = torch.sum((sim_loss - 1) / 2, dim=0)
+
+        loss += self.similarity_loss_alpha * normalized_sim_loss_sum[0]
+        #####
+
         #NEW GET INFONCE LOSS
         masked_spk_emb2 = []
         masked_percent = 0.2
@@ -433,13 +443,11 @@ class TacotronLoss(torch.nn.Module):
         spk_emb2 = torch.squeeze(spk_emb2, 1)
         masked_spk_emb2 = torch.squeeze(masked_spk_emb2, 1)
 
-        infonce_loss = InfoNCE()
         if len(set(speaker_ids)) == len(speaker_ids):
 
-            infonce_loss_output = infonce_loss(spk_emb2, masked_spk_emb2, torch.flip(spk_emb2, [0]))
+            infonce_loss_output = self.infonce_loss(spk_emb2, masked_spk_emb2, torch.flip(spk_emb2, [0]))
         
         loss += infonce_loss_output * self.infoNCE_alpha
-        print("INFONCE LOSSSSSSSSSSSSSSSS:", infonce_loss_output)
         #####
                 
         if self.use_capacitron_vae:

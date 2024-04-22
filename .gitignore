@@ -116,4 +116,4 @@ tts_model/
 __MACOSX/
 
 #playground
-.torch_playground.py
+torch_playground.py
