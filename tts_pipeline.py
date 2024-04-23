@@ -51,7 +51,7 @@ config = Tacotron2Config(
     precompute_num_workers=0,
     run_eval=True,
     test_delay_epochs=-1,
-    epochs=1,
+    epochs=2,
     print_step=1,
     print_eval=True,
     mixed_precision=False,
@@ -118,4 +118,4 @@ trainer = Trainer(
 )
 
 # AND... 3,2,1... 🚀
-trainer.fit() 
+trainer.fit()
