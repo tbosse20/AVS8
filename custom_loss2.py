@@ -368,7 +368,7 @@ class TacotronLoss(torch.nn.Module):
         # spk_emb sim loss
         self.criterion_spkemb = nn.CosineSimilarity(dim=2)
         # infoNCE loss
-        self.infonce_loss = InfoNCE()
+        self.infonce_loss = InfoNCE(negative_mode='paired')
         ####
 
         # For dev pruposes only
@@ -444,12 +444,12 @@ class TacotronLoss(torch.nn.Module):
                     break
             neg_embs = [value for key, value in speaker_emb_dict.items() if key != target_spk_id]
             neg_embs_tensor = torch.stack(neg_embs, dim=0)
+            neg_embs_tensor = torch.squeeze(neg_embs_tensor, 1)
             batch_neg_embs.append(neg_embs_tensor)
         min_len = min([len(neg_embs) for neg_embs in batch_neg_embs])
-        batch_neg_embs = [random.sample(neg_embs, min_len) for neg_embs in batch_neg_embs]
+        batch_neg_embs = [neg_embs[:min_len] for neg_embs in batch_neg_embs]
         batch_neg_embs = torch.stack(batch_neg_embs, dim=0)
-
-        infonce_loss_output = self.infonce_loss(spk_emb2, pos_emb, spk_emb2)
+        infonce_loss_output = self.infonce_loss(spk_emb2, pos_emb, batch_neg_embs)
         
         loss += infonce_loss_output * self.infoNCE_alpha
         #####
