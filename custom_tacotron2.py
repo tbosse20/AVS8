@@ -10,7 +10,7 @@ from trainer.trainer_utils import get_optimizer, get_scheduler
 from TTS.tts.layers.tacotron.capacitron_layers import CapacitronVAE
 from TTS.tts.layers.tacotron.gst_layers import GST
 from TTS.tts.layers.tacotron.tacotron2 import Decoder, Encoder, Postnet
-from TTS.tts.models.base_tacotron import BaseTacotron
+from custom_base_tacotron import BaseTacotron
 from TTS.tts.utils.measures import alignment_diagonal_score
 from TTS.tts.utils.speakers import SpeakerManager
 from TTS.tts.utils.text.tokenizer import TTSTokenizer
