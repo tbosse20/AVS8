@@ -368,7 +368,7 @@ class TacotronLoss(torch.nn.Module):
         # spk_emb sim loss
         self.criterion_spkemb = nn.CosineSimilarity(dim=2)
         # infoNCE loss
-        self.infonce_loss = InfoNCE()
+        self.infonce_loss = InfoNCE(negative_mode="paired")
         ####
 
         # For dev pruposes only
@@ -391,7 +391,7 @@ class TacotronLoss(torch.nn.Module):
         alignments_backwards,
         input_lens,
         #NEW PARAMS FOR INFONCE
-        speaker_ids,
+        speaker_emb_dict,
         spk_emb1,
         spk_emb2,
         pos_emb,
@@ -433,13 +433,24 @@ class TacotronLoss(torch.nn.Module):
         #fix shapes
         pos_emb = torch.stack(pos_emb, dim=0)
         pos_emb = torch.squeeze(pos_emb, 1)
-        print("HEREHEREHREHREHR POS EMB SHAPE HIHI:", pos_emb.shape)
         spk_emb2 = torch.squeeze(spk_emb2, 1)
-        masked_spk_emb2 = torch.squeeze(masked_spk_emb2, 1)
 
-        if len(set(speaker_ids)) == len(speaker_ids):
+        batch_neg_embs = []
+        for sample in spk_emb2:
+            neg_embs = []
+            print(type(list(speaker_emb_dict.values())[0]))
+            print("HI SAMPLE:", type(sample))
+            
+            target_spk_id = list(speaker_emb_dict.keys())[list(speaker_emb_dict.values()).index(sample)]
+            neg_spk_ids = speaker_emb_dict.keys().remove(target_spk_id)
+            for neg_spk_id in neg_spk_ids:
+                neg_embs.append(speaker_emb_dict[neg_spk_id])
+            batch_neg_embs.append(neg_embs)
+        
+        batch_neg_embs = torch.stack(batch_neg_embs, dim=0)
+        print("SHAPEHAPSAGHEPA OF NEG EMBBBB:", batch_neg_embs.shape)
 
-            infonce_loss_output = self.infonce_loss(spk_emb2, pos_emb, torch.flip(spk_emb2, [0]))
+        infonce_loss_output = self.infonce_loss(spk_emb2, pos_emb, neg_embs)
         
         loss += infonce_loss_output * self.infoNCE_alpha
         #####

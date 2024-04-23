@@ -88,7 +88,7 @@ print("HAHAHA", tensor.shape)
 # print(reversed_tensor.shape)  # Output: torch.Size([4, 1, 512])
 
 # import matplotlib.pyplot as plt
-
+'''
 # # Calculate cosine similarity between embeddings
 cos_sim = torch.nn.CosineSimilarity(dim=2)
 cos_sim = cos_sim(tensor, tensor)
@@ -118,3 +118,27 @@ def find_duplicates(lst):
 my_list = [1, 2, 3, 4, 2, 5, 3, 6]
 duplicate_indices = find_duplicates(my_list)
 print(duplicate_indices)
+
+
+my_list[0,1,2,]
+'''
+import torch
+
+def remove_current_id_values(ids_list, values_tensor):
+    # Convert the list of IDs to a PyTorch tensor
+    ids_tensor = torch.tensor(ids_list)
+    
+    # Create a mask to exclude the current ID
+    mask = ~torch.eq(ids_tensor.unsqueeze(1), ids_tensor.unsqueeze(0))
+    
+    # Apply the mask to the values tensor to exclude the current ID's value
+    values_excluding_current = values_tensor[mask].view(len(ids_list), -1, values_tensor.shape[-1])
+    
+    return values_excluding_current
+
+# Example usage:
+ids_list = [1, 2, 3, 4]
+values_tensor = torch.randn(len(ids_list), 512)  # Example values tensor
+result_tensor = remove_current_id_values(ids_list, values_tensor)
+print(result_tensor.shape)  # Output should be [x, x-1, 512]
+
