@@ -435,19 +435,16 @@ class TacotronLoss(torch.nn.Module):
         pos_emb = torch.squeeze(pos_emb, 1)
         spk_emb2 = torch.squeeze(spk_emb2, 1)
 
-        # batch_neg_embs = []
-        # for sample in spk_emb2:
-        #     neg_embs = []
-        #     print(type(list(speaker_emb_dict.values())[0]))
-        #     print("HI SAMPLE:", type(sample))
-            
-        #     target_spk_id = list(speaker_emb_dict.keys())[list(speaker_emb_dict.values()).index(sample)]
-        #     neg_spk_ids = speaker_emb_dict.keys().remove(target_spk_id)
-        #     for neg_spk_id in neg_spk_ids:
-        #         neg_embs.append(speaker_emb_dict[neg_spk_id])
-        #     batch_neg_embs.append(neg_embs)
-        
-        # batch_neg_embs = torch.stack(batch_neg_embs, dim=0)
+        batch_neg_embs = []
+        for sample in spk_emb2:
+            for key, value in speaker_emb_dict.items():
+                # Check if the value (tensor) matches the search tensor
+                if torch.all(torch.eq(value, sample)):
+                    target_spk_id = key
+                    break
+            neg_embs = [value for key, value in speaker_emb_dict.items() if key != target_spk_id]
+            batch_neg_embs.append(torch.tensor(neg_embs))
+        batch_neg_embs = torch.stack(batch_neg_embs, dim=0)
 
         infonce_loss_output = self.infonce_loss(spk_emb2, pos_emb, spk_emb2)
         
