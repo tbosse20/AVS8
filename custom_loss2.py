@@ -443,7 +443,10 @@ class TacotronLoss(torch.nn.Module):
                     target_spk_id = key
                     break
             neg_embs = [value for key, value in speaker_emb_dict.items() if key != target_spk_id]
-            batch_neg_embs.append(torch.tensor(neg_embs))
+            neg_embs_tensor = torch.stack(neg_embs, dim=0)
+            batch_neg_embs.append(neg_embs_tensor)
+        min_len = min([len(neg_embs) for neg_embs in batch_neg_embs])
+        batch_neg_embs = [random.sample(neg_embs, min_len) for neg_embs in batch_neg_embs]
         batch_neg_embs = torch.stack(batch_neg_embs, dim=0)
 
         infonce_loss_output = self.infonce_loss(spk_emb2, pos_emb, spk_emb2)
