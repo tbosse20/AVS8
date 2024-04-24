@@ -5,7 +5,7 @@ import numpy as np
 from TTS.config.shared_configs import BaseAudioConfig
 from TTS.tts.configs.tacotron2_config import Tacotron2Config
 from TTS.tts.configs.shared_configs import BaseDatasetConfig
-from TTS.tts.datasets import load_tts_samples
+from dataset import load_tts_samples
 from TTS.tts.models.tacotron2 import Tacotron2
 from custom_tacotron2 import Tacotron2
 from TTS.tts.utils.speakers import SpeakerManager
