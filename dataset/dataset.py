@@ -16,7 +16,7 @@ from TTS.utils.audio.numpy_transforms import compute_energy as calculate_energy
 import torchaudio
 from librosa.core import resample
 from librosa.util import fix_length
-from transformers import AutoFeatureExtractor, Wav2Vec2ForXVector
+from transformers import AutoFeatureExtractor, Wav2Vec2ForXVector, logging
 #####
 
 # to prevent too many open files error as suggested here
@@ -420,6 +420,7 @@ class TTSDataset(Dataset):
         """
         #NEW COMPUTE EMBEDDINGS
         def spk_embedding(audio, sr:int = 16000) -> torch.Tensor:
+            logging.set_verbosity_error()
             feat_extractor = AutoFeatureExtractor.from_pretrained("anton-l/wav2vec2-base-superb-sv")
             spk_emb_model = Wav2Vec2ForXVector.from_pretrained("anton-l/wav2vec2-base-superb-sv")
             audio = resample(np.array(audio), orig_sr=sr, target_sr=16000)

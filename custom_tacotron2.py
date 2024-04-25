@@ -22,7 +22,7 @@ from TTS.config import load_config
 import numpy as np
 import torchaudio
 from librosa.core import resample
-from transformers import AutoFeatureExtractor, Wav2Vec2ForXVector
+from transformers import AutoFeatureExtractor, Wav2Vec2ForXVector, logging
 from librosa.util import fix_length
 
 #####
@@ -175,6 +175,7 @@ class Tacotron2(BaseTacotron):
         return mel_outputs, mel_outputs_postnet, alignments
     
     def spk_embedding(self, audio_batch, sr:int = 24000) -> torch.Tensor:
+        logging.set_verbosity_error()
         wav_lengths = [w.shape[1] for w in audio_batch]
         max_wav_len = max(wav_lengths)
         embeddings = []
