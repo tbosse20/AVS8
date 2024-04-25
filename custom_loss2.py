@@ -424,7 +424,7 @@ class TacotronLoss(torch.nn.Module):
         spk_emb1 = torch.stack(spk_emb1, dim=0) # [4, 1, 512]
         sim_loss = self.criterion_spkemb(spk_emb1, spk_emb2)
         normalized_sim_loss_sum = torch.sum(-(sim_loss - 1) / 2, dim=0)
-
+        return_dict["similarity_loss"] = normalized_sim_loss_sum
         loss += self.similarity_loss_alpha * normalized_sim_loss_sum[0]
         #####
 
@@ -450,7 +450,7 @@ class TacotronLoss(torch.nn.Module):
         batch_neg_embs = [neg_embs[:min_len] for neg_embs in batch_neg_embs]
         batch_neg_embs = torch.stack(batch_neg_embs, dim=0)
         infonce_loss_output = self.infonce_loss(spk_emb2, pos_emb, batch_neg_embs)
-        
+        return_dict["infonce_loss"] = infonce_loss_output
         loss += infonce_loss_output * self.infoNCE_alpha
         #####
                 
