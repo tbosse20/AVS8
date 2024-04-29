@@ -109,6 +109,9 @@ libriTTS/
 runs/
 vocoder/
 tts_model/
+wandb/
+model/
+output/
 
 # editor, os cache directory
 .vscode/
