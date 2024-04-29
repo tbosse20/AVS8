@@ -184,9 +184,10 @@ class Tacotron2(BaseTacotron):
             audio = resample(np.array(audio.cpu()), orig_sr=sr, target_sr=16000)
             audio = fix_length(audio, size=int(max_wav_len*1.5))
             print("\n\nSHAPE OF AUDIO;:\n\n", audio.shape)
-            if torch.cuda.is_available():
-                audio = torch.tensor(audio).to(device="cuda")
             inputs = self.feature_extractor(audio, sampling_rate=16000, return_tensors="pt")
+            if torch.cuda.is_available():
+                inputs["input_values"] = torch.tensor(inputs["input_values"]).to(device="cuda")
+                inputs["attention_mask"] = torch.tensor(inputs["attention_mask"]).to(device="cuda")
             print("\n\nSHAPE OF INPUTS_values;:\n\n", inputs["input_values"].shape)
             print("\n\nSHAPE OF INPUTS masks;:\n\n", inputs["attention_mask"].shape)
             with torch.no_grad():
