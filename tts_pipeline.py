@@ -33,10 +33,9 @@ dataset_path = os.path.join(current_path, "libriTTS")
 # download the dataset if not downloaded
 if not os.path.exists(dataset_path):
     from TTS.utils.downloaders import download_libri_tts
-
     download_libri_tts(dataset_path, subset="libri-tts-clean-100") #這裡是Ollie做的
+    print("downloaded data")
 
-print("downloaded data")
 # define dataset config
 dataset_config = BaseDatasetConfig(formatter="libri_tts", meta_file_train="", path=dataset_path)
 
