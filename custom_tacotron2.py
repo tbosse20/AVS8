@@ -24,6 +24,7 @@ import torchaudio
 from librosa.core import resample
 from transformers import AutoFeatureExtractor, Wav2Vec2ForXVector, logging
 from librosa.util import fix_length
+import wandb
 
 #####
 
@@ -463,6 +464,7 @@ class Tacotron2(BaseTacotron):
             "ground_truth": plot_spectrogram(gt_spec, ap, output_fig=False),
             "alignment": plot_alignment(align_img, output_fig=False),
         }
+        wandb.log(figures) # NEW log figures to wandb
 
         if self.bidirectional_decoder or self.double_decoder_consistency:
             figures["alignment_backward"] = plot_alignment(alignments_backward[0].data.cpu().numpy(), output_fig=False)

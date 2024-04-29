@@ -54,6 +54,7 @@ config = {
     "run_eval": True,
     "test_delay_epochs": -1,
     "epochs": 1,
+    "lr": 1e-4,
     "print_step": 1,
     "print_eval": True,
     "mixed_precision": False,
