@@ -181,7 +181,7 @@ class Tacotron2(BaseTacotron):
         max_wav_len = max(wav_lengths)
         embeddings = []
         for audio in audio_batch:
-            audio = resample(np.array(audio), orig_sr=sr, target_sr=16000)
+            audio = resample(np.array(audio.cpu()), orig_sr=sr, target_sr=16000)
             audio = fix_length(audio, size=int(max_wav_len*1.5))
             inputs = self.feature_extractor(audio, sampling_rate=16000, return_tensors="pt")
             with torch.no_grad():
