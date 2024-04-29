@@ -145,6 +145,6 @@ print(result_tensor.shape)  # Output should be [x, x-1, 512]
 '''
 a = torch.tensor([1,2,3,4,5])
 a.cpu()
-print(a.device)
+print(a)
 # print
 
