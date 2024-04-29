@@ -13,6 +13,7 @@ from TTS.utils.audio.torch_transforms import TorchSTFT
 #NEW IMPORTS
 from info_nce import InfoNCE, info_nce
 import random
+import wandb
 
 # pylint: disable=abstract-method
 # relates https://github.com/pytorch/pytorch/issues/42305
@@ -424,7 +425,7 @@ class TacotronLoss(torch.nn.Module):
         spk_emb1 = torch.stack(spk_emb1, dim=0) # [4, 1, 512]
         sim_loss = self.criterion_spkemb(spk_emb1, spk_emb2)
         normalized_sim_loss_sum = torch.sum(-(sim_loss - 1) / 2, dim=0)
-
+        return_dict["similarity_loss"] = normalized_sim_loss_sum
         loss += self.similarity_loss_alpha * normalized_sim_loss_sum[0]
         #####
 
@@ -451,6 +452,7 @@ class TacotronLoss(torch.nn.Module):
         batch_neg_embs = torch.stack(batch_neg_embs, dim=0)
         infonce_loss_output = self.infonce_loss(spk_emb2, pos_emb, batch_neg_embs)
         
+        return_dict["infonce_loss"] = infonce_loss_output
         loss += infonce_loss_output * self.infoNCE_alpha
         #####
                 
@@ -565,6 +567,9 @@ class TacotronLoss(torch.nn.Module):
             return_dict["postnet_ssim_loss"] = postnet_ssim_loss
 
         return_dict["loss"] = loss
+        
+        wandb.log(return_dict)
+        
         return return_dict
 
 

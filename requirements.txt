@@ -12,4 +12,4 @@ torchvision==0.15.0.dev20230314
 tqdm==4.65.0
 transformers==4.33.3
 TTS==0.22.0
-wandb==0.16.2
+wandb
