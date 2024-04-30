@@ -19,6 +19,11 @@ import logging
 logging.getLogger("transformers.modeling_utils").setLevel(logging.ERROR)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Disable TensorFlow INFO and WARNING messages
 
+# TODO CHECK DEVMODE
+dev_mode = {
+    "downsample": 4,
+}
+
 VOCODER_MODEL = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
 VOCODER_CONFIG = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/config.json"
 
@@ -33,7 +38,16 @@ dataset_path = os.path.join(current_path, "libriTTS")
 # download the dataset if not downloaded
 if not os.path.exists(dataset_path):
     from TTS.utils.downloaders import download_libri_tts
-    download_libri_tts(dataset_path, subset="libri-tts-clean-100") #這裡是Ollie做的
+    
+    subsets = [
+        "libri-tts-clean-100",  # 這裡是Ollie做的
+        # "libri-tts-test-clean"  # 這裡是Tonko做的
+    ]
+    
+    for subset in subsets:
+        if not any(subset in file for file in os.listdir(dataset_path)):
+            download_libri_tts(dataset_path, subset=subset)
+
     print("downloaded data")
 
 # define dataset config
@@ -46,14 +60,14 @@ audio_config = BaseAudioConfig(sample_rate=24000, resample=False, do_trim_silenc
 # define model config
 # config = load_config(TACO_CONFIG)
 config = {
-    "batch_size": 32,
-    "eval_batch_size": 32,
-    "num_loader_workers": 4,
-    "num_eval_loader_workers": 4,
-    "precompute_num_workers": 4,
-    "run_eval": True,
+    "batch_size": 4,
+    "eval_batch_size": 4,
+    "num_loader_workers": 0,
+    "num_eval_loader_workers": 0,
+    "precompute_num_workers": 0,
+    "run_eval": False,
     "test_delay_epochs": -1,
-    "epochs": 100,
+    "epochs": 1,
     "lr": 1e-4,
     "print_step": 1,
     "print_eval": True,
@@ -73,7 +87,7 @@ tacotron2_config = Tacotron2Config(**config)
 # INITIALIZE THE AUDIO PROCESSOR
 # Audio processor is used for feature extraction and audio I/O.
 # It mainly serves to the dataloader and the training loggers.
-ap = AudioProcessor.init_from_config(tacotron2_config)
+ap = AudioProcessor.init_from_config(tacotron2_config, verbose=False)
 
 # INITIALIZE THE TOKENIZER
 # Tokenizer is used to convert text to sequences of token IDs.
@@ -91,6 +105,15 @@ train_samples, eval_samples = load_tts_samples(
     eval_split_max_size=tacotron2_config.eval_split_max_size,
     eval_split_size=tacotron2_config.eval_split_size,
 )
+# test_samples = load_tts_samples(dataset_config)
+
+# Dev mode: reduce the number of samples
+if dev_mode["downsample"]:
+    downsample_factor = dev_mode["downsample"]
+    print(f"DEVMODE: Downsample to {downsample_factor} samples")
+    train_samples = train_samples[19:19 + downsample_factor]
+    eval_samples = [eval_samples[50], eval_samples[51], eval_samples[44], eval_samples[46]]
+    # test_samples = test_samples[:downsample_factor]
 
 # init speaker manager for multi-speaker training
 # it maps speaker-id to speaker-name in the model and data-loader
@@ -131,6 +154,7 @@ trainer = Trainer(
     model=model,
     train_samples=train_samples,
     eval_samples=eval_samples,
+    # test_samples=eval_samples,
 )
 
 # AND... 3,2,1... 🚀

@@ -452,6 +452,10 @@ class TacotronLoss(torch.nn.Module):
         batch_neg_embs = torch.stack(batch_neg_embs, dim=0)
         infonce_loss_output = self.infonce_loss(spk_emb2, pos_emb, batch_neg_embs)
         
+        # NEW Log embeddings as image
+        # wandb.log({"spk_emb": wandb.Image(spk_emb2.detach().cpu().numpy())})
+        # wandb.log({"pos_emb": wandb.Image(pos_emb.detach().cpu().numpy())})
+        
         return_dict["infonce_loss"] = infonce_loss_output
         loss += infonce_loss_output * self.infoNCE_alpha
         #####
