@@ -19,10 +19,8 @@ import logging
 logging.getLogger("transformers.modeling_utils").setLevel(logging.ERROR)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Disable TensorFlow INFO and WARNING messages
 
-# TODO CHECK DEVMODE
-dev_mode = {
-    "downsample": True, # bool
-}
+# TODO : CHECK DEV-MODE
+dev_mode = True, # bool
 
 VOCODER_MODEL = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
 VOCODER_CONFIG = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/config.json"
@@ -87,7 +85,7 @@ tacotron2_config = Tacotron2Config(**config)
 # INITIALIZE THE AUDIO PROCESSOR
 # Audio processor is used for feature extraction and audio I/O.
 # It mainly serves to the dataloader and the training loggers.
-ap = AudioProcessor.init_from_config(tacotron2_config, verbose=False)
+ap = AudioProcessor.init_from_config(tacotron2_config)  #, verbose=False)
 
 # INITIALIZE THE TOKENIZER
 # Tokenizer is used to convert text to sequences of token IDs.
@@ -146,12 +144,11 @@ trainer = Trainer(
     model=model,
     train_samples=train_samples,
     eval_samples=eval_samples,
-    test_samples=eval_samples,
+    test_samples=eval_samples, # TODO: Load and change this to test_samples
 )
 
 # Dev mode: reduce the number of samples
-if dev_mode["downsample"]:
-    trainer.setup_small_run(4)
+if dev_mode: trainer.setup_small_run(4)
 
 # AND... 3,2,1... 🚀
 trainer.fit()

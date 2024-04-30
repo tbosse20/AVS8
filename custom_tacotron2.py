@@ -349,17 +349,30 @@ class Tacotron2(BaseTacotron):
         postnet_outputs = decoder_outputs + postnet_outputs
         decoder_outputs, postnet_outputs, alignments = self.shape_outputs(decoder_outputs, postnet_outputs, alignments)
         #NEW INFERENCE USING VOCODER#
-        postnet_outputs = postnet_outputs.permute(0, 2, 1)
-        # print("POSTENET OUTPUTS: ", postnet_outputs.shape)
-        postnet_outputs = self.vocoder.inference(postnet_outputs)
-        torchaudio.save("output.wav", postnet_outputs, 22050)
+        waveform = self.vocoder.inference(postnet_outputs.permute(0, 2, 1))
+        
+        # Detach from batch and convert to NumPy array
+        waveform = waveform.squeeze(0)
+        waveform = waveform.cpu().detach().numpy()
+        waveform = waveform.astype(np.float32)
+        waveform = torch.from_numpy(waveform)
+        torchaudio.save("output.wav", waveform, 22050)
         #####
+        
         outputs = {
             "model_outputs": postnet_outputs,
             "decoder_outputs": decoder_outputs,
             "alignments": alignments,
             "stop_tokens": stop_tokens,
         }
+         # NEW save outputs to log wandb
+        # wandb.log({
+        #     "model_outputs": wandb.Image(postnet_outputs),
+        #     "decoder_outputs": wandb.Image(decoder_outputs),
+        #     "alignments": wandb.Image(alignments),
+        #     "stop_tokens": wandb.Image(stop_tokens),
+        # })
+        
         return outputs
 
     def before_backward_pass(self, loss_dict, optimizer) -> None:
