@@ -21,7 +21,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Disable TensorFlow INFO and WARNING 
 
 # TODO CHECK DEVMODE
 dev_mode = {
-    "downsample": 4,
+    "downsample": True, # bool
 }
 
 VOCODER_MODEL = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
@@ -107,14 +107,6 @@ train_samples, eval_samples = load_tts_samples(
 )
 # test_samples = load_tts_samples(dataset_config)
 
-# Dev mode: reduce the number of samples
-if dev_mode["downsample"]:
-    downsample_factor = dev_mode["downsample"]
-    print(f"DEVMODE: Downsample to {downsample_factor} samples")
-    train_samples = train_samples[19:19 + downsample_factor]
-    eval_samples = [eval_samples[50], eval_samples[51], eval_samples[44], eval_samples[46]]
-    # test_samples = test_samples[:downsample_factor]
-
 # init speaker manager for multi-speaker training
 # it maps speaker-id to speaker-name in the model and data-loader
 speaker_manager = SpeakerManager()
@@ -154,8 +146,12 @@ trainer = Trainer(
     model=model,
     train_samples=train_samples,
     eval_samples=eval_samples,
-    # test_samples=eval_samples,
+    test_samples=eval_samples,
 )
+
+# Dev mode: reduce the number of samples
+if dev_mode["downsample"]:
+    trainer.setup_small_run(4)
 
 # AND... 3,2,1... 🚀
 trainer.fit()
