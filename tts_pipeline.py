@@ -78,6 +78,7 @@ config = {
     "min_audio_len": 0,
     "max_audio_len": 500000,
     "double_decoder_consistency": True,
+    "text_cleaner": "english_cleaners",
     # "infoNCE_alpha": 0.2,
 }
 tacotron2_config = Tacotron2Config(**config)
@@ -90,7 +91,8 @@ ap = AudioProcessor.init_from_config(tacotron2_config)  #, verbose=False)
 # INITIALIZE THE TOKENIZER
 # Tokenizer is used to convert text to sequences of token IDs.
 # If characters are not defined in the config, default characters are passed to the config
-tokenizer, tacotron2_config = TTSTokenizer.init_from_config(tacotron2_config)
+tokenizer, tacotron2_config = TTSTokenizer.init_from_config(config=tacotron2_config)
+tokenizer.use_eos_bos = True
 
 # LOAD DATA SAMPLES
 # Each sample is a list of ```[text, audio_file_path, speaker_name]```
