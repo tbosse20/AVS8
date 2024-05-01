@@ -20,7 +20,7 @@ logging.getLogger("transformers.modeling_utils").setLevel(logging.ERROR)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Disable TensorFlow INFO and WARNING messages
 
 # TODO : CHECK DEV-MODE
-dev_mode = False, # bool
+dev_mode = False # bool
 
 VOCODER_MODEL = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
 VOCODER_CONFIG = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/config.json"
@@ -150,7 +150,8 @@ trainer = Trainer(
 )
 
 # Dev mode: reduce the number of samples
-if dev_mode: trainer.setup_small_run(16)
+if dev_mode:    
+    trainer.setup_small_run(16)
 
 # AND... 3,2,1... 🚀
 trainer.fit()
