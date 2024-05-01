@@ -1678,3 +1678,6 @@ warning: audio amplitude out of range, auto clipped.
 
 [1m > TRAINING (2024-05-01 02:28:47) [0m
  | > Synthesizing test sentences.
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+slurmstepd: error: *** JOB 179887 ON i256-a40-01 CANCELLED AT 2024-05-01T10:06:23 ***
+slurmstepd: error: *** STEP 179887.0 ON i256-a40-01 CANCELLED AT 2024-05-01T10:06:23 ***

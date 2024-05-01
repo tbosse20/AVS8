@@ -58,16 +58,16 @@ audio_config = BaseAudioConfig(sample_rate=24000, resample=False, do_trim_silenc
 # define model config
 # config = load_config(TACO_CONFIG)
 config = {
-    "batch_size": 32,
-    "eval_batch_size": 32,
-    "num_loader_workers": 4,
-    "num_eval_loader_workers": 4,
-    "precompute_num_workers": 4,
+    "batch_size": 16,
+    "eval_batch_size": 8,
+    "num_loader_workers": 0,
+    "num_eval_loader_workers": 0,
+    "precompute_num_workers": 0,
     "run_eval": True,
     "test_delay_epochs": -1,
     "epochs": 100,
     "lr": 1e-4,
-    "print_step": 5,
+    "print_step": 1,
     "print_eval": True,
     "mixed_precision": False,
     "output_path": output_path,

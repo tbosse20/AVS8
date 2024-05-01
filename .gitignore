@@ -120,3 +120,6 @@ __MACOSX/
 
 #playground
 torch_playground.py
+
+#CLAAUDIA
+slurm*
