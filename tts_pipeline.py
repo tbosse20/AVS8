@@ -20,7 +20,7 @@ logging.getLogger("transformers.modeling_utils").setLevel(logging.ERROR)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Disable TensorFlow INFO and WARNING messages
 
 # TODO : CHECK DEV-MODE
-dev_mode = True, # bool
+dev_mode = False, # bool
 
 VOCODER_MODEL = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
 VOCODER_CONFIG = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/config.json"
@@ -58,16 +58,16 @@ audio_config = BaseAudioConfig(sample_rate=24000, resample=False, do_trim_silenc
 # define model config
 # config = load_config(TACO_CONFIG)
 config = {
-    "batch_size": 4,
-    "eval_batch_size": 4,
-    "num_loader_workers": 0,
-    "num_eval_loader_workers": 0,
-    "precompute_num_workers": 0,
-    "run_eval": False,
+    "batch_size": 32,
+    "eval_batch_size": 32,
+    "num_loader_workers": 4,
+    "num_eval_loader_workers": 4,
+    "precompute_num_workers": 4,
+    "run_eval": True,
     "test_delay_epochs": -1,
-    "epochs": 1,
+    "epochs": 100,
     "lr": 1e-4,
-    "print_step": 1,
+    "print_step": 5,
     "print_eval": True,
     "mixed_precision": False,
     "output_path": output_path,
@@ -150,7 +150,7 @@ trainer = Trainer(
 )
 
 # Dev mode: reduce the number of samples
-if dev_mode: trainer.setup_small_run(4)
+if dev_mode: trainer.setup_small_run(16)
 
 # AND... 3,2,1... 🚀
 trainer.fit()

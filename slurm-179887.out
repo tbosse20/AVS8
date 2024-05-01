@@ -1,0 +1,1680 @@
+13:4: not a valid test operator: (
+13:4: not a valid test operator: 535.171.04
+
+=============
+== PyTorch ==
+=============
+
+NVIDIA Release 24.01 (build 80741402)
+PyTorch Version 2.2.0a0+81ea7a4
+
+Container image Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+Copyright (c) 2014-2023 Facebook Inc.
+Copyright (c) 2011-2014 Idiap Research Institute (Ronan Collobert)
+Copyright (c) 2012-2014 Deepmind Technologies    (Koray Kavukcuoglu)
+Copyright (c) 2011-2012 NEC Laboratories America (Koray Kavukcuoglu)
+Copyright (c) 2011-2013 NYU                      (Clement Farabet)
+Copyright (c) 2006-2010 NEC Laboratories America (Ronan Collobert, Leon Bottou, Iain Melvin, Jason Weston)
+Copyright (c) 2006      Idiap Research Institute (Samy Bengio)
+Copyright (c) 2001-2004 Idiap Research Institute (Ronan Collobert, Samy Bengio, Johnny Mariethoz)
+Copyright (c) 2015      Google Inc.
+Copyright (c) 2015      Yangqing Jia
+Copyright (c) 2013-2016 The Caffe contributors
+All rights reserved.
+
+Various files include modifications (c) NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+
+This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+By pulling and using the container, you accept the terms and conditions of this license:
+https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+
+NOTE: CUDA Forward Compatibility mode ENABLED.
+  Using CUDA 12.3 driver version 545.23.08 with kernel driver version 535.171.04.
+  See https://docs.nvidia.com/deploy/cuda-compatibility/ for details.
+
+RuntimeError: module compiled against API version 0x10 but this version of numpy is 0xf . Check the section C-API incompatibility at the Troubleshooting ImportError section at https://numpy.org/devdocs/user/troubleshooting-importerror.html#c-api-incompatibility for indications on how to solve this problem .
+wandb: Currently logged in as: x0917364931 (qwewef). Use `wandb login --relogin` to force relogin
+wandb: wandb version 0.16.6 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.16.2
+wandb: Run data is saved locally in /home/student.aau.dk/lk83xy/avs8/AVS8/wandb/run-20240430_223114-bup1nn8w
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run happy-bush-84
+wandb: ⭐️ View project at https://wandb.ai/qwewef/AVSP8
+wandb: 🚀 View run at https://wandb.ai/qwewef/AVSP8/runs/bup1nn8w
+ > Training Environment:
+ | > Backend: Torch
+ | > Mixed precision: False
+ | > Precision: float32
+ | > Current device: 0
+ | > Num. of GPUs: 1
+ | > Num. of CPUs: 48
+ | > Num. of Torch Threads: 6
+ | > Torch seed: 54321
+ | > Torch CUDNN: True
+ | > Torch CUDNN deterministic: False
+ | > Torch CUDNN benchmark: False
+ | > Torch TF32 MatMul: True
+ > Start Tensorboard: tensorboard --logdir=/home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+ > Model has 166276116 parameters
+[!] Small Run, only using 16 samples.
+
+[4m[1m > EPOCH: 0/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-04-30 22:31:18) [0m
+ > Setting up Audio Processor...
+ | > sample_rate:22050
+ | > resample:False
+ | > num_mels:80
+ | > log_func:np.log10
+ | > min_level_db:-100
+ | > frame_shift_ms:None
+ | > frame_length_ms:None
+ | > ref_level_db:20
+ | > fft_size:1024
+ | > power:1.5
+ | > preemphasis:0.0
+ | > griffin_lim_iters:60
+ | > signal_norm:True
+ | > symmetric_norm:True
+ | > mel_fmin:0
+ | > mel_fmax:None
+ | > pitch_fmin:1.0
+ | > pitch_fmax:640.0
+ | > spec_gain:20.0
+ | > stft_pad_mode:reflect
+ | > max_norm:4.0
+ | > clip_norm:True
+ | > do_trim_silence:True
+ | > trim_db:45
+ | > do_sound_norm:False
+ | > do_amp_to_db_linear:True
+ | > do_amp_to_db_mel:True
+ | > do_rms_norm:False
+ | > db_level:None
+ | > stats_path:None
+ | > base:10
+ | > hop_length:256
+ | > win_length:1024
+ | > Found 33236 files in /home/student.aau.dk/lk83xy/avs8/AVS8/libriTTS
+ > Init speaker_embedding layer.
+ > Generator Model: fullband_melgan_generator
+ > Discriminator Model: melgan_multiscale_discriminator
+ > `speakers.pth` is saved to /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b/speakers.pth.
+ > `speakers_file` is updated in the config.json.
+
+
+> DataLoader initialization
+| > Tokenizer:
+	| > add_blank: False
+	| > use_eos_bos: True
+	| > use_phonemes: False
+| > Number of instances : 16
+ | > Preprocessing samples
+ | > Max text length: 236
+ | > Min text length: 9
+ | > Avg text length: 89.66666666666667
+ | 
+ | > Max audio length: 367702.0
+ | > Min audio length: 19942.0
+ | > Avg audio length: 130022.0
+ | > Num. instances discarded samples: 1
+ | > Batch group size: 0.
+/home/student.aau.dk/lk83xy/avs8/AVS8/custom_tacotron2.py:188: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  inputs["input_values"] = torch.tensor(inputs["input_values"]).to(device="cuda")
+/home/student.aau.dk/lk83xy/avs8/AVS8/custom_tacotron2.py:189: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  inputs["attention_mask"] = torch.tensor(inputs["attention_mask"]).to(device="cuda")
+/usr/local/lib/python3.10/dist-packages/torch/functional.py:507: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at ../aten/src/ATen/native/TensorShape.cpp:3549.)
+  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
+
+[1m   --> TIME: 2024-04-30 22:34:12 -- STEP: 0/1 -- GLOBAL_STEP: 0[0m
+     | > decoder_loss: 6.215037822723389  (6.215037822723389)
+     | > postnet_loss: 8.695608139038086  (8.695608139038086)
+     | > similarity_loss: 1.9649555683135986  (1.9649555683135986)
+     | > infonce_loss: 3.7239294052124023  (3.7239294052124023)
+     | > stopnet_loss: 0.7321479320526123  (0.7321479320526123)
+     | > decoder_coarse_loss: 6.22270393371582  (6.22270393371582)
+     | > decoder_ddc_loss: 0.001281079137697816  (0.001281079137697816)
+     | > ga_loss: 0.0021414593793451786  (0.0021414593793451786)
+     | > decoder_diff_spec_loss: 0.24739380180835724  (0.24739380180835724)
+     | > postnet_diff_spec_loss: 5.268083572387695  (5.268083572387695)
+     | > decoder_ssim_loss: 0.3461316227912903  (0.3461316227912903)
+     | > postnet_ssim_loss: 0.3375636339187622  (0.3375636339187622)
+     | > loss: 8.998527526855469  (8.998527526855469)
+     | > align_error: 0.994791648350656  (0.994791648350656)
+     | > grad_norm: tensor(4.4869, device='cuda:0')  (tensor(4.4869, device='cuda:0'))
+     | > current_lr: 2.5000000000000002e-08 
+     | > step_time: 6.515  (6.515012979507446)
+     | > loader_time: 166.8976  (166.89755392074585)
+
+
+[1m > EVALUATION [0m
+
+warning: audio amplitude out of range, auto clipped.
+
+
+> DataLoader initialization
+| > Tokenizer:
+	| > add_blank: False
+	| > use_eos_bos: True
+	| > use_phonemes: False
+| > Number of instances : 16
+ | > Preprocessing samples
+ | > Max text length: 240
+ | > Min text length: 13
+ | > Avg text length: 101.125
+ | 
+ | > Max audio length: 334582.0
+ | > Min audio length: 23061.0
+ | > Avg audio length: 149256.6875
+ | > Num. instances discarded samples: 0
+ | > Batch group size: 0.
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.777920722961426  (5.777920722961426)
+     | > postnet_loss: 5.770478248596191  (5.770478248596191)
+     | > similarity_loss: 3.8750357627868652  (3.8750357627868652)
+     | > infonce_loss: 5.00870943069458  (5.00870943069458)
+     | > stopnet_loss: 0.6949067711830139  (0.6949067711830139)
+     | > decoder_coarse_loss: 5.745636463165283  (5.745636463165283)
+     | > decoder_ddc_loss: 0.0006024959147907794  (0.0006024959147907794)
+     | > ga_loss: 0.0021805346477776766  (0.0021805346477776766)
+     | > decoder_diff_spec_loss: 0.23005372285842896  (0.23005372285842896)
+     | > postnet_diff_spec_loss: 0.23075802624225616  (0.23075802624225616)
+     | > decoder_ssim_loss: 0.43430423736572266  (0.43430423736572266)
+     | > postnet_ssim_loss: 0.43444591760635376  (0.43444591760635376)
+     | > loss: 7.5827956199646  (7.5827956199646)
+     | > align_error: 0.9952117213979363  (0.9952117213979363)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time: 163.4888994693756 [0m(+0)
+     | > avg_decoder_loss: 5.777920722961426 [0m(+0)
+     | > avg_postnet_loss: 5.770478248596191 [0m(+0)
+     | > avg_similarity_loss: 3.8750357627868652 [0m(+0)
+     | > avg_infonce_loss: 5.00870943069458 [0m(+0)
+     | > avg_stopnet_loss: 0.6949067711830139 [0m(+0)
+     | > avg_decoder_coarse_loss: 5.745636463165283 [0m(+0)
+     | > avg_decoder_ddc_loss: 0.0006024959147907794 [0m(+0)
+     | > avg_ga_loss: 0.0021805346477776766 [0m(+0)
+     | > avg_decoder_diff_spec_loss: 0.23005372285842896 [0m(+0)
+     | > avg_postnet_diff_spec_loss: 0.23075802624225616 [0m(+0)
+     | > avg_decoder_ssim_loss: 0.43430423736572266 [0m(+0)
+     | > avg_postnet_ssim_loss: 0.43444591760635376 [0m(+0)
+     | > avg_loss: 7.5827956199646 [0m(+0)
+     | > avg_align_error: 0.9952117213979363 [0m(+0)
+
+ > BEST MODEL : /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b/best_model_1.pth
+
+[4m[1m > EPOCH: 1/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-04-30 22:43:46) [0m
+ | > Synthesizing test sentences.
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.760225772857666  (5.760225772857666)
+     | > postnet_loss: 5.752176284790039  (5.752176284790039)
+     | > similarity_loss: 3.9329519271850586  (3.9329519271850586)
+     | > infonce_loss: 5.030023574829102  (5.030023574829102)
+     | > stopnet_loss: 0.6962722539901733  (0.6962722539901733)
+     | > decoder_coarse_loss: 5.727286338806152  (5.727286338806152)
+     | > decoder_ddc_loss: 0.0006031767698004842  (0.0006031767698004842)
+     | > ga_loss: 0.0021806745789945126  (0.0021806745789945126)
+     | > decoder_diff_spec_loss: 0.2303343117237091  (0.2303343117237091)
+     | > postnet_diff_spec_loss: 0.23137076199054718  (0.23137076199054718)
+     | > decoder_ssim_loss: 0.4342425465583801  (0.4342425465583801)
+     | > postnet_ssim_loss: 0.4343233108520508  (0.4343233108520508)
+     | > loss: 7.590559959411621  (7.590559959411621)
+     | > align_error: 0.9952113321051002  (0.9952113321051002)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[92m 160.92823600769043 [0m(-2.5606634616851807)
+     | > avg_decoder_loss:[92m 5.760225772857666 [0m(-0.017694950103759766)
+     | > avg_postnet_loss:[92m 5.752176284790039 [0m(-0.018301963806152344)
+     | > avg_similarity_loss:[91m 3.9329519271850586 [0m(+0.05791616439819336)
+     | > avg_infonce_loss:[91m 5.030023574829102 [0m(+0.021314144134521484)
+     | > avg_stopnet_loss:[91m 0.6962722539901733 [0m(+0.0013654828071594238)
+     | > avg_decoder_coarse_loss:[92m 5.727286338806152 [0m(-0.01835012435913086)
+     | > avg_decoder_ddc_loss:[91m 0.0006031767698004842 [0m(+6.808550097048283e-07)
+     | > avg_ga_loss:[91m 0.0021806745789945126 [0m(+1.3993121683597565e-07)
+     | > avg_decoder_diff_spec_loss:[91m 0.2303343117237091 [0m(+0.00028058886528015137)
+     | > avg_postnet_diff_spec_loss:[91m 0.23137076199054718 [0m(+0.0006127357482910156)
+     | > avg_decoder_ssim_loss:[92m 0.4342425465583801 [0m(-6.16908073425293e-05)
+     | > avg_postnet_ssim_loss:[92m 0.4343233108520508 [0m(-0.00012260675430297852)
+     | > avg_loss:[91m 7.590559959411621 [0m(+0.007764339447021484)
+     | > avg_align_error:[92m 0.9952113321051002 [0m(-3.8929283618927e-07)
+
+
+[4m[1m > EPOCH: 2/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-04-30 22:56:00) [0m
+ | > Synthesizing test sentences.
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.792385101318359  (5.792385101318359)
+     | > postnet_loss: 5.7837300300598145  (5.7837300300598145)
+     | > similarity_loss: 3.8783071041107178  (3.8783071041107178)
+     | > infonce_loss: 4.843995094299316  (4.843995094299316)
+     | > stopnet_loss: 0.697482168674469  (0.697482168674469)
+     | > decoder_coarse_loss: 5.758580684661865  (5.758580684661865)
+     | > decoder_ddc_loss: 0.000604791275691241  (0.000604791275691241)
+     | > ga_loss: 0.0021804613061249256  (0.0021804613061249256)
+     | > decoder_diff_spec_loss: 0.22963477671146393  (0.22963477671146393)
+     | > postnet_diff_spec_loss: 0.23114117980003357  (0.23114117980003357)
+     | > decoder_ssim_loss: 0.43428921699523926  (0.43428921699523926)
+     | > postnet_ssim_loss: 0.43426334857940674  (0.43426334857940674)
+     | > loss: 7.555117607116699  (7.555117607116699)
+     | > align_error: 0.9952107602730393  (0.9952107602730393)
+
+/usr/local/lib/python3.10/dist-packages/librosa/core/spectrum.py:256: UserWarning: n_fft=1024 is too large for input signal of length=768
+  warnings.warn(
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[91m 161.73944211006165 [0m(+0.8112061023712158)
+     | > avg_decoder_loss:[91m 5.792385101318359 [0m(+0.03215932846069336)
+     | > avg_postnet_loss:[91m 5.7837300300598145 [0m(+0.03155374526977539)
+     | > avg_similarity_loss:[92m 3.8783071041107178 [0m(-0.05464482307434082)
+     | > avg_infonce_loss:[92m 4.843995094299316 [0m(-0.18602848052978516)
+     | > avg_stopnet_loss:[91m 0.697482168674469 [0m(+0.0012099146842956543)
+     | > avg_decoder_coarse_loss:[91m 5.758580684661865 [0m(+0.03129434585571289)
+     | > avg_decoder_ddc_loss:[91m 0.000604791275691241 [0m(+1.6145058907568455e-06)
+     | > avg_ga_loss:[92m 0.0021804613061249256 [0m(-2.1327286958694458e-07)
+     | > avg_decoder_diff_spec_loss:[92m 0.22963477671146393 [0m(-0.0006995350122451782)
+     | > avg_postnet_diff_spec_loss:[92m 0.23114117980003357 [0m(-0.00022958219051361084)
+     | > avg_decoder_ssim_loss:[91m 0.43428921699523926 [0m(+4.667043685913086e-05)
+     | > avg_postnet_ssim_loss:[92m 0.43426334857940674 [0m(-5.996227264404297e-05)
+     | > avg_loss:[92m 7.555117607116699 [0m(-0.035442352294921875)
+     | > avg_align_error:[92m 0.9952107602730393 [0m(-5.718320608139038e-07)
+
+ > BEST MODEL : /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b/best_model_3.pth
+
+[4m[1m > EPOCH: 3/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-04-30 23:01:45) [0m
+ | > Synthesizing test sentences.
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.694338321685791  (5.694338321685791)
+     | > postnet_loss: 5.6854634284973145  (5.6854634284973145)
+     | > similarity_loss: 3.8767306804656982  (3.8767306804656982)
+     | > infonce_loss: 4.689342021942139  (4.689342021942139)
+     | > stopnet_loss: 0.698657751083374  (0.698657751083374)
+     | > decoder_coarse_loss: 5.660501480102539  (5.660501480102539)
+     | > decoder_ddc_loss: 0.0006063430919311941  (0.0006063430919311941)
+     | > ga_loss: 0.0021806261502206326  (0.0021806261502206326)
+     | > decoder_diff_spec_loss: 0.23074871301651  (0.23074871301651)
+     | > postnet_diff_spec_loss: 0.23294225335121155  (0.23294225335121155)
+     | > decoder_ssim_loss: 0.4341711401939392  (0.4341711401939392)
+     | > postnet_ssim_loss: 0.4341033697128296  (0.4341033697128296)
+     | > loss: 7.444298267364502  (7.444298267364502)
+     | > align_error: 0.9952106280252337  (0.9952106280252337)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[91m 162.79451441764832 [0m(+1.05507230758667)
+     | > avg_decoder_loss:[92m 5.694338321685791 [0m(-0.09804677963256836)
+     | > avg_postnet_loss:[92m 5.6854634284973145 [0m(-0.0982666015625)
+     | > avg_similarity_loss:[92m 3.8767306804656982 [0m(-0.0015764236450195312)
+     | > avg_infonce_loss:[92m 4.689342021942139 [0m(-0.15465307235717773)
+     | > avg_stopnet_loss:[91m 0.698657751083374 [0m(+0.0011755824089050293)
+     | > avg_decoder_coarse_loss:[92m 5.660501480102539 [0m(-0.09807920455932617)
+     | > avg_decoder_ddc_loss:[91m 0.0006063430919311941 [0m(+1.551816239953041e-06)
+     | > avg_ga_loss:[91m 0.0021806261502206326 [0m(+1.648440957069397e-07)
+     | > avg_decoder_diff_spec_loss:[91m 0.23074871301651 [0m(+0.0011139363050460815)
+     | > avg_postnet_diff_spec_loss:[91m 0.23294225335121155 [0m(+0.0018010735511779785)
+     | > avg_decoder_ssim_loss:[92m 0.4341711401939392 [0m(-0.00011807680130004883)
+     | > avg_postnet_ssim_loss:[92m 0.4341033697128296 [0m(-0.00015997886657714844)
+     | > avg_loss:[92m 7.444298267364502 [0m(-0.11081933975219727)
+     | > avg_align_error:[92m 0.9952106280252337 [0m(-1.3224780559539795e-07)
+
+ > BEST MODEL : /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b/best_model_4.pth
+
+[4m[1m > EPOCH: 4/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-04-30 23:07:32) [0m
+ | > Synthesizing test sentences.
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.789987087249756  (5.789987087249756)
+     | > postnet_loss: 5.780416011810303  (5.780416011810303)
+     | > similarity_loss: 3.8256239891052246  (3.8256239891052246)
+     | > infonce_loss: 4.93220853805542  (4.93220853805542)
+     | > stopnet_loss: 0.6995635628700256  (0.6995635628700256)
+     | > decoder_coarse_loss: 5.755135536193848  (5.755135536193848)
+     | > decoder_ddc_loss: 0.0006085901986807585  (0.0006085901986807585)
+     | > ga_loss: 0.002180608920753002  (0.002180608920753002)
+     | > decoder_diff_spec_loss: 0.22996753454208374  (0.22996753454208374)
+     | > postnet_diff_spec_loss: 0.23312462866306305  (0.23312462866306305)
+     | > decoder_ssim_loss: 0.43422555923461914  (0.43422555923461914)
+     | > postnet_ssim_loss: 0.43408113718032837  (0.43408113718032837)
+     | > loss: 7.564310550689697  (7.564310550689697)
+     | > align_error: 0.9952102769166231  (0.9952102769166231)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[92m 161.68505549430847 [0m(-1.1094589233398438)
+     | > avg_decoder_loss:[91m 5.789987087249756 [0m(+0.09564876556396484)
+     | > avg_postnet_loss:[91m 5.780416011810303 [0m(+0.09495258331298828)
+     | > avg_similarity_loss:[92m 3.8256239891052246 [0m(-0.05110669136047363)
+     | > avg_infonce_loss:[91m 4.93220853805542 [0m(+0.24286651611328125)
+     | > avg_stopnet_loss:[91m 0.6995635628700256 [0m(+0.0009058117866516113)
+     | > avg_decoder_coarse_loss:[91m 5.755135536193848 [0m(+0.0946340560913086)
+     | > avg_decoder_ddc_loss:[91m 0.0006085901986807585 [0m(+2.2471067495644093e-06)
+     | > avg_ga_loss:[92m 0.002180608920753002 [0m(-1.7229467630386353e-08)
+     | > avg_decoder_diff_spec_loss:[92m 0.22996753454208374 [0m(-0.0007811784744262695)
+     | > avg_postnet_diff_spec_loss:[91m 0.23312462866306305 [0m(+0.00018237531185150146)
+     | > avg_decoder_ssim_loss:[91m 0.43422555923461914 [0m(+5.441904067993164e-05)
+     | > avg_postnet_ssim_loss:[92m 0.43408113718032837 [0m(-2.2232532501220703e-05)
+     | > avg_loss:[91m 7.564310550689697 [0m(+0.12001228332519531)
+     | > avg_align_error:[92m 0.9952102769166231 [0m(-3.511086106300354e-07)
+
+
+[4m[1m > EPOCH: 5/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-04-30 23:13:17) [0m
+ | > Synthesizing test sentences.
+
+[1m   --> TIME: 2024-04-30 23:16:07 -- STEP: 0/1 -- GLOBAL_STEP: 5[0m
+     | > decoder_loss: 6.201626777648926  (6.201626777648926)
+     | > postnet_loss: 8.67627239227295  (8.67627239227295)
+     | > similarity_loss: 1.9749202728271484  (1.9749202728271484)
+     | > infonce_loss: 3.722669839859009  (3.722669839859009)
+     | > stopnet_loss: 0.7346107959747314  (0.7346107959747314)
+     | > decoder_coarse_loss: 6.210512161254883  (6.210512161254883)
+     | > decoder_ddc_loss: 0.0012911009835079312  (0.0012911009835079312)
+     | > ga_loss: 0.0021458028350025415  (0.0021458028350025415)
+     | > decoder_diff_spec_loss: 0.2440178096294403  (0.2440178096294403)
+     | > postnet_diff_spec_loss: 5.2539238929748535  (5.2539238929748535)
+     | > decoder_ssim_loss: 0.3458683490753174  (0.3458683490753174)
+     | > postnet_ssim_loss: 0.3377378582954407  (0.3377378582954407)
+     | > loss: 8.987549781799316  (8.987549781799316)
+     | > align_error: 0.9948006765916944  (0.9948006765916944)
+     | > grad_norm: tensor(4.5391, device='cuda:0')  (tensor(4.5391, device='cuda:0'))
+     | > current_lr: 1.25e-07 
+     | > step_time: 3.9513  (3.9512877464294434)
+     | > loader_time: 165.683  (165.68300580978394)
+
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.789971828460693  (5.789971828460693)
+     | > postnet_loss: 5.779890060424805  (5.779890060424805)
+     | > similarity_loss: 3.822150230407715  (3.822150230407715)
+     | > infonce_loss: 4.8879570960998535  (4.8879570960998535)
+     | > stopnet_loss: 0.7004375457763672  (0.7004375457763672)
+     | > decoder_coarse_loss: 5.75465202331543  (5.75465202331543)
+     | > decoder_ddc_loss: 0.0006113559356890619  (0.0006113559356890619)
+     | > ga_loss: 0.0021807090379297733  (0.0021807090379297733)
+     | > decoder_diff_spec_loss: 0.22940322756767273  (0.22940322756767273)
+     | > postnet_diff_spec_loss: 0.2339175045490265  (0.2339175045490265)
+     | > decoder_ssim_loss: 0.4342024326324463  (0.4342024326324463)
+     | > postnet_ssim_loss: 0.43402916193008423  (0.43402916193008423)
+     | > loss: 7.553036689758301  (7.553036689758301)
+     | > align_error: 0.9952102731913328  (0.9952102731913328)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[92m 160.60015845298767 [0m(-1.0848970413208008)
+     | > avg_decoder_loss:[92m 5.789971828460693 [0m(-1.52587890625e-05)
+     | > avg_postnet_loss:[92m 5.779890060424805 [0m(-0.0005259513854980469)
+     | > avg_similarity_loss:[92m 3.822150230407715 [0m(-0.0034737586975097656)
+     | > avg_infonce_loss:[92m 4.8879570960998535 [0m(-0.044251441955566406)
+     | > avg_stopnet_loss:[91m 0.7004375457763672 [0m(+0.0008739829063415527)
+     | > avg_decoder_coarse_loss:[92m 5.75465202331543 [0m(-0.00048351287841796875)
+     | > avg_decoder_ddc_loss:[91m 0.0006113559356890619 [0m(+2.765737008303404e-06)
+     | > avg_ga_loss:[91m 0.0021807090379297733 [0m(+1.0011717677116394e-07)
+     | > avg_decoder_diff_spec_loss:[92m 0.22940322756767273 [0m(-0.0005643069744110107)
+     | > avg_postnet_diff_spec_loss:[91m 0.2339175045490265 [0m(+0.0007928758859634399)
+     | > avg_decoder_ssim_loss:[92m 0.4342024326324463 [0m(-2.3126602172851562e-05)
+     | > avg_postnet_ssim_loss:[92m 0.43402916193008423 [0m(-5.1975250244140625e-05)
+     | > avg_loss:[92m 7.553036689758301 [0m(-0.011273860931396484)
+     | > avg_align_error:[92m 0.9952102731913328 [0m(-3.725290298461914e-09)
+
+
+[4m[1m > EPOCH: 6/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-04-30 23:25:28) [0m
+ | > Synthesizing test sentences.
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.799314022064209  (5.799314022064209)
+     | > postnet_loss: 5.788889408111572  (5.788889408111572)
+     | > similarity_loss: 3.8645999431610107  (3.8645999431610107)
+     | > infonce_loss: 4.930657386779785  (4.930657386779785)
+     | > stopnet_loss: 0.7013079524040222  (0.7013079524040222)
+     | > decoder_coarse_loss: 5.763523101806641  (5.763523101806641)
+     | > decoder_ddc_loss: 0.0006147211533971131  (0.0006147211533971131)
+     | > ga_loss: 0.0021805916912853718  (0.0021805916912853718)
+     | > decoder_diff_spec_loss: 0.22970665991306305  (0.22970665991306305)
+     | > postnet_diff_spec_loss: 0.23606467247009277  (0.23606467247009277)
+     | > decoder_ssim_loss: 0.4342224597930908  (0.4342224597930908)
+     | > postnet_ssim_loss: 0.4340451955795288  (0.4340451955795288)
+     | > loss: 7.582620143890381  (7.582620143890381)
+     | > align_error: 0.9952101018279791  (0.9952101018279791)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[91m 161.67331385612488 [0m(+1.073155403137207)
+     | > avg_decoder_loss:[91m 5.799314022064209 [0m(+0.009342193603515625)
+     | > avg_postnet_loss:[91m 5.788889408111572 [0m(+0.008999347686767578)
+     | > avg_similarity_loss:[91m 3.8645999431610107 [0m(+0.0424497127532959)
+     | > avg_infonce_loss:[91m 4.930657386779785 [0m(+0.04270029067993164)
+     | > avg_stopnet_loss:[91m 0.7013079524040222 [0m(+0.0008704066276550293)
+     | > avg_decoder_coarse_loss:[91m 5.763523101806641 [0m(+0.008871078491210938)
+     | > avg_decoder_ddc_loss:[91m 0.0006147211533971131 [0m(+3.3652177080512047e-06)
+     | > avg_ga_loss:[92m 0.0021805916912853718 [0m(-1.1734664440155029e-07)
+     | > avg_decoder_diff_spec_loss:[91m 0.22970665991306305 [0m(+0.0003034323453903198)
+     | > avg_postnet_diff_spec_loss:[91m 0.23606467247009277 [0m(+0.002147167921066284)
+     | > avg_decoder_ssim_loss:[91m 0.4342224597930908 [0m(+2.002716064453125e-05)
+     | > avg_postnet_ssim_loss:[91m 0.4340451955795288 [0m(+1.6033649444580078e-05)
+     | > avg_loss:[91m 7.582620143890381 [0m(+0.029583454132080078)
+     | > avg_align_error:[92m 0.9952101018279791 [0m(-1.7136335372924805e-07)
+
+
+[4m[1m > EPOCH: 7/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-04-30 23:31:12) [0m
+ | > Synthesizing test sentences.
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.790889739990234  (5.790889739990234)
+     | > postnet_loss: 5.781113147735596  (5.781113147735596)
+     | > similarity_loss: 3.8615081310272217  (3.8615081310272217)
+     | > infonce_loss: 4.9376630783081055  (4.9376630783081055)
+     | > stopnet_loss: 0.7021152377128601  (0.7021152377128601)
+     | > decoder_coarse_loss: 5.754993915557861  (5.754993915557861)
+     | > decoder_ddc_loss: 0.0006181466742418706  (0.0006181466742418706)
+     | > ga_loss: 0.0021807337179780006  (0.0021807337179780006)
+     | > decoder_diff_spec_loss: 0.229401096701622  (0.229401096701622)
+     | > postnet_diff_spec_loss: 0.2383023053407669  (0.2383023053407669)
+     | > decoder_ssim_loss: 0.43421846628189087  (0.43421846628189087)
+     | > postnet_ssim_loss: 0.4340594410896301  (0.4340594410896301)
+     | > loss: 7.578710556030273  (7.578710556030273)
+     | > align_error: 0.9952100813388824  (0.9952100813388824)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[92m 159.6795539855957 [0m(-1.9937598705291748)
+     | > avg_decoder_loss:[92m 5.790889739990234 [0m(-0.00842428207397461)
+     | > avg_postnet_loss:[92m 5.781113147735596 [0m(-0.0077762603759765625)
+     | > avg_similarity_loss:[92m 3.8615081310272217 [0m(-0.0030918121337890625)
+     | > avg_infonce_loss:[91m 4.9376630783081055 [0m(+0.0070056915283203125)
+     | > avg_stopnet_loss:[91m 0.7021152377128601 [0m(+0.0008072853088378906)
+     | > avg_decoder_coarse_loss:[92m 5.754993915557861 [0m(-0.008529186248779297)
+     | > avg_decoder_ddc_loss:[91m 0.0006181466742418706 [0m(+3.425520844757557e-06)
+     | > avg_ga_loss:[91m 0.0021807337179780006 [0m(+1.4202669262886047e-07)
+     | > avg_decoder_diff_spec_loss:[92m 0.229401096701622 [0m(-0.00030556321144104004)
+     | > avg_postnet_diff_spec_loss:[91m 0.2383023053407669 [0m(+0.0022376328706741333)
+     | > avg_decoder_ssim_loss:[92m 0.43421846628189087 [0m(-3.993511199951172e-06)
+     | > avg_postnet_ssim_loss:[91m 0.4340594410896301 [0m(+1.424551010131836e-05)
+     | > avg_loss:[92m 7.578710556030273 [0m(-0.003909587860107422)
+     | > avg_align_error:[92m 0.9952100813388824 [0m(-2.0489096641540527e-08)
+
+
+[4m[1m > EPOCH: 8/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-04-30 23:43:23) [0m
+ | > Synthesizing test sentences.
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.800633430480957  (5.800633430480957)
+     | > postnet_loss: 5.791636943817139  (5.791636943817139)
+     | > similarity_loss: 3.8971030712127686  (3.8971030712127686)
+     | > infonce_loss: 4.8459248542785645  (4.8459248542785645)
+     | > stopnet_loss: 0.7028491497039795  (0.7028491497039795)
+     | > decoder_coarse_loss: 5.764365196228027  (5.764365196228027)
+     | > decoder_ddc_loss: 0.0006222584052011371  (0.0006222584052011371)
+     | > ga_loss: 0.002180712763220072  (0.002180712763220072)
+     | > decoder_diff_spec_loss: 0.22990620136260986  (0.22990620136260986)
+     | > postnet_diff_spec_loss: 0.24219071865081787  (0.24219071865081787)
+     | > decoder_ssim_loss: 0.43422257900238037  (0.43422257900238037)
+     | > postnet_ssim_loss: 0.4341055154800415  (0.4341055154800415)
+     | > loss: 7.573930263519287  (7.573930263519287)
+     | > align_error: 0.9952097926288843  (0.9952097926288843)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[91m 161.6567986011505 [0m(+1.9772446155548096)
+     | > avg_decoder_loss:[91m 5.800633430480957 [0m(+0.009743690490722656)
+     | > avg_postnet_loss:[91m 5.791636943817139 [0m(+0.010523796081542969)
+     | > avg_similarity_loss:[91m 3.8971030712127686 [0m(+0.035594940185546875)
+     | > avg_infonce_loss:[92m 4.8459248542785645 [0m(-0.09173822402954102)
+     | > avg_stopnet_loss:[91m 0.7028491497039795 [0m(+0.0007339119911193848)
+     | > avg_decoder_coarse_loss:[91m 5.764365196228027 [0m(+0.009371280670166016)
+     | > avg_decoder_ddc_loss:[91m 0.0006222584052011371 [0m(+4.111730959266424e-06)
+     | > avg_ga_loss:[92m 0.002180712763220072 [0m(-2.0954757928848267e-08)
+     | > avg_decoder_diff_spec_loss:[91m 0.22990620136260986 [0m(+0.000505104660987854)
+     | > avg_postnet_diff_spec_loss:[91m 0.24219071865081787 [0m(+0.0038884133100509644)
+     | > avg_decoder_ssim_loss:[91m 0.43422257900238037 [0m(+4.112720489501953e-06)
+     | > avg_postnet_ssim_loss:[91m 0.4341055154800415 [0m(+4.607439041137695e-05)
+     | > avg_loss:[92m 7.573930263519287 [0m(-0.004780292510986328)
+     | > avg_align_error:[92m 0.9952097926288843 [0m(-2.8870999813079834e-07)
+
+
+[4m[1m > EPOCH: 9/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-04-30 23:49:21) [0m
+ | > Synthesizing test sentences.
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.782039642333984  (5.782039642333984)
+     | > postnet_loss: 5.775017261505127  (5.775017261505127)
+     | > similarity_loss: 4.0042266845703125  (4.0042266845703125)
+     | > infonce_loss: 5.253908157348633  (5.253908157348633)
+     | > stopnet_loss: 0.7034987211227417  (0.7034987211227417)
+     | > decoder_coarse_loss: 5.745691776275635  (5.745691776275635)
+     | > decoder_ddc_loss: 0.0006266084965318441  (0.0006266084965318441)
+     | > ga_loss: 0.002180769806727767  (0.002180769806727767)
+     | > decoder_diff_spec_loss: 0.23062120378017426  (0.23062120378017426)
+     | > postnet_diff_spec_loss: 0.24737611413002014  (0.24737611413002014)
+     | > decoder_ssim_loss: 0.43423306941986084  (0.43423306941986084)
+     | > postnet_ssim_loss: 0.4342033267021179  (0.4342033267021179)
+     | > loss: 7.6913886070251465  (7.6913886070251465)
+     | > align_error: 0.9952097176574171  (0.9952097176574171)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[91m 166.08753418922424 [0m(+4.4307355880737305)
+     | > avg_decoder_loss:[92m 5.782039642333984 [0m(-0.018593788146972656)
+     | > avg_postnet_loss:[92m 5.775017261505127 [0m(-0.01661968231201172)
+     | > avg_similarity_loss:[91m 4.0042266845703125 [0m(+0.10712361335754395)
+     | > avg_infonce_loss:[91m 5.253908157348633 [0m(+0.40798330307006836)
+     | > avg_stopnet_loss:[91m 0.7034987211227417 [0m(+0.000649571418762207)
+     | > avg_decoder_coarse_loss:[92m 5.745691776275635 [0m(-0.018673419952392578)
+     | > avg_decoder_ddc_loss:[91m 0.0006266084965318441 [0m(+4.350091330707073e-06)
+     | > avg_ga_loss:[91m 0.002180769806727767 [0m(+5.704350769519806e-08)
+     | > avg_decoder_diff_spec_loss:[91m 0.23062120378017426 [0m(+0.0007150024175643921)
+     | > avg_postnet_diff_spec_loss:[91m 0.24737611413002014 [0m(+0.0051853954792022705)
+     | > avg_decoder_ssim_loss:[91m 0.43423306941986084 [0m(+1.049041748046875e-05)
+     | > avg_postnet_ssim_loss:[91m 0.4342033267021179 [0m(+9.781122207641602e-05)
+     | > avg_loss:[91m 7.6913886070251465 [0m(+0.11745834350585938)
+     | > avg_align_error:[92m 0.9952097176574171 [0m(-7.497146725654602e-08)
+
+
+[4m[1m > EPOCH: 10/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-04-30 23:55:18) [0m
+ | > Synthesizing test sentences.
+
+[1m   --> TIME: 2024-04-30 23:58:08 -- STEP: 0/1 -- GLOBAL_STEP: 10[0m
+     | > decoder_loss: 6.245077133178711  (6.245077133178711)
+     | > postnet_loss: 8.70463752746582  (8.70463752746582)
+     | > similarity_loss: 2.139089584350586  (2.139089584350586)
+     | > infonce_loss: 4.012528419494629  (4.012528419494629)
+     | > stopnet_loss: 0.7366926670074463  (0.7366926670074463)
+     | > decoder_coarse_loss: 6.25258731842041  (6.25258731842041)
+     | > decoder_ddc_loss: 0.0012826925376430154  (0.0012826925376430154)
+     | > ga_loss: 0.002151218941435218  (0.002151218941435218)
+     | > decoder_diff_spec_loss: 0.24539948999881744  (0.24539948999881744)
+     | > postnet_diff_spec_loss: 5.228170871734619  (5.228170871734619)
+     | > decoder_ssim_loss: 0.3463313579559326  (0.3463313579559326)
+     | > postnet_ssim_loss: 0.3378133773803711  (0.3378133773803711)
+     | > loss: 9.125679016113281  (9.125679016113281)
+     | > align_error: 0.9947986709885299  (0.9947986709885299)
+     | > grad_norm: tensor(4.5320, device='cuda:0')  (tensor(4.5320, device='cuda:0'))
+     | > current_lr: 2.5e-07 
+     | > step_time: 3.9576  (3.9576194286346436)
+     | > loader_time: 166.2649  (166.26490259170532)
+
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.78045654296875  (5.78045654296875)
+     | > postnet_loss: 5.775825023651123  (5.775825023651123)
+     | > similarity_loss: 4.092771530151367  (4.092771530151367)
+     | > infonce_loss: 5.137699604034424  (5.137699604034424)
+     | > stopnet_loss: 0.7041930556297302  (0.7041930556297302)
+     | > decoder_coarse_loss: 5.744028091430664  (5.744028091430664)
+     | > decoder_ddc_loss: 0.0006313247140496969  (0.0006313247140496969)
+     | > ga_loss: 0.0021808291785418987  (0.0021808291785418987)
+     | > decoder_diff_spec_loss: 0.2313457727432251  (0.2313457727432251)
+     | > postnet_diff_spec_loss: 0.2538377642631531  (0.2538377642631531)
+     | > decoder_ssim_loss: 0.4342583417892456  (0.4342583417892456)
+     | > postnet_ssim_loss: 0.434237003326416  (0.434237003326416)
+     | > loss: 7.686369895935059  (7.686369895935059)
+     | > align_error: 0.9952095234766603  (0.9952095234766603)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[92m 164.37006282806396 [0m(-1.7174713611602783)
+     | > avg_decoder_loss:[92m 5.78045654296875 [0m(-0.001583099365234375)
+     | > avg_postnet_loss:[91m 5.775825023651123 [0m(+0.0008077621459960938)
+     | > avg_similarity_loss:[91m 4.092771530151367 [0m(+0.08854484558105469)
+     | > avg_infonce_loss:[92m 5.137699604034424 [0m(-0.11620855331420898)
+     | > avg_stopnet_loss:[91m 0.7041930556297302 [0m(+0.0006943345069885254)
+     | > avg_decoder_coarse_loss:[92m 5.744028091430664 [0m(-0.0016636848449707031)
+     | > avg_decoder_ddc_loss:[91m 0.0006313247140496969 [0m(+4.716217517852783e-06)
+     | > avg_ga_loss:[91m 0.0021808291785418987 [0m(+5.9371814131736755e-08)
+     | > avg_decoder_diff_spec_loss:[91m 0.2313457727432251 [0m(+0.0007245689630508423)
+     | > avg_postnet_diff_spec_loss:[91m 0.2538377642631531 [0m(+0.006461650133132935)
+     | > avg_decoder_ssim_loss:[91m 0.4342583417892456 [0m(+2.5272369384765625e-05)
+     | > avg_postnet_ssim_loss:[91m 0.434237003326416 [0m(+3.36766242980957e-05)
+     | > avg_loss:[92m 7.686369895935059 [0m(-0.005018711090087891)
+     | > avg_align_error:[92m 0.9952095234766603 [0m(-1.9418075680732727e-07)
+
+
+[4m[1m > EPOCH: 11/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-05-01 00:01:06) [0m
+ | > Synthesizing test sentences.
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.791347026824951  (5.791347026824951)
+     | > postnet_loss: 5.789795875549316  (5.789795875549316)
+     | > similarity_loss: 4.044057369232178  (4.044057369232178)
+     | > infonce_loss: 5.1669135093688965  (5.1669135093688965)
+     | > stopnet_loss: 0.7048673033714294  (0.7048673033714294)
+     | > decoder_coarse_loss: 5.754794597625732  (5.754794597625732)
+     | > decoder_ddc_loss: 0.0006361418054439127  (0.0006361418054439127)
+     | > ga_loss: 0.0021810620091855526  (0.0021810620091855526)
+     | > decoder_diff_spec_loss: 0.229864239692688  (0.229864239692688)
+     | > postnet_diff_spec_loss: 0.2595997154712677  (0.2595997154712677)
+     | > decoder_ssim_loss: 0.434218168258667  (0.434218168258667)
+     | > postnet_ssim_loss: 0.434159517288208  (0.434159517288208)
+     | > loss: 7.692119121551514  (7.692119121551514)
+     | > align_error: 0.995209451764822  (0.995209451764822)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[92m 160.84951639175415 [0m(-3.5205464363098145)
+     | > avg_decoder_loss:[91m 5.791347026824951 [0m(+0.010890483856201172)
+     | > avg_postnet_loss:[91m 5.789795875549316 [0m(+0.01397085189819336)
+     | > avg_similarity_loss:[92m 4.044057369232178 [0m(-0.04871416091918945)
+     | > avg_infonce_loss:[91m 5.1669135093688965 [0m(+0.029213905334472656)
+     | > avg_stopnet_loss:[91m 0.7048673033714294 [0m(+0.0006742477416992188)
+     | > avg_decoder_coarse_loss:[91m 5.754794597625732 [0m(+0.01076650619506836)
+     | > avg_decoder_ddc_loss:[91m 0.0006361418054439127 [0m(+4.817091394215822e-06)
+     | > avg_ga_loss:[91m 0.0021810620091855526 [0m(+2.3283064365386963e-07)
+     | > avg_decoder_diff_spec_loss:[92m 0.229864239692688 [0m(-0.0014815330505371094)
+     | > avg_postnet_diff_spec_loss:[91m 0.2595997154712677 [0m(+0.005761951208114624)
+     | > avg_decoder_ssim_loss:[92m 0.434218168258667 [0m(-4.017353057861328e-05)
+     | > avg_postnet_ssim_loss:[92m 0.434159517288208 [0m(-7.748603820800781e-05)
+     | > avg_loss:[91m 7.692119121551514 [0m(+0.005749225616455078)
+     | > avg_align_error:[92m 0.995209451764822 [0m(-7.171183824539185e-08)
+
+
+[4m[1m > EPOCH: 12/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-05-01 00:06:50) [0m
+ | > Synthesizing test sentences.
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.79999303817749  (5.79999303817749)
+     | > postnet_loss: 5.802778244018555  (5.802778244018555)
+     | > similarity_loss: 3.7806296348571777  (3.7806296348571777)
+     | > infonce_loss: 4.79000997543335  (4.79000997543335)
+     | > stopnet_loss: 0.7055225372314453  (0.7055225372314453)
+     | > decoder_coarse_loss: 5.763474941253662  (5.763474941253662)
+     | > decoder_ddc_loss: 0.0006414944073185325  (0.0006414944073185325)
+     | > ga_loss: 0.0021810061298310757  (0.0021810061298310757)
+     | > decoder_diff_spec_loss: 0.22998814284801483  (0.22998814284801483)
+     | > postnet_diff_spec_loss: 0.26869437098503113  (0.26869437098503113)
+     | > decoder_ssim_loss: 0.43430137634277344  (0.43430137634277344)
+     | > postnet_ssim_loss: 0.43431752920150757  (0.43431752920150757)
+     | > loss: 7.542634963989258  (7.542634963989258)
+     | > align_error: 0.9952089213766158  (0.9952089213766158)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[91m 163.08542490005493 [0m(+2.2359085083007812)
+     | > avg_decoder_loss:[91m 5.79999303817749 [0m(+0.008646011352539062)
+     | > avg_postnet_loss:[91m 5.802778244018555 [0m(+0.012982368469238281)
+     | > avg_similarity_loss:[92m 3.7806296348571777 [0m(-0.263427734375)
+     | > avg_infonce_loss:[92m 4.79000997543335 [0m(-0.3769035339355469)
+     | > avg_stopnet_loss:[91m 0.7055225372314453 [0m(+0.0006552338600158691)
+     | > avg_decoder_coarse_loss:[91m 5.763474941253662 [0m(+0.008680343627929688)
+     | > avg_decoder_ddc_loss:[91m 0.0006414944073185325 [0m(+5.352601874619722e-06)
+     | > avg_ga_loss:[92m 0.0021810061298310757 [0m(-5.587935447692871e-08)
+     | > avg_decoder_diff_spec_loss:[91m 0.22998814284801483 [0m(+0.00012390315532684326)
+     | > avg_postnet_diff_spec_loss:[91m 0.26869437098503113 [0m(+0.009094655513763428)
+     | > avg_decoder_ssim_loss:[91m 0.43430137634277344 [0m(+8.320808410644531e-05)
+     | > avg_postnet_ssim_loss:[91m 0.43431752920150757 [0m(+0.00015801191329956055)
+     | > avg_loss:[92m 7.542634963989258 [0m(-0.14948415756225586)
+     | > avg_align_error:[92m 0.9952089213766158 [0m(-5.30388206243515e-07)
+
+
+[4m[1m > EPOCH: 13/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-05-01 00:12:36) [0m
+ | > Synthesizing test sentences.
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.781152725219727  (5.781152725219727)
+     | > postnet_loss: 5.789196491241455  (5.789196491241455)
+     | > similarity_loss: 3.8406858444213867  (3.8406858444213867)
+     | > infonce_loss: 5.161039352416992  (5.161039352416992)
+     | > stopnet_loss: 0.7061560750007629  (0.7061560750007629)
+     | > decoder_coarse_loss: 5.744991302490234  (5.744991302490234)
+     | > decoder_ddc_loss: 0.0006467337952926755  (0.0006467337952926755)
+     | > ga_loss: 0.00218102615326643  (0.00218102615326643)
+     | > decoder_diff_spec_loss: 0.23074544966220856  (0.23074544966220856)
+     | > postnet_diff_spec_loss: 0.2803139090538025  (0.2803139090538025)
+     | > decoder_ssim_loss: 0.43426400423049927  (0.43426400423049927)
+     | > postnet_ssim_loss: 0.43431150913238525  (0.43431150913238525)
+     | > loss: 7.641397953033447  (7.641397953033447)
+     | > align_error: 0.9952086033299565  (0.9952086033299565)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[92m 161.65473413467407 [0m(-1.4306907653808594)
+     | > avg_decoder_loss:[92m 5.781152725219727 [0m(-0.018840312957763672)
+     | > avg_postnet_loss:[92m 5.789196491241455 [0m(-0.01358175277709961)
+     | > avg_similarity_loss:[91m 3.8406858444213867 [0m(+0.060056209564208984)
+     | > avg_infonce_loss:[91m 5.161039352416992 [0m(+0.3710293769836426)
+     | > avg_stopnet_loss:[91m 0.7061560750007629 [0m(+0.000633537769317627)
+     | > avg_decoder_coarse_loss:[92m 5.744991302490234 [0m(-0.018483638763427734)
+     | > avg_decoder_ddc_loss:[91m 0.0006467337952926755 [0m(+5.239387974143028e-06)
+     | > avg_ga_loss:[91m 0.00218102615326643 [0m(+2.0023435354232788e-08)
+     | > avg_decoder_diff_spec_loss:[91m 0.23074544966220856 [0m(+0.0007573068141937256)
+     | > avg_postnet_diff_spec_loss:[91m 0.2803139090538025 [0m(+0.011619538068771362)
+     | > avg_decoder_ssim_loss:[92m 0.43426400423049927 [0m(-3.737211227416992e-05)
+     | > avg_postnet_ssim_loss:[92m 0.43431150913238525 [0m(-6.020069122314453e-06)
+     | > avg_loss:[91m 7.641397953033447 [0m(+0.09876298904418945)
+     | > avg_align_error:[92m 0.9952086033299565 [0m(-3.180466592311859e-07)
+
+
+[4m[1m > EPOCH: 14/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-05-01 00:18:20) [0m
+ | > Synthesizing test sentences.
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.781319618225098  (5.781319618225098)
+     | > postnet_loss: 5.795823574066162  (5.795823574066162)
+     | > similarity_loss: 3.9609200954437256  (3.9609200954437256)
+     | > infonce_loss: 5.3072967529296875  (5.3072967529296875)
+     | > stopnet_loss: 0.7066583633422852  (0.7066583633422852)
+     | > decoder_coarse_loss: 5.745321750640869  (5.745321750640869)
+     | > decoder_ddc_loss: 0.0006525054341182113  (0.0006525054341182113)
+     | > ga_loss: 0.0021811050828546286  (0.0021811050828546286)
+     | > decoder_diff_spec_loss: 0.2307627648115158  (0.2307627648115158)
+     | > postnet_diff_spec_loss: 0.29321685433387756  (0.29321685433387756)
+     | > decoder_ssim_loss: 0.43430280685424805  (0.43430280685424805)
+     | > postnet_ssim_loss: 0.4343998432159424  (0.4343998432159424)
+     | > loss: 7.713568210601807  (7.713568210601807)
+     | > align_error: 0.995208122767508  (0.995208122767508)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[92m 161.38776564598083 [0m(-0.2669684886932373)
+     | > avg_decoder_loss:[91m 5.781319618225098 [0m(+0.00016689300537109375)
+     | > avg_postnet_loss:[91m 5.795823574066162 [0m(+0.006627082824707031)
+     | > avg_similarity_loss:[91m 3.9609200954437256 [0m(+0.12023425102233887)
+     | > avg_infonce_loss:[91m 5.3072967529296875 [0m(+0.1462574005126953)
+     | > avg_stopnet_loss:[91m 0.7066583633422852 [0m(+0.0005022883415222168)
+     | > avg_decoder_coarse_loss:[91m 5.745321750640869 [0m(+0.0003304481506347656)
+     | > avg_decoder_ddc_loss:[91m 0.0006525054341182113 [0m(+5.771638825535774e-06)
+     | > avg_ga_loss:[91m 0.0021811050828546286 [0m(+7.89295881986618e-08)
+     | > avg_decoder_diff_spec_loss:[91m 0.2307627648115158 [0m(+1.7315149307250977e-05)
+     | > avg_postnet_diff_spec_loss:[91m 0.29321685433387756 [0m(+0.012902945280075073)
+     | > avg_decoder_ssim_loss:[91m 0.43430280685424805 [0m(+3.88026237487793e-05)
+     | > avg_postnet_ssim_loss:[91m 0.4343998432159424 [0m(+8.83340835571289e-05)
+     | > avg_loss:[91m 7.713568210601807 [0m(+0.07217025756835938)
+     | > avg_align_error:[92m 0.995208122767508 [0m(-4.805624485015869e-07)
+
+
+[4m[1m > EPOCH: 15/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-05-01 00:30:29) [0m
+ | > Synthesizing test sentences.
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+
+[1m   --> TIME: 2024-05-01 00:33:17 -- STEP: 0/1 -- GLOBAL_STEP: 15[0m
+     | > decoder_loss: 6.252890586853027  (6.252890586853027)
+     | > postnet_loss: 8.739487648010254  (8.739487648010254)
+     | > similarity_loss: 2.159783124923706  (2.159783124923706)
+     | > infonce_loss: 3.9509403705596924  (3.9509403705596924)
+     | > stopnet_loss: 0.7338880300521851  (0.7338880300521851)
+     | > decoder_coarse_loss: 6.2593865394592285  (6.2593865394592285)
+     | > decoder_ddc_loss: 0.0012907370692119002  (0.0012907370692119002)
+     | > ga_loss: 0.0021416745148599148  (0.0021416745148599148)
+     | > decoder_diff_spec_loss: 0.24431344866752625  (0.24431344866752625)
+     | > postnet_diff_spec_loss: 5.252898693084717  (5.252898693084717)
+     | > decoder_ssim_loss: 0.34611058235168457  (0.34611058235168457)
+     | > postnet_ssim_loss: 0.3372722268104553  (0.3372722268104553)
+     | > loss: 9.130690574645996  (9.130690574645996)
+     | > align_error: 0.9948107032105327  (0.9948107032105327)
+     | > grad_norm: tensor(4.5067, device='cuda:0')  (tensor(4.5067, device='cuda:0'))
+     | > current_lr: 3.75e-07 
+     | > step_time: 3.9395  (3.9394781589508057)
+     | > loader_time: 164.4144  (164.41441869735718)
+
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.704835414886475  (5.704835414886475)
+     | > postnet_loss: 5.728485584259033  (5.728485584259033)
+     | > similarity_loss: 4.028341770172119  (4.028341770172119)
+     | > infonce_loss: 5.207703590393066  (5.207703590393066)
+     | > stopnet_loss: 0.7073277831077576  (0.7073277831077576)
+     | > decoder_coarse_loss: 5.669527053833008  (5.669527053833008)
+     | > decoder_ddc_loss: 0.0006581882480531931  (0.0006581882480531931)
+     | > ga_loss: 0.00218127085827291  (0.00218127085827291)
+     | > decoder_diff_spec_loss: 0.2312423288822174  (0.2312423288822174)
+     | > postnet_diff_spec_loss: 0.30872657895088196  (0.30872657895088196)
+     | > decoder_ssim_loss: 0.43422508239746094  (0.43422508239746094)
+     | > postnet_ssim_loss: 0.43426698446273804  (0.43426698446273804)
+     | > loss: 7.655237197875977  (7.655237197875977)
+     | > align_error: 0.9952077781781554  (0.9952077781781554)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[92m 160.9712781906128 [0m(-0.416487455368042)
+     | > avg_decoder_loss:[92m 5.704835414886475 [0m(-0.07648420333862305)
+     | > avg_postnet_loss:[92m 5.728485584259033 [0m(-0.0673379898071289)
+     | > avg_similarity_loss:[91m 4.028341770172119 [0m(+0.06742167472839355)
+     | > avg_infonce_loss:[92m 5.207703590393066 [0m(-0.0995931625366211)
+     | > avg_stopnet_loss:[91m 0.7073277831077576 [0m(+0.0006694197654724121)
+     | > avg_decoder_coarse_loss:[92m 5.669527053833008 [0m(-0.07579469680786133)
+     | > avg_decoder_ddc_loss:[91m 0.0006581882480531931 [0m(+5.682813934981823e-06)
+     | > avg_ga_loss:[91m 0.00218127085827291 [0m(+1.6577541828155518e-07)
+     | > avg_decoder_diff_spec_loss:[91m 0.2312423288822174 [0m(+0.0004795640707015991)
+     | > avg_postnet_diff_spec_loss:[91m 0.30872657895088196 [0m(+0.015509724617004395)
+     | > avg_decoder_ssim_loss:[92m 0.43422508239746094 [0m(-7.772445678710938e-05)
+     | > avg_postnet_ssim_loss:[92m 0.43426698446273804 [0m(-0.0001328587532043457)
+     | > avg_loss:[92m 7.655237197875977 [0m(-0.05833101272583008)
+     | > avg_align_error:[92m 0.9952077781781554 [0m(-3.4458935260772705e-07)
+
+
+[4m[1m > EPOCH: 16/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-05-01 00:36:12) [0m
+ | > Synthesizing test sentences.
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.800870418548584  (5.800870418548584)
+     | > postnet_loss: 5.830956935882568  (5.830956935882568)
+     | > similarity_loss: 3.9043710231781006  (3.9043710231781006)
+     | > infonce_loss: 5.1993327140808105  (5.1993327140808105)
+     | > stopnet_loss: 0.7077232599258423  (0.7077232599258423)
+     | > decoder_coarse_loss: 5.765413284301758  (5.765413284301758)
+     | > decoder_ddc_loss: 0.0006641501095145941  (0.0006641501095145941)
+     | > ga_loss: 0.002181279007345438  (0.002181279007345438)
+     | > decoder_diff_spec_loss: 0.22969339787960052  (0.22969339787960052)
+     | > postnet_diff_spec_loss: 0.3240913450717926  (0.3240913450717926)
+     | > decoder_ssim_loss: 0.43434786796569824  (0.43434786796569824)
+     | > postnet_ssim_loss: 0.43439388275146484  (0.43439388275146484)
+     | > loss: 7.699662208557129  (7.699662208557129)
+     | > align_error: 0.9952068859711289  (0.9952068859711289)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[91m 163.3528356552124 [0m(+2.3815574645996094)
+     | > avg_decoder_loss:[91m 5.800870418548584 [0m(+0.09603500366210938)
+     | > avg_postnet_loss:[91m 5.830956935882568 [0m(+0.10247135162353516)
+     | > avg_similarity_loss:[92m 3.9043710231781006 [0m(-0.12397074699401855)
+     | > avg_infonce_loss:[92m 5.1993327140808105 [0m(-0.00837087631225586)
+     | > avg_stopnet_loss:[91m 0.7077232599258423 [0m(+0.0003954768180847168)
+     | > avg_decoder_coarse_loss:[91m 5.765413284301758 [0m(+0.09588623046875)
+     | > avg_decoder_ddc_loss:[91m 0.0006641501095145941 [0m(+5.961861461400986e-06)
+     | > avg_ga_loss:[91m 0.002181279007345438 [0m(+8.149072527885437e-09)
+     | > avg_decoder_diff_spec_loss:[92m 0.22969339787960052 [0m(-0.0015489310026168823)
+     | > avg_postnet_diff_spec_loss:[91m 0.3240913450717926 [0m(+0.015364766120910645)
+     | > avg_decoder_ssim_loss:[91m 0.43434786796569824 [0m(+0.0001227855682373047)
+     | > avg_postnet_ssim_loss:[91m 0.43439388275146484 [0m(+0.00012689828872680664)
+     | > avg_loss:[91m 7.699662208557129 [0m(+0.044425010681152344)
+     | > avg_align_error:[92m 0.9952068859711289 [0m(-8.922070264816284e-07)
+
+
+[4m[1m > EPOCH: 17/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-05-01 00:48:26) [0m
+ | > Synthesizing test sentences.
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.796149730682373  (5.796149730682373)
+     | > postnet_loss: 5.836487770080566  (5.836487770080566)
+     | > similarity_loss: 3.9822614192962646  (3.9822614192962646)
+     | > infonce_loss: 5.135800838470459  (5.135800838470459)
+     | > stopnet_loss: 0.7082117199897766  (0.7082117199897766)
+     | > decoder_coarse_loss: 5.7611236572265625  (5.7611236572265625)
+     | > decoder_ddc_loss: 0.0006704032421112061  (0.0006704032421112061)
+     | > ga_loss: 0.002181418938562274  (0.002181418938562274)
+     | > decoder_diff_spec_loss: 0.22910068929195404  (0.22910068929195404)
+     | > postnet_diff_spec_loss: 0.34246790409088135  (0.34246790409088135)
+     | > decoder_ssim_loss: 0.4342871308326721  (0.4342871308326721)
+     | > postnet_ssim_loss: 0.43426573276519775  (0.43426573276519775)
+     | > loss: 7.707273006439209  (7.707273006439209)
+     | > align_error: 0.9952060403302312  (0.9952060403302312)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[92m 162.0289821624756 [0m(-1.3238534927368164)
+     | > avg_decoder_loss:[92m 5.796149730682373 [0m(-0.0047206878662109375)
+     | > avg_postnet_loss:[91m 5.836487770080566 [0m(+0.005530834197998047)
+     | > avg_similarity_loss:[91m 3.9822614192962646 [0m(+0.07789039611816406)
+     | > avg_infonce_loss:[92m 5.135800838470459 [0m(-0.06353187561035156)
+     | > avg_stopnet_loss:[91m 0.7082117199897766 [0m(+0.0004884600639343262)
+     | > avg_decoder_coarse_loss:[92m 5.7611236572265625 [0m(-0.0042896270751953125)
+     | > avg_decoder_ddc_loss:[91m 0.0006704032421112061 [0m(+6.253132596611977e-06)
+     | > avg_ga_loss:[91m 0.002181418938562274 [0m(+1.3993121683597565e-07)
+     | > avg_decoder_diff_spec_loss:[92m 0.22910068929195404 [0m(-0.0005927085876464844)
+     | > avg_postnet_diff_spec_loss:[91m 0.34246790409088135 [0m(+0.018376559019088745)
+     | > avg_decoder_ssim_loss:[92m 0.4342871308326721 [0m(-6.073713302612305e-05)
+     | > avg_postnet_ssim_loss:[92m 0.43426573276519775 [0m(-0.00012814998626708984)
+     | > avg_loss:[91m 7.707273006439209 [0m(+0.007610797882080078)
+     | > avg_align_error:[92m 0.9952060403302312 [0m(-8.456408977508545e-07)
+
+
+[4m[1m > EPOCH: 18/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-05-01 00:54:10) [0m
+ | > Synthesizing test sentences.
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.666338920593262  (5.666338920593262)
+     | > postnet_loss: 5.7197771072387695  (5.7197771072387695)
+     | > similarity_loss: 4.093790531158447  (4.093790531158447)
+     | > infonce_loss: 5.259276866912842  (5.259276866912842)
+     | > stopnet_loss: 0.7088857889175415  (0.7088857889175415)
+     | > decoder_coarse_loss: 5.632143974304199  (5.632143974304199)
+     | > decoder_ddc_loss: 0.0006766365258954465  (0.0006766365258954465)
+     | > ga_loss: 0.002181422431021929  (0.002181422431021929)
+     | > decoder_diff_spec_loss: 0.23149211704730988  (0.23149211704730988)
+     | > postnet_diff_spec_loss: 0.36576831340789795  (0.36576831340789795)
+     | > decoder_ssim_loss: 0.4342585802078247  (0.4342585802078247)
+     | > postnet_ssim_loss: 0.43418776988983154  (0.43418776988983154)
+     | > loss: 7.679220676422119  (7.679220676422119)
+     | > align_error: 0.9952055453322828  (0.9952055453322828)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[91m 163.0337414741516 [0m(+1.0047593116760254)
+     | > avg_decoder_loss:[92m 5.666338920593262 [0m(-0.12981081008911133)
+     | > avg_postnet_loss:[92m 5.7197771072387695 [0m(-0.11671066284179688)
+     | > avg_similarity_loss:[91m 4.093790531158447 [0m(+0.11152911186218262)
+     | > avg_infonce_loss:[91m 5.259276866912842 [0m(+0.12347602844238281)
+     | > avg_stopnet_loss:[91m 0.7088857889175415 [0m(+0.0006740689277648926)
+     | > avg_decoder_coarse_loss:[92m 5.632143974304199 [0m(-0.12897968292236328)
+     | > avg_decoder_ddc_loss:[91m 0.0006766365258954465 [0m(+6.233283784240484e-06)
+     | > avg_ga_loss:[91m 0.002181422431021929 [0m(+3.4924596548080444e-09)
+     | > avg_decoder_diff_spec_loss:[91m 0.23149211704730988 [0m(+0.002391427755355835)
+     | > avg_postnet_diff_spec_loss:[91m 0.36576831340789795 [0m(+0.0233004093170166)
+     | > avg_decoder_ssim_loss:[92m 0.4342585802078247 [0m(-2.855062484741211e-05)
+     | > avg_postnet_ssim_loss:[92m 0.43418776988983154 [0m(-7.796287536621094e-05)
+     | > avg_loss:[92m 7.679220676422119 [0m(-0.028052330017089844)
+     | > avg_align_error:[92m 0.9952055453322828 [0m(-4.949979484081268e-07)
+
+
+[4m[1m > EPOCH: 19/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-05-01 01:06:22) [0m
+ | > Synthesizing test sentences.
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.794555187225342  (5.794555187225342)
+     | > postnet_loss: 5.857112407684326  (5.857112407684326)
+     | > similarity_loss: 4.137257099151611  (4.137257099151611)
+     | > infonce_loss: 5.315149784088135  (5.315149784088135)
+     | > stopnet_loss: 0.7093192338943481  (0.7093192338943481)
+     | > decoder_coarse_loss: 5.760080337524414  (5.760080337524414)
+     | > decoder_ddc_loss: 0.0006826317403465509  (0.0006826317403465509)
+     | > ga_loss: 0.0021813991479575634  (0.0021813991479575634)
+     | > decoder_diff_spec_loss: 0.23013387620449066  (0.23013387620449066)
+     | > postnet_diff_spec_loss: 0.3864371180534363  (0.3864371180534363)
+     | > decoder_ssim_loss: 0.4344269037246704  (0.4344269037246704)
+     | > postnet_ssim_loss: 0.43421995639801025  (0.43421995639801025)
+     | > loss: 7.807739734649658  (7.807739734649658)
+     | > align_error: 0.9952043825760484  (0.9952043825760484)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[92m 160.41539525985718 [0m(-2.6183462142944336)
+     | > avg_decoder_loss:[91m 5.794555187225342 [0m(+0.12821626663208008)
+     | > avg_postnet_loss:[91m 5.857112407684326 [0m(+0.13733530044555664)
+     | > avg_similarity_loss:[91m 4.137257099151611 [0m(+0.04346656799316406)
+     | > avg_infonce_loss:[91m 5.315149784088135 [0m(+0.05587291717529297)
+     | > avg_stopnet_loss:[91m 0.7093192338943481 [0m(+0.0004334449768066406)
+     | > avg_decoder_coarse_loss:[91m 5.760080337524414 [0m(+0.12793636322021484)
+     | > avg_decoder_ddc_loss:[91m 0.0006826317403465509 [0m(+5.9952144511044025e-06)
+     | > avg_ga_loss:[92m 0.0021813991479575634 [0m(-2.3283064365386963e-08)
+     | > avg_decoder_diff_spec_loss:[92m 0.23013387620449066 [0m(-0.0013582408428192139)
+     | > avg_postnet_diff_spec_loss:[91m 0.3864371180534363 [0m(+0.02066880464553833)
+     | > avg_decoder_ssim_loss:[91m 0.4344269037246704 [0m(+0.00016832351684570312)
+     | > avg_postnet_ssim_loss:[91m 0.43421995639801025 [0m(+3.218650817871094e-05)
+     | > avg_loss:[91m 7.807739734649658 [0m(+0.12851905822753906)
+     | > avg_align_error:[92m 0.9952043825760484 [0m(-1.162756234407425e-06)
+
+
+[4m[1m > EPOCH: 20/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-05-01 01:12:05) [0m
+ | > Synthesizing test sentences.
+
+[1m   --> TIME: 2024-05-01 01:15:01 -- STEP: 0/1 -- GLOBAL_STEP: 20[0m
+     | > decoder_loss: 6.225876331329346  (6.225876331329346)
+     | > postnet_loss: 8.686487197875977  (8.686487197875977)
+     | > similarity_loss: 1.9191193580627441  (1.9191193580627441)
+     | > infonce_loss: 3.843581438064575  (3.843581438064575)
+     | > stopnet_loss: 0.7332369089126587  (0.7332369089126587)
+     | > decoder_coarse_loss: 6.234444618225098  (6.234444618225098)
+     | > decoder_ddc_loss: 0.0012342850677669048  (0.0012342850677669048)
+     | > ga_loss: 0.002153011504560709  (0.002153011504560709)
+     | > decoder_diff_spec_loss: 0.2455412596464157  (0.2455412596464157)
+     | > postnet_diff_spec_loss: 5.218276023864746  (5.218276023864746)
+     | > decoder_ssim_loss: 0.34619301557540894  (0.34619301557540894)
+     | > postnet_ssim_loss: 0.33725178241729736  (0.33725178241729736)
+     | > loss: 9.008502960205078  (9.008502960205078)
+     | > align_error: 0.9947969801723957  (0.9947969801723957)
+     | > grad_norm: tensor(4.5035, device='cuda:0')  (tensor(4.5035, device='cuda:0'))
+     | > current_lr: 5e-07 
+     | > step_time: 3.9762  (3.976238250732422)
+     | > loader_time: 171.9782  (171.97816824913025)
+
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.784381866455078  (5.784381866455078)
+     | > postnet_loss: 5.86010217666626  (5.86010217666626)
+     | > similarity_loss: 4.010299205780029  (4.010299205780029)
+     | > infonce_loss: 5.439228057861328  (5.439228057861328)
+     | > stopnet_loss: 0.7097064256668091  (0.7097064256668091)
+     | > decoder_coarse_loss: 5.750366687774658  (5.750366687774658)
+     | > decoder_ddc_loss: 0.0006886838818900287  (0.0006886838818900287)
+     | > ga_loss: 0.002181458054110408  (0.002181458054110408)
+     | > decoder_diff_spec_loss: 0.23131784796714783  (0.23131784796714783)
+     | > postnet_diff_spec_loss: 0.4110278785228729  (0.4110278785228729)
+     | > decoder_ssim_loss: 0.4344049096107483  (0.4344049096107483)
+     | > postnet_ssim_loss: 0.4342743158340454  (0.4342743158340454)
+     | > loss: 7.809636116027832  (7.809636116027832)
+     | > align_error: 0.9952034666202962  (0.9952034666202962)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[91m 161.1105833053589 [0m(+0.695188045501709)
+     | > avg_decoder_loss:[92m 5.784381866455078 [0m(-0.010173320770263672)
+     | > avg_postnet_loss:[91m 5.86010217666626 [0m(+0.0029897689819335938)
+     | > avg_similarity_loss:[92m 4.010299205780029 [0m(-0.12695789337158203)
+     | > avg_infonce_loss:[91m 5.439228057861328 [0m(+0.12407827377319336)
+     | > avg_stopnet_loss:[91m 0.7097064256668091 [0m(+0.0003871917724609375)
+     | > avg_decoder_coarse_loss:[92m 5.750366687774658 [0m(-0.00971364974975586)
+     | > avg_decoder_ddc_loss:[91m 0.0006886838818900287 [0m(+6.052141543477774e-06)
+     | > avg_ga_loss:[91m 0.002181458054110408 [0m(+5.8906152844429016e-08)
+     | > avg_decoder_diff_spec_loss:[91m 0.23131784796714783 [0m(+0.0011839717626571655)
+     | > avg_postnet_diff_spec_loss:[91m 0.4110278785228729 [0m(+0.024590760469436646)
+     | > avg_decoder_ssim_loss:[92m 0.4344049096107483 [0m(-2.199411392211914e-05)
+     | > avg_postnet_ssim_loss:[91m 0.4342743158340454 [0m(+5.435943603515625e-05)
+     | > avg_loss:[91m 7.809636116027832 [0m(+0.0018963813781738281)
+     | > avg_align_error:[92m 0.9952034666202962 [0m(-9.159557521343231e-07)
+
+
+[4m[1m > EPOCH: 21/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-05-01 01:17:55) [0m
+ | > Synthesizing test sentences.
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.801686763763428  (5.801686763763428)
+     | > postnet_loss: 5.888097286224365  (5.888097286224365)
+     | > similarity_loss: 3.9723215103149414  (3.9723215103149414)
+     | > infonce_loss: 5.321706771850586  (5.321706771850586)
+     | > stopnet_loss: 0.7100813388824463  (0.7100813388824463)
+     | > decoder_coarse_loss: 5.767966270446777  (5.767966270446777)
+     | > decoder_ddc_loss: 0.0006946483626961708  (0.0006946483626961708)
+     | > ga_loss: 0.0021814843639731407  (0.0021814843639731407)
+     | > decoder_diff_spec_loss: 0.23048244416713715  (0.23048244416713715)
+     | > postnet_diff_spec_loss: 0.43435654044151306  (0.43435654044151306)
+     | > decoder_ssim_loss: 0.4344424605369568  (0.4344424605369568)
+     | > postnet_ssim_loss: 0.43415623903274536  (0.43415623903274536)
+     | > loss: 7.79246711730957  (7.79246711730957)
+     | > align_error: 0.9952024570666254  (0.9952024570666254)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[91m 163.44570469856262 [0m(+2.3351213932037354)
+     | > avg_decoder_loss:[91m 5.801686763763428 [0m(+0.01730489730834961)
+     | > avg_postnet_loss:[91m 5.888097286224365 [0m(+0.02799510955810547)
+     | > avg_similarity_loss:[92m 3.9723215103149414 [0m(-0.03797769546508789)
+     | > avg_infonce_loss:[92m 5.321706771850586 [0m(-0.11752128601074219)
+     | > avg_stopnet_loss:[91m 0.7100813388824463 [0m(+0.00037491321563720703)
+     | > avg_decoder_coarse_loss:[91m 5.767966270446777 [0m(+0.01759958267211914)
+     | > avg_decoder_ddc_loss:[91m 0.0006946483626961708 [0m(+5.964480806142092e-06)
+     | > avg_ga_loss:[91m 0.0021814843639731407 [0m(+2.6309862732887268e-08)
+     | > avg_decoder_diff_spec_loss:[92m 0.23048244416713715 [0m(-0.0008354038000106812)
+     | > avg_postnet_diff_spec_loss:[91m 0.43435654044151306 [0m(+0.023328661918640137)
+     | > avg_decoder_ssim_loss:[91m 0.4344424605369568 [0m(+3.7550926208496094e-05)
+     | > avg_postnet_ssim_loss:[92m 0.43415623903274536 [0m(-0.00011807680130004883)
+     | > avg_loss:[92m 7.79246711730957 [0m(-0.01716899871826172)
+     | > avg_align_error:[92m 0.9952024570666254 [0m(-1.0095536708831787e-06)
+
+
+[4m[1m > EPOCH: 22/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-05-01 01:23:43) [0m
+ | > Synthesizing test sentences.
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.782535552978516  (5.782535552978516)
+     | > postnet_loss: 5.882573127746582  (5.882573127746582)
+     | > similarity_loss: 3.964538097381592  (3.964538097381592)
+     | > infonce_loss: 5.231141567230225  (5.231141567230225)
+     | > stopnet_loss: 0.7104701399803162  (0.7104701399803162)
+     | > decoder_coarse_loss: 5.7494940757751465  (5.7494940757751465)
+     | > decoder_ddc_loss: 0.0007003685459494591  (0.0007003685459494591)
+     | > ga_loss: 0.002181537449359894  (0.002181537449359894)
+     | > decoder_diff_spec_loss: 0.23171311616897583  (0.23171311616897583)
+     | > postnet_diff_spec_loss: 0.46047744154930115  (0.46047744154930115)
+     | > decoder_ssim_loss: 0.43444645404815674  (0.43444645404815674)
+     | > postnet_ssim_loss: 0.4342266321182251  (0.4342266321182251)
+     | > loss: 7.764339447021484  (7.764339447021484)
+     | > align_error: 0.9952017166651785  (0.9952017166651785)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[92m 161.8474781513214 [0m(-1.598226547241211)
+     | > avg_decoder_loss:[92m 5.782535552978516 [0m(-0.01915121078491211)
+     | > avg_postnet_loss:[92m 5.882573127746582 [0m(-0.005524158477783203)
+     | > avg_similarity_loss:[92m 3.964538097381592 [0m(-0.007783412933349609)
+     | > avg_infonce_loss:[92m 5.231141567230225 [0m(-0.09056520462036133)
+     | > avg_stopnet_loss:[91m 0.7104701399803162 [0m(+0.00038880109786987305)
+     | > avg_decoder_coarse_loss:[92m 5.7494940757751465 [0m(-0.01847219467163086)
+     | > avg_decoder_ddc_loss:[91m 0.0007003685459494591 [0m(+5.720183253288269e-06)
+     | > avg_ga_loss:[91m 0.002181537449359894 [0m(+5.3085386753082275e-08)
+     | > avg_decoder_diff_spec_loss:[91m 0.23171311616897583 [0m(+0.001230672001838684)
+     | > avg_postnet_diff_spec_loss:[91m 0.46047744154930115 [0m(+0.026120901107788086)
+     | > avg_decoder_ssim_loss:[91m 0.43444645404815674 [0m(+3.993511199951172e-06)
+     | > avg_postnet_ssim_loss:[91m 0.4342266321182251 [0m(+7.039308547973633e-05)
+     | > avg_loss:[92m 7.764339447021484 [0m(-0.028127670288085938)
+     | > avg_align_error:[92m 0.9952017166651785 [0m(-7.404014468193054e-07)
+
+
+[4m[1m > EPOCH: 23/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-05-01 01:35:52) [0m
+ | > Synthesizing test sentences.
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.790604591369629  (5.790604591369629)
+     | > postnet_loss: 5.902770519256592  (5.902770519256592)
+     | > similarity_loss: 3.9606690406799316  (3.9606690406799316)
+     | > infonce_loss: 5.166870594024658  (5.166870594024658)
+     | > stopnet_loss: 0.7108180522918701  (0.7108180522918701)
+     | > decoder_coarse_loss: 5.758174419403076  (5.758174419403076)
+     | > decoder_ddc_loss: 0.0007058947812765837  (0.0007058947812765837)
+     | > ga_loss: 0.0021816652733832598  (0.0021816652733832598)
+     | > decoder_diff_spec_loss: 0.23092280328273773  (0.23092280328273773)
+     | > postnet_diff_spec_loss: 0.4846189618110657  (0.4846189618110657)
+     | > decoder_ssim_loss: 0.4344267249107361  (0.4344267249107361)
+     | > postnet_ssim_loss: 0.4341195821762085  (0.4341195821762085)
+     | > loss: 7.762696743011475  (7.762696743011475)
+     | > align_error: 0.9952009944245219  (0.9952009944245219)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[91m 164.28390789031982 [0m(+2.436429738998413)
+     | > avg_decoder_loss:[91m 5.790604591369629 [0m(+0.008069038391113281)
+     | > avg_postnet_loss:[91m 5.902770519256592 [0m(+0.020197391510009766)
+     | > avg_similarity_loss:[92m 3.9606690406799316 [0m(-0.0038690567016601562)
+     | > avg_infonce_loss:[92m 5.166870594024658 [0m(-0.0642709732055664)
+     | > avg_stopnet_loss:[91m 0.7108180522918701 [0m(+0.0003479123115539551)
+     | > avg_decoder_coarse_loss:[91m 5.758174419403076 [0m(+0.008680343627929688)
+     | > avg_decoder_ddc_loss:[91m 0.0007058947812765837 [0m(+5.526235327124596e-06)
+     | > avg_ga_loss:[91m 0.0021816652733832598 [0m(+1.2782402336597443e-07)
+     | > avg_decoder_diff_spec_loss:[92m 0.23092280328273773 [0m(-0.0007903128862380981)
+     | > avg_postnet_diff_spec_loss:[91m 0.4846189618110657 [0m(+0.024141520261764526)
+     | > avg_decoder_ssim_loss:[92m 0.4344267249107361 [0m(-1.9729137420654297e-05)
+     | > avg_postnet_ssim_loss:[92m 0.4341195821762085 [0m(-0.00010704994201660156)
+     | > avg_loss:[92m 7.762696743011475 [0m(-0.0016427040100097656)
+     | > avg_align_error:[92m 0.9952009944245219 [0m(-7.222406566143036e-07)
+
+
+[4m[1m > EPOCH: 24/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-05-01 01:41:38) [0m
+ | > Synthesizing test sentences.
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.802134990692139  (5.802134990692139)
+     | > postnet_loss: 5.926104545593262  (5.926104545593262)
+     | > similarity_loss: 4.075335502624512  (4.075335502624512)
+     | > infonce_loss: 5.276429176330566  (5.276429176330566)
+     | > stopnet_loss: 0.7112445831298828  (0.7112445831298828)
+     | > decoder_coarse_loss: 5.770140647888184  (5.770140647888184)
+     | > decoder_ddc_loss: 0.0007116260239854455  (0.0007116260239854455)
+     | > ga_loss: 0.002181609394028783  (0.002181609394028783)
+     | > decoder_diff_spec_loss: 0.23197351396083832  (0.23197351396083832)
+     | > postnet_diff_spec_loss: 0.5104573369026184  (0.5104573369026184)
+     | > decoder_ssim_loss: 0.4344741106033325  (0.4344741106033325)
+     | > postnet_ssim_loss: 0.4341013431549072  (0.4341013431549072)
+     | > loss: 7.837618827819824  (7.837618827819824)
+     | > align_error: 0.995199843775481  (0.995199843775481)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[91m 172.4504358768463 [0m(+8.16652798652649)
+     | > avg_decoder_loss:[91m 5.802134990692139 [0m(+0.011530399322509766)
+     | > avg_postnet_loss:[91m 5.926104545593262 [0m(+0.023334026336669922)
+     | > avg_similarity_loss:[91m 4.075335502624512 [0m(+0.11466646194458008)
+     | > avg_infonce_loss:[91m 5.276429176330566 [0m(+0.1095585823059082)
+     | > avg_stopnet_loss:[91m 0.7112445831298828 [0m(+0.0004265308380126953)
+     | > avg_decoder_coarse_loss:[91m 5.770140647888184 [0m(+0.011966228485107422)
+     | > avg_decoder_ddc_loss:[91m 0.0007116260239854455 [0m(+5.731242708861828e-06)
+     | > avg_ga_loss:[92m 0.002181609394028783 [0m(-5.587935447692871e-08)
+     | > avg_decoder_diff_spec_loss:[91m 0.23197351396083832 [0m(+0.001050710678100586)
+     | > avg_postnet_diff_spec_loss:[91m 0.5104573369026184 [0m(+0.025838375091552734)
+     | > avg_decoder_ssim_loss:[91m 0.4344741106033325 [0m(+4.738569259643555e-05)
+     | > avg_postnet_ssim_loss:[92m 0.4341013431549072 [0m(-1.823902130126953e-05)
+     | > avg_loss:[91m 7.837618827819824 [0m(+0.07492208480834961)
+     | > avg_align_error:[92m 0.995199843775481 [0m(-1.1506490409374237e-06)
+
+
+[4m[1m > EPOCH: 25/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-05-01 01:54:06) [0m
+ | > Synthesizing test sentences.
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+   > Decoder stopped with `max_decoder_steps` 10000
+
+[1m   --> TIME: 2024-05-01 01:56:56 -- STEP: 0/1 -- GLOBAL_STEP: 25[0m
+     | > decoder_loss: 6.2331109046936035  (6.2331109046936035)
+     | > postnet_loss: 8.687493324279785  (8.687493324279785)
+     | > similarity_loss: 2.1286582946777344  (2.1286582946777344)
+     | > infonce_loss: 4.16801643371582  (4.16801643371582)
+     | > stopnet_loss: 0.7326068878173828  (0.7326068878173828)
+     | > decoder_coarse_loss: 6.24587345123291  (6.24587345123291)
+     | > decoder_ddc_loss: 0.0013500906061381102  (0.0013500906061381102)
+     | > ga_loss: 0.0021528941579163074  (0.0021528941579163074)
+     | > decoder_diff_spec_loss: 0.24556554853916168  (0.24556554853916168)
+     | > postnet_diff_spec_loss: 5.238041877746582  (5.238041877746582)
+     | > decoder_ssim_loss: 0.3462769389152527  (0.3462769389152527)
+     | > postnet_ssim_loss: 0.33778029680252075  (0.33778029680252075)
+     | > loss: 9.151412963867188  (9.151412963867188)
+     | > align_error: 0.9947607959620655  (0.9947607959620655)
+     | > grad_norm: tensor(4.4841, device='cuda:0')  (tensor(4.4841, device='cuda:0'))
+     | > current_lr: 6.25e-07 
+     | > step_time: 3.9715  (3.9715232849121094)
+     | > loader_time: 165.7794  (165.77936029434204)
+
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.78968620300293  (5.78968620300293)
+     | > postnet_loss: 5.926582336425781  (5.926582336425781)
+     | > similarity_loss: 4.100929260253906  (4.100929260253906)
+     | > infonce_loss: 5.174725532531738  (5.174725532531738)
+     | > stopnet_loss: 0.711482584476471  (0.711482584476471)
+     | > decoder_coarse_loss: 5.758106231689453  (5.758106231689453)
+     | > decoder_ddc_loss: 0.0007168488809838891  (0.0007168488809838891)
+     | > ga_loss: 0.002181755844503641  (0.002181755844503641)
+     | > decoder_diff_spec_loss: 0.23100605607032776  (0.23100605607032776)
+     | > postnet_diff_spec_loss: 0.5342559814453125  (0.5342559814453125)
+     | > decoder_ssim_loss: 0.43448036909103394  (0.43448036909103394)
+     | > postnet_ssim_loss: 0.43407315015792847  (0.43407315015792847)
+     | > loss: 7.8185319900512695  (7.8185319900512695)
+     | > align_error: 0.9951992845162749  (0.9951992845162749)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[92m 162.06559109687805 [0m(-10.384844779968262)
+     | > avg_decoder_loss:[92m 5.78968620300293 [0m(-0.012448787689208984)
+     | > avg_postnet_loss:[91m 5.926582336425781 [0m(+0.00047779083251953125)
+     | > avg_similarity_loss:[91m 4.100929260253906 [0m(+0.02559375762939453)
+     | > avg_infonce_loss:[92m 5.174725532531738 [0m(-0.10170364379882812)
+     | > avg_stopnet_loss:[91m 0.711482584476471 [0m(+0.00023800134658813477)
+     | > avg_decoder_coarse_loss:[92m 5.758106231689453 [0m(-0.012034416198730469)
+     | > avg_decoder_ddc_loss:[91m 0.0007168488809838891 [0m(+5.2228569984436035e-06)
+     | > avg_ga_loss:[91m 0.002181755844503641 [0m(+1.46450474858284e-07)
+     | > avg_decoder_diff_spec_loss:[92m 0.23100605607032776 [0m(-0.0009674578905105591)
+     | > avg_postnet_diff_spec_loss:[91m 0.5342559814453125 [0m(+0.023798644542694092)
+     | > avg_decoder_ssim_loss:[91m 0.43448036909103394 [0m(+6.258487701416016e-06)
+     | > avg_postnet_ssim_loss:[92m 0.43407315015792847 [0m(-2.8192996978759766e-05)
+     | > avg_loss:[92m 7.8185319900512695 [0m(-0.019086837768554688)
+     | > avg_align_error:[92m 0.9951992845162749 [0m(-5.592592060565948e-07)
+
+
+[4m[1m > EPOCH: 26/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-05-01 01:59:52) [0m
+ | > Synthesizing test sentences.
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.791316986083984  (5.791316986083984)
+     | > postnet_loss: 5.939426898956299  (5.939426898956299)
+     | > similarity_loss: 4.13362979888916  (4.13362979888916)
+     | > infonce_loss: 5.424339771270752  (5.424339771270752)
+     | > stopnet_loss: 0.7116378545761108  (0.7116378545761108)
+     | > decoder_coarse_loss: 5.760411262512207  (5.760411262512207)
+     | > decoder_ddc_loss: 0.0007220698753371835  (0.0007220698753371835)
+     | > ga_loss: 0.0021818073000758886  (0.0021818073000758886)
+     | > decoder_diff_spec_loss: 0.23123501241207123  (0.23123501241207123)
+     | > postnet_diff_spec_loss: 0.5585108399391174  (0.5585108399391174)
+     | > decoder_ssim_loss: 0.43448036909103394  (0.43448036909103394)
+     | > postnet_ssim_loss: 0.434067964553833  (0.434067964553833)
+     | > loss: 7.899582862854004  (7.899582862854004)
+     | > align_error: 0.9951986498199403  (0.9951986498199403)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[91m 163.86414313316345 [0m(+1.7985520362854004)
+     | > avg_decoder_loss:[91m 5.791316986083984 [0m(+0.0016307830810546875)
+     | > avg_postnet_loss:[91m 5.939426898956299 [0m(+0.012844562530517578)
+     | > avg_similarity_loss:[91m 4.13362979888916 [0m(+0.032700538635253906)
+     | > avg_infonce_loss:[91m 5.424339771270752 [0m(+0.24961423873901367)
+     | > avg_stopnet_loss:[91m 0.7116378545761108 [0m(+0.00015527009963989258)
+     | > avg_decoder_coarse_loss:[91m 5.760411262512207 [0m(+0.0023050308227539062)
+     | > avg_decoder_ddc_loss:[91m 0.0007220698753371835 [0m(+5.2209943532943726e-06)
+     | > avg_ga_loss:[91m 0.0021818073000758886 [0m(+5.145557224750519e-08)
+     | > avg_decoder_diff_spec_loss:[91m 0.23123501241207123 [0m(+0.00022895634174346924)
+     | > avg_postnet_diff_spec_loss:[91m 0.5585108399391174 [0m(+0.02425485849380493)
+     | > avg_decoder_ssim_loss: 0.43448036909103394 [0m(+0.0)
+     | > avg_postnet_ssim_loss:[92m 0.434067964553833 [0m(-5.185604095458984e-06)
+     | > avg_loss:[91m 7.899582862854004 [0m(+0.08105087280273438)
+     | > avg_align_error:[92m 0.9951986498199403 [0m(-6.346963346004486e-07)
+
+
+[4m[1m > EPOCH: 27/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-05-01 02:05:36) [0m
+ | > Synthesizing test sentences.
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.77987813949585  (5.77987813949585)
+     | > postnet_loss: 5.939462661743164  (5.939462661743164)
+     | > similarity_loss: 4.148403167724609  (4.148403167724609)
+     | > infonce_loss: 5.362093925476074  (5.362093925476074)
+     | > stopnet_loss: 0.7118837237358093  (0.7118837237358093)
+     | > decoder_coarse_loss: 5.749256134033203  (5.749256134033203)
+     | > decoder_ddc_loss: 0.0007267876644618809  (0.0007267876644618809)
+     | > ga_loss: 0.002181745134294033  (0.002181745134294033)
+     | > decoder_diff_spec_loss: 0.23231998085975647  (0.23231998085975647)
+     | > postnet_diff_spec_loss: 0.5830283761024475  (0.5830283761024475)
+     | > decoder_ssim_loss: 0.43454980850219727  (0.43454980850219727)
+     | > postnet_ssim_loss: 0.4340871572494507  (0.4340871572494507)
+     | > loss: 7.888744354248047  (7.888744354248047)
+     | > align_error: 0.9951980565674603  (0.9951980565674603)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[92m 162.64142751693726 [0m(-1.2227156162261963)
+     | > avg_decoder_loss:[92m 5.77987813949585 [0m(-0.011438846588134766)
+     | > avg_postnet_loss:[91m 5.939462661743164 [0m(+3.5762786865234375e-05)
+     | > avg_similarity_loss:[91m 4.148403167724609 [0m(+0.014773368835449219)
+     | > avg_infonce_loss:[92m 5.362093925476074 [0m(-0.062245845794677734)
+     | > avg_stopnet_loss:[91m 0.7118837237358093 [0m(+0.00024586915969848633)
+     | > avg_decoder_coarse_loss:[92m 5.749256134033203 [0m(-0.011155128479003906)
+     | > avg_decoder_ddc_loss:[91m 0.0007267876644618809 [0m(+4.717789124697447e-06)
+     | > avg_ga_loss:[92m 0.002181745134294033 [0m(-6.216578185558319e-08)
+     | > avg_decoder_diff_spec_loss:[91m 0.23231998085975647 [0m(+0.0010849684476852417)
+     | > avg_postnet_diff_spec_loss:[91m 0.5830283761024475 [0m(+0.024517536163330078)
+     | > avg_decoder_ssim_loss:[91m 0.43454980850219727 [0m(+6.943941116333008e-05)
+     | > avg_postnet_ssim_loss:[91m 0.4340871572494507 [0m(+1.919269561767578e-05)
+     | > avg_loss:[92m 7.888744354248047 [0m(-0.010838508605957031)
+     | > avg_align_error:[92m 0.9951980565674603 [0m(-5.932524800300598e-07)
+
+
+[4m[1m > EPOCH: 28/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-05-01 02:11:21) [0m
+ | > Synthesizing test sentences.
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.800601482391357  (5.800601482391357)
+     | > postnet_loss: 5.969217300415039  (5.969217300415039)
+     | > similarity_loss: 4.121526718139648  (4.121526718139648)
+     | > infonce_loss: 5.1879563331604  (5.1879563331604)
+     | > stopnet_loss: 0.71202552318573  (0.71202552318573)
+     | > decoder_coarse_loss: 5.7702860832214355  (5.7702860832214355)
+     | > decoder_ddc_loss: 0.0007310638902708888  (0.0007310638902708888)
+     | > ga_loss: 0.0021817535161972046  (0.0021817535161972046)
+     | > decoder_diff_spec_loss: 0.23210912942886353  (0.23210912942886353)
+     | > postnet_diff_spec_loss: 0.6053088903427124  (0.6053088903427124)
+     | > decoder_ssim_loss: 0.4345322847366333  (0.4345322847366333)
+     | > postnet_ssim_loss: 0.4340299963951111  (0.4340299963951111)
+     | > loss: 7.862009048461914  (7.862009048461914)
+     | > align_error: 0.9951975648291409  (0.9951975648291409)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[91m 165.63196921348572 [0m(+2.990541696548462)
+     | > avg_decoder_loss:[91m 5.800601482391357 [0m(+0.020723342895507812)
+     | > avg_postnet_loss:[91m 5.969217300415039 [0m(+0.029754638671875)
+     | > avg_similarity_loss:[92m 4.121526718139648 [0m(-0.026876449584960938)
+     | > avg_infonce_loss:[92m 5.1879563331604 [0m(-0.17413759231567383)
+     | > avg_stopnet_loss:[91m 0.71202552318573 [0m(+0.0001417994499206543)
+     | > avg_decoder_coarse_loss:[91m 5.7702860832214355 [0m(+0.021029949188232422)
+     | > avg_decoder_ddc_loss:[91m 0.0007310638902708888 [0m(+4.276225809007883e-06)
+     | > avg_ga_loss:[91m 0.0021817535161972046 [0m(+8.381903171539307e-09)
+     | > avg_decoder_diff_spec_loss:[92m 0.23210912942886353 [0m(-0.00021085143089294434)
+     | > avg_postnet_diff_spec_loss:[91m 0.6053088903427124 [0m(+0.022280514240264893)
+     | > avg_decoder_ssim_loss:[92m 0.4345322847366333 [0m(-1.7523765563964844e-05)
+     | > avg_postnet_ssim_loss:[92m 0.4340299963951111 [0m(-5.716085433959961e-05)
+     | > avg_loss:[92m 7.862009048461914 [0m(-0.026735305786132812)
+     | > avg_align_error:[92m 0.9951975648291409 [0m(-4.917383193969727e-07)
+
+
+[4m[1m > EPOCH: 29/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-05-01 02:17:13) [0m
+ | > Synthesizing test sentences.
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.730381965637207  (5.730381965637207)
+     | > postnet_loss: 5.9111480712890625  (5.9111480712890625)
+     | > similarity_loss: 4.0893778800964355  (4.0893778800964355)
+     | > infonce_loss: 5.137180805206299  (5.137180805206299)
+     | > stopnet_loss: 0.7122816443443298  (0.7122816443443298)
+     | > decoder_coarse_loss: 5.70076322555542  (5.70076322555542)
+     | > decoder_ddc_loss: 0.0007354641566053033  (0.0007354641566053033)
+     | > ga_loss: 0.0021818233653903008  (0.0021818233653903008)
+     | > decoder_diff_spec_loss: 0.23260410130023956  (0.23260410130023956)
+     | > postnet_diff_spec_loss: 0.6277603507041931  (0.6277603507041931)
+     | > decoder_ssim_loss: 0.43454182147979736  (0.43454182147979736)
+     | > postnet_ssim_loss: 0.43397629261016846  (0.43397629261016846)
+     | > loss: 7.7978081703186035  (7.7978081703186035)
+     | > align_error: 0.9951976132579148  (0.9951976132579148)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[92m 161.4176847934723 [0m(-4.214284420013428)
+     | > avg_decoder_loss:[92m 5.730381965637207 [0m(-0.07021951675415039)
+     | > avg_postnet_loss:[92m 5.9111480712890625 [0m(-0.05806922912597656)
+     | > avg_similarity_loss:[92m 4.0893778800964355 [0m(-0.03214883804321289)
+     | > avg_infonce_loss:[92m 5.137180805206299 [0m(-0.05077552795410156)
+     | > avg_stopnet_loss:[91m 0.7122816443443298 [0m(+0.0002561211585998535)
+     | > avg_decoder_coarse_loss:[92m 5.70076322555542 [0m(-0.06952285766601562)
+     | > avg_decoder_ddc_loss:[91m 0.0007354641566053033 [0m(+4.400266334414482e-06)
+     | > avg_ga_loss:[91m 0.0021818233653903008 [0m(+6.984919309616089e-08)
+     | > avg_decoder_diff_spec_loss:[91m 0.23260410130023956 [0m(+0.0004949718713760376)
+     | > avg_postnet_diff_spec_loss:[91m 0.6277603507041931 [0m(+0.022451460361480713)
+     | > avg_decoder_ssim_loss:[91m 0.43454182147979736 [0m(+9.5367431640625e-06)
+     | > avg_postnet_ssim_loss:[92m 0.43397629261016846 [0m(-5.370378494262695e-05)
+     | > avg_loss:[92m 7.7978081703186035 [0m(-0.06420087814331055)
+     | > avg_align_error:[91m 0.9951976132579148 [0m(+4.842877388000488e-08)
+
+
+[4m[1m > EPOCH: 30/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-05-01 02:23:00) [0m
+ | > Synthesizing test sentences.
+
+[1m   --> TIME: 2024-05-01 02:25:52 -- STEP: 0/1 -- GLOBAL_STEP: 30[0m
+     | > decoder_loss: 6.211085796356201  (6.211085796356201)
+     | > postnet_loss: 8.645515441894531  (8.645515441894531)
+     | > similarity_loss: 1.9654120206832886  (1.9654120206832886)
+     | > infonce_loss: 3.8505895137786865  (3.8505895137786865)
+     | > stopnet_loss: 0.7357534170150757  (0.7357534170150757)
+     | > decoder_coarse_loss: 6.218553066253662  (6.218553066253662)
+     | > decoder_ddc_loss: 0.0012832145439460874  (0.0012832145439460874)
+     | > ga_loss: 0.0021332825999706984  (0.0021332825999706984)
+     | > decoder_diff_spec_loss: 0.244333878159523  (0.244333878159523)
+     | > postnet_diff_spec_loss: 5.210662364959717  (5.210662364959717)
+     | > decoder_ssim_loss: 0.3459434509277344  (0.3459434509277344)
+     | > postnet_ssim_loss: 0.337364137172699  (0.337364137172699)
+     | > loss: 9.004105567932129  (9.004105567932129)
+     | > align_error: 0.9947901950217783  (0.9947901950217783)
+     | > grad_norm: tensor(4.4779, device='cuda:0')  (tensor(4.4779, device='cuda:0'))
+     | > current_lr: 7.5e-07 
+     | > step_time: 3.9638  (3.9637911319732666)
+     | > loader_time: 167.8757  (167.87568187713623)
+
+
+[1m > EVALUATION [0m
+
+[1m   --> STEP: 0[0m
+     | > decoder_loss: 5.794801712036133  (5.794801712036133)
+     | > postnet_loss: 5.981129169464111  (5.981129169464111)
+     | > similarity_loss: 4.045777797698975  (4.045777797698975)
+     | > infonce_loss: 5.210712432861328  (5.210712432861328)
+     | > stopnet_loss: 0.7120986580848694  (0.7120986580848694)
+     | > decoder_coarse_loss: 5.765494346618652  (5.765494346618652)
+     | > decoder_ddc_loss: 0.0007395604043267667  (0.0007395604043267667)
+     | > ga_loss: 0.0021818855311721563  (0.0021818855311721563)
+     | > decoder_diff_spec_loss: 0.232309028506279  (0.232309028506279)
+     | > postnet_diff_spec_loss: 0.6476597785949707  (0.6476597785949707)
+     | > decoder_ssim_loss: 0.4346083402633667  (0.4346083402633667)
+     | > postnet_ssim_loss: 0.4339785575866699  (0.4339785575866699)
+     | > loss: 7.859810829162598  (7.859810829162598)
+     | > align_error: 0.9951969720423222  (0.9951969720423222)
+
+
+  [1m--> EVAL PERFORMANCE[0m
+     | > avg_loader_time:[91m 163.19418025016785 [0m(+1.7764954566955566)
+     | > avg_decoder_loss:[91m 5.794801712036133 [0m(+0.06441974639892578)
+     | > avg_postnet_loss:[91m 5.981129169464111 [0m(+0.06998109817504883)
+     | > avg_similarity_loss:[92m 4.045777797698975 [0m(-0.04360008239746094)
+     | > avg_infonce_loss:[91m 5.210712432861328 [0m(+0.0735316276550293)
+     | > avg_stopnet_loss:[92m 0.7120986580848694 [0m(-0.00018298625946044922)
+     | > avg_decoder_coarse_loss:[91m 5.765494346618652 [0m(+0.06473112106323242)
+     | > avg_decoder_ddc_loss:[91m 0.0007395604043267667 [0m(+4.096247721463442e-06)
+     | > avg_ga_loss:[91m 0.0021818855311721563 [0m(+6.216578185558319e-08)
+     | > avg_decoder_diff_spec_loss:[92m 0.232309028506279 [0m(-0.0002950727939605713)
+     | > avg_postnet_diff_spec_loss:[91m 0.6476597785949707 [0m(+0.019899427890777588)
+     | > avg_decoder_ssim_loss:[91m 0.4346083402633667 [0m(+6.651878356933594e-05)
+     | > avg_postnet_ssim_loss:[91m 0.4339785575866699 [0m(+2.2649765014648438e-06)
+     | > avg_loss:[91m 7.859810829162598 [0m(+0.06200265884399414)
+     | > avg_align_error:[92m 0.9951969720423222 [0m(-6.41215592622757e-07)
+
+
+[4m[1m > EPOCH: 31/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-April-30-2024_10+31PM-236bd6b
+
+[1m > TRAINING (2024-05-01 02:28:47) [0m
+ | > Synthesizing test sentences.
