@@ -16,11 +16,14 @@ from TTS.vocoder.models.gan import GAN
 import torchaudio
 import wandb
 import logging
-logging.getLogger("transformers.modeling_utils").setLevel(logging.ERROR)
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Disable TensorFlow INFO and WARNING messages
+# logging.getLogger("transformers.modeling_utils").setLevel(logging.ERROR)
+# os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Disable TensorFlow INFO and WARNING messages
+import argparse
 
-# TODO : CHECK DEV-MODE
-dev_mode = False # bool
+parser = argparse.ArgumentParser()
+parser.add_argument("-n", "--notes", type=str, help="Notes for the run")
+parser.add_argument("-dev", action="store_true", help="Enable development mode")
+args = parser.parse_args()
 
 VOCODER_MODEL = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
 VOCODER_CONFIG = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/config.json"
@@ -65,7 +68,7 @@ config = {
     "precompute_num_workers": 0,
     "run_eval": True,
     "test_delay_epochs": -1,
-    "epochs": 100,
+    "epochs": 1 if args.dev else 100,
     "lr": 1e-4,
     "print_step": 1,
     "print_eval": True,
@@ -137,6 +140,10 @@ wandb.init(
     entity='qwewef',
     project="AVSP8",
     config=config,
+    notes=args.notes if args.notes else "",
+    tags=[
+        'dev' if args.dev else "full"
+    ]
 )
 
 trainer = Trainer(
@@ -150,7 +157,7 @@ trainer = Trainer(
 )
 
 # Dev mode: reduce the number of samples
-if dev_mode:    
+if args.dev:    
     trainer.setup_small_run(16)
 
 # AND... 3,2,1... 🚀
