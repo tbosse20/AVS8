@@ -19,6 +19,7 @@ import logging
 # logging.getLogger("transformers.modeling_utils").setLevel(logging.ERROR)
 # os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Disable TensorFlow INFO and WARNING messages
 import argparse
+from transformers import WandbLogger
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-n", "--notes", type=str, help="Notes for the run")
@@ -136,13 +137,13 @@ model = Tacotron2(tacotron2_config, ap, tokenizer, speaker_manager=speaker_manag
 # # Trainer provides a generic API to train all the 🐸TTS models with all its perks like mixed-precision training,
 # # distributed training, etc.
 
-wandb.init(
-    entity='qwewef',
-    project="AVSP8",
-    config=config,
-    notes=args.notes if args.notes else "",
+wandb_logger = WandbLogger(
+    project="AVSP8",                            # Project name
+    entity="qwewef",                            # Entity name
+    config=config,                              # Configuration dictionary
+    notes=args.notes if args.notes else "",     # Notes
     tags=[
-        'dev' if args.dev else "full"
+        "dev" if args.dev else "full"           # Run mode tag
     ]
 )
 
@@ -154,6 +155,7 @@ trainer = Trainer(
     train_samples=train_samples,
     eval_samples=eval_samples,
     test_samples=eval_samples, # TODO: Load and change this to test_samples
+    dashboard_logger=wandb_logger
 )
 
 # Dev mode: reduce the number of samples
