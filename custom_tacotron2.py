@@ -185,6 +185,7 @@ class Tacotron2(BaseTacotron):
             audio = fix_length(audio, size=int(max_wav_len*1.5))
             inputs = self.feature_extractor(audio, sampling_rate=16000, return_tensors="pt")
             if torch.cuda.is_available():
+                print("HELLOO", type(inputs["input_values"]))
                 inputs["input_values"] = inputs["input_values"].clone().detach().to(device="cuda")
                 inputs["attention_mask"] = inputs["attention_mask"].clone().detach().to(device="cuda")
             with torch.no_grad():
