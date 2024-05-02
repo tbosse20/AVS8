@@ -185,8 +185,11 @@ class Tacotron2(BaseTacotron):
             audio = fix_length(audio, size=int(max_wav_len*1.5))
             inputs = self.feature_extractor(audio, sampling_rate=16000, return_tensors="pt")
             if torch.cuda.is_available():
-                inputs["input_values"] = torch.tensor(inputs["input_values"]).to(device="cuda")
-                inputs["attention_mask"] = torch.tensor(inputs["attention_mask"]).to(device="cuda")
+                # Recommended using ".clone().detach()" to avoid "UserWarning"
+                inputs["input_values"] = torch.tensor(inputs["input_values"]).clone().detach().to(device="cuda")
+                inputs["attention_mask"] = torch.tensor(inputs["attention_mask"]).clone().detach().to(device="cuda")
+                # inputs["input_values"] = torch.tensor(inputs["input_values"]).to(device="cuda")
+                # inputs["attention_mask"] = torch.tensor(inputs["attention_mask"]).to(device="cuda")
             with torch.no_grad():
                 embedding = self.spk_emb_model(**inputs).embeddings
             embedding = torch.nn.functional.normalize(embedding, dim=-1).cpu()
