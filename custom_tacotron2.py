@@ -24,7 +24,8 @@ import torchaudio
 from librosa.core import resample
 from transformers import AutoFeatureExtractor, Wav2Vec2ForXVector, logging
 from librosa.util import fix_length
-import gc
+import wandb
+
 #####
 
 #NEW PATH#
@@ -180,9 +181,18 @@ class Tacotron2(BaseTacotron):
         max_wav_len = max(wav_lengths)
         embeddings = []
         for audio in audio_batch:
-            audio = resample(np.array(audio), orig_sr=sr, target_sr=16000)
+            audio = resample(np.array(audio.cpu()), orig_sr=sr, target_sr=16000)
             audio = fix_length(audio, size=int(max_wav_len*1.5))
             inputs = self.feature_extractor(audio, sampling_rate=16000, return_tensors="pt")
+            if torch.cuda.is_available():
+                # Recommended using ".clone().detach()" to avoid "UserWarning"
+                print("HELLOO", type(inputs["input_values"]))
+                inputs["input_values"] = torch.tensor(inputs["input_values"]).clone().detach().to(device="cuda")
+                inputs["attention_mask"] = torch.tensor(inputs["attention_mask"]).clone().detach().to(device="cuda")
+                # inputs["input_values"] = torch.tensor(inputs["input_values"]).to(device="cuda")
+                # inputs["attention_mask"] = torch.tensor(inputs["attention_mask"]).to(device="cuda")
+                # inputs["input_values"] = inputs["input_values"].clone().detach().to(device="cuda")
+                # inputs["attention_mask"] = inputs["attention_mask"].clone().detach().to(device="cuda")
             with torch.no_grad():
                 embedding = self.spk_emb_model(**inputs).embeddings
             embedding = torch.nn.functional.normalize(embedding, dim=-1).cpu()
@@ -345,17 +355,30 @@ class Tacotron2(BaseTacotron):
         postnet_outputs = decoder_outputs + postnet_outputs
         decoder_outputs, postnet_outputs, alignments = self.shape_outputs(decoder_outputs, postnet_outputs, alignments)
         #NEW INFERENCE USING VOCODER#
-        postnet_outputs = postnet_outputs.permute(0, 2, 1)
-        # print("POSTENET OUTPUTS: ", postnet_outputs.shape)
-        postnet_outputs = self.vocoder.inference(postnet_outputs)
-        torchaudio.save("output.wav", postnet_outputs, 22050)
+        waveform = self.vocoder.inference(postnet_outputs.permute(0, 2, 1))
+        
+        # Detach from batch and convert to NumPy array
+        waveform = waveform.squeeze(0)
+        waveform = waveform.cpu().detach().numpy()
+        waveform = waveform.astype(np.float32)
+        waveform = torch.from_numpy(waveform)
+        torchaudio.save("output.wav", waveform, 22050)
         #####
+        
         outputs = {
             "model_outputs": postnet_outputs,
             "decoder_outputs": decoder_outputs,
             "alignments": alignments,
             "stop_tokens": stop_tokens,
         }
+         # NEW save outputs to log wandb
+        # wandb.log({
+        #     "model_outputs": wandb.Image(postnet_outputs),
+        #     "decoder_outputs": wandb.Image(decoder_outputs),
+        #     "alignments": wandb.Image(alignments),
+        #     "stop_tokens": wandb.Image(stop_tokens),
+        # })
+        
         return outputs
 
     def before_backward_pass(self, loss_dict, optimizer) -> None:
@@ -465,6 +488,7 @@ class Tacotron2(BaseTacotron):
             "ground_truth": plot_spectrogram(gt_spec, ap, output_fig=False),
             "alignment": plot_alignment(align_img, output_fig=False),
         }
+        # wandb.log(figures) # NEW log figures to wandb
 
         if self.bidirectional_decoder or self.double_decoder_consistency:
             figures["alignment_backward"] = plot_alignment(alignments_backward[0].data.cpu().numpy(), output_fig=False)

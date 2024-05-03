@@ -13,6 +13,7 @@ from TTS.utils.audio.torch_transforms import TorchSTFT
 #NEW IMPORTS
 from info_nce import InfoNCE, info_nce
 import random
+import wandb
 
 # pylint: disable=abstract-method
 # relates https://github.com/pytorch/pytorch/issues/42305
@@ -450,6 +451,11 @@ class TacotronLoss(torch.nn.Module):
         batch_neg_embs = [neg_embs[:min_len] for neg_embs in batch_neg_embs]
         batch_neg_embs = torch.stack(batch_neg_embs, dim=0)
         infonce_loss_output = self.infonce_loss(spk_emb2, pos_emb, batch_neg_embs)
+        
+        # NEW Log embeddings as image
+        # wandb.log({"spk_emb": wandb.Image(spk_emb2.detach().cpu().numpy())})
+        # wandb.log({"pos_emb": wandb.Image(pos_emb.detach().cpu().numpy())})
+        
         return_dict["infonce_loss"] = infonce_loss_output
         loss += infonce_loss_output * self.infoNCE_alpha
         #####
@@ -565,6 +571,9 @@ class TacotronLoss(torch.nn.Module):
             return_dict["postnet_ssim_loss"] = postnet_ssim_loss
 
         return_dict["loss"] = loss
+        
+        wandb.log(return_dict)
+        
         return return_dict
 
 

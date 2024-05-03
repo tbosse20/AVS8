@@ -7,7 +7,7 @@ import librosa
 
 # Make this a function.
 
-
+'''
 def spk_embedding(audio, sr:int = 16000, feature_extractor = AutoFeatureExtractor.from_pretrained("anton-l/wav2vec2-base-superb-sv"), 
                   model = Wav2Vec2ForXVector.from_pretrained("anton-l/wav2vec2-base-superb-sv")) -> torch.Tensor:
     audio = resample(np.array(audio), orig_sr=sr, target_sr=16000)
@@ -90,11 +90,11 @@ print("HAHAHA", tensor.shape)
 # import matplotlib.pyplot as plt
 '''
 # # Calculate cosine similarity between embeddings
-cos_sim = torch.nn.CosineSimilarity(dim=2)
-cos_sim = cos_sim(tensor, tensor)
-print(cos_sim.shape)
-weird_cos = (cos_sim -1) / 2
-print(f"{torch.sum(weird_cos, dim=0)[0]}")
+# cos_sim = torch.nn.CosineSimilarity(dim=2)
+# cos_sim = cos_sim(tensor, tensor)
+# print(cos_sim.shape)
+# weird_cos = (cos_sim -1) / 2
+# print(f"{torch.sum(weird_cos, dim=0)[0]}")
 # Plot the cosine similarity matrix
 # plt.imshow(cos_sim, cmap='hot', interpolation='nearest')
 # plt.colorbar()
@@ -104,23 +104,24 @@ print(f"{torch.sum(weird_cos, dim=0)[0]}")
 # plt.show()
 
 
-def find_duplicates(lst):
-    duplicates = []
-    seen = set()
-    for i, item in enumerate(lst):
-        if item in seen:
-            duplicates.append(i)
-        else:
-            seen.add(item)
-    return duplicates
+# def find_duplicates(lst):
+    # duplicates = []
+    # seen = set()
+    # for i, item in enumerate(lst):
+        # if item in seen:
+            # duplicates.append(i)
+        # else:
+            # seen.add(item)
+    # return duplicates
 
-# Example usage:
-my_list = [1, 2, 3, 4, 2, 5, 3, 6]
-duplicate_indices = find_duplicates(my_list)
-print(duplicate_indices)
+# # Example usage:
+# my_list = [1, 2, 3, 4, 2, 5, 3, 6]
+# duplicate_indices = find_duplicates(my_list)
+# print(duplicate_indices)
 
 
-my_list[0,1,2,]
+# my_list[0,1,2,]
+
 '''
 import torch
 
@@ -141,4 +142,9 @@ ids_list = [1, 2, 3, 4]
 values_tensor = torch.randn(len(ids_list), 512)  # Example values tensor
 result_tensor = remove_current_id_values(ids_list, values_tensor)
 print(result_tensor.shape)  # Output should be [x, x-1, 512]
+'''
+a = torch.tensor([1,2,3,4,5])
+a.cpu()
+print(a)
+# print
 

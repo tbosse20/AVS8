@@ -1,0 +1,303 @@
+13:4: not a valid test operator: (
+13:4: not a valid test operator: 535.171.04
+
+=============
+== PyTorch ==
+=============
+
+NVIDIA Release 24.01 (build 80741402)
+PyTorch Version 2.2.0a0+81ea7a4
+
+Container image Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+Copyright (c) 2014-2023 Facebook Inc.
+Copyright (c) 2011-2014 Idiap Research Institute (Ronan Collobert)
+Copyright (c) 2012-2014 Deepmind Technologies    (Koray Kavukcuoglu)
+Copyright (c) 2011-2012 NEC Laboratories America (Koray Kavukcuoglu)
+Copyright (c) 2011-2013 NYU                      (Clement Farabet)
+Copyright (c) 2006-2010 NEC Laboratories America (Ronan Collobert, Leon Bottou, Iain Melvin, Jason Weston)
+Copyright (c) 2006      Idiap Research Institute (Samy Bengio)
+Copyright (c) 2001-2004 Idiap Research Institute (Ronan Collobert, Samy Bengio, Johnny Mariethoz)
+Copyright (c) 2015      Google Inc.
+Copyright (c) 2015      Yangqing Jia
+Copyright (c) 2013-2016 The Caffe contributors
+All rights reserved.
+
+Various files include modifications (c) NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+
+This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+By pulling and using the container, you accept the terms and conditions of this license:
+https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+
+NOTE: CUDA Forward Compatibility mode ENABLED.
+  Using CUDA 12.3 driver version 545.23.08 with kernel driver version 535.171.04.
+  See https://docs.nvidia.com/deploy/cuda-compatibility/ for details.
+
+RuntimeError: module compiled against API version 0x10 but this version of numpy is 0xf . Check the section C-API incompatibility at the Troubleshooting ImportError section at https://numpy.org/devdocs/user/troubleshooting-importerror.html#c-api-incompatibility for indications on how to solve this problem .
+wandb: Currently logged in as: x0917364931 (qwewef). Use `wandb login --relogin` to force relogin
+wandb: wandb version 0.16.6 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.16.2
+wandb: Run data is saved locally in /home/student.aau.dk/lk83xy/avs8/AVS8/wandb/run-20240501_105457-s8vqd95f
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run twilight-water-92
+wandb: ⭐️ View project at https://wandb.ai/qwewef/AVSP8
+wandb: 🚀 View run at https://wandb.ai/qwewef/AVSP8/runs/s8vqd95f
+ > Training Environment:
+ | > Backend: Torch
+ | > Mixed precision: False
+ | > Precision: float32
+ | > Current device: 0
+ | > Num. of GPUs: 1
+ | > Num. of CPUs: 48
+ | > Num. of Torch Threads: 6
+ | > Torch seed: 54321
+ | > Torch CUDNN: True
+ | > Torch CUDNN deterministic: False
+ | > Torch CUDNN benchmark: False
+ | > Torch TF32 MatMul: True
+ > Start Tensorboard: tensorboard --logdir=/home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-May-01-2024_10+55AM-a31d486
+
+ > Model has 166276116 parameters
+
+[4m[1m > EPOCH: 0/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-May-01-2024_10+55AM-a31d486
+
+[1m > TRAINING (2024-05-01 10:55:04) [0m
+/home/student.aau.dk/lk83xy/avs8/AVS8/custom_tacotron2.py:188: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  inputs["input_values"] = torch.tensor(inputs["input_values"]).to(device="cuda")
+/home/student.aau.dk/lk83xy/avs8/AVS8/custom_tacotron2.py:189: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  inputs["attention_mask"] = torch.tensor(inputs["attention_mask"]).to(device="cuda")
+/usr/local/lib/python3.10/dist-packages/torch/functional.py:507: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at ../aten/src/ATen/native/TensorShape.cpp:3549.)
+  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
+
+[1m   --> TIME: 2024-05-01 10:55:47 -- STEP: 0/2032 -- GLOBAL_STEP: 0[0m
+     | > decoder_loss: 3.8916778564453125  (3.8916778564453125)
+     | > postnet_loss: 6.013586521148682  (6.013586521148682)
+     | > similarity_loss: 3.967012405395508  (3.967012405395508)
+     | > infonce_loss: 4.813082695007324  (4.813082695007324)
+     | > stopnet_loss: 0.6575170159339905  (0.6575170159339905)
+     | > decoder_coarse_loss: 3.894845724105835  (3.894845724105835)
+     | > decoder_ddc_loss: 0.013195584528148174  (0.013195584528148174)
+     | > ga_loss: 0.06008010357618332  (0.06008010357618332)
+     | > decoder_diff_spec_loss: 0.43811896443367004  (0.43811896443367004)
+     | > postnet_diff_spec_loss: 4.746546268463135  (4.746546268463135)
+     | > decoder_ssim_loss: 0.7758957147598267  (0.7758957147598267)
+     | > postnet_ssim_loss: 0.7582402229309082  (0.7582402229309082)
+     | > loss: 8.285967826843262  (8.285967826843262)
+     | > align_error: 0.8806675225496292  (0.8806675225496292)
+     | > grad_norm: tensor(6.1014, device='cuda:0')  (tensor(6.1014, device='cuda:0'))
+     | > current_lr: 2.5000000000000002e-08 
+     | > step_time: 3.4195  (3.4194624423980713)
+     | > loader_time: 39.4208  (39.42079544067383)
+
+
+[1m   --> TIME: 2024-05-01 10:56:27 -- STEP: 1/2032 -- GLOBAL_STEP: 1[0m
+     | > decoder_loss: 4.11033296585083  (4.11033296585083)
+     | > postnet_loss: 6.1526665687561035  (6.1526665687561035)
+     | > similarity_loss: 3.745335102081299  (3.745335102081299)
+     | > infonce_loss: 4.961695194244385  (4.961695194244385)
+     | > stopnet_loss: 0.6363879442214966  (0.6363879442214966)
+     | > decoder_coarse_loss: 4.08059549331665  (4.08059549331665)
+     | > decoder_ddc_loss: 0.01762906275689602  (0.01762906275689602)
+     | > ga_loss: 0.05982804298400879  (0.05982804298400879)
+     | > decoder_diff_spec_loss: 0.5347440838813782  (0.5347440838813782)
+     | > postnet_diff_spec_loss: 4.68979549407959  (4.68979549407959)
+     | > decoder_ssim_loss: 0.9606366753578186  (0.9606366753578186)
+     | > postnet_ssim_loss: 0.932402491569519  (0.932402491569519)
+     | > loss: 8.481986999511719  (8.481986999511719)
+     | > align_error: 0.8632297813892365  (0.8632297813892365)
+     | > grad_norm: tensor(4.8145, device='cuda:0')  (tensor(4.8145, device='cuda:0'))
+     | > current_lr: 2.5000000000000002e-08 
+     | > step_time: 0.4512  (0.4511897563934326)
+     | > loader_time: 37.1072  (37.10724878311157)
+
+
+[1m   --> TIME: 2024-05-01 10:57:02 -- STEP: 2/2032 -- GLOBAL_STEP: 2[0m
+     | > decoder_loss: 4.9056315422058105  (4.50798225402832)
+     | > postnet_loss: 7.00971794128418  (6.581192255020142)
+     | > similarity_loss: 3.2866408824920654  (3.515987992286682)
+     | > infonce_loss: 4.566993713378906  (4.7643444538116455)
+     | > stopnet_loss: 0.6636915802955627  (0.6500397622585297)
+     | > decoder_coarse_loss: 4.897474765777588  (4.489035129547119)
+     | > decoder_ddc_loss: 0.013986506499350071  (0.015807784628123045)
+     | > ga_loss: 0.04778485372662544  (0.053806448355317116)
+     | > decoder_diff_spec_loss: 0.3393179476261139  (0.43703101575374603)
+     | > postnet_diff_spec_loss: 4.5637922286987305  (4.62679386138916)
+     | > decoder_ssim_loss: 0.9654413461685181  (0.9630390107631683)
+     | > postnet_ssim_loss: 0.9452431201934814  (0.9388228058815002)
+     | > loss: 8.776176452636719  (8.629081726074219)
+     | > align_error: 0.8870780616998672  (0.8751539215445518)
+     | > grad_norm: tensor(4.4512, device='cuda:0')  (tensor(4.6329, device='cuda:0'))
+     | > current_lr: 2.5000000000000002e-08 
+     | > step_time: 0.5509  (0.501024603843689)
+     | > loader_time: 34.7687  (35.93798613548279)
+
+
+[1m   --> TIME: 2024-05-01 10:57:41 -- STEP: 3/2032 -- GLOBAL_STEP: 3[0m
+     | > decoder_loss: 5.382987976074219  (4.79965082804362)
+     | > postnet_loss: 7.441597938537598  (6.86799414952596)
+     | > similarity_loss: 3.019768476486206  (3.350581487019857)
+     | > infonce_loss: 3.8478167057037354  (4.458835204442342)
+     | > stopnet_loss: 0.671867847442627  (0.6573157906532288)
+     | > decoder_coarse_loss: 5.355910301208496  (4.777993520100911)
+     | > decoder_ddc_loss: 0.012570378370583057  (0.014728649208943049)
+     | > ga_loss: 0.03729016333818436  (0.048301020016272865)
+     | > decoder_diff_spec_loss: 0.3119257986545563  (0.3953292767206828)
+     | > postnet_diff_spec_loss: 4.4586405754089355  (4.570742766062419)
+     | > decoder_ssim_loss: 0.9787644743919373  (0.9682808319727579)
+     | > postnet_ssim_loss: 0.9620449542999268  (0.9465635220209757)
+     | > loss: 8.801324844360352  (8.686496098836264)
+     | > align_error: 0.9229487180709839  (0.8910855203866959)
+     | > grad_norm: tensor(4.1201, device='cuda:0')  (tensor(4.4620, device='cuda:0'))
+     | > current_lr: 2.5000000000000002e-08 
+     | > step_time: 0.6484  (0.5501628716786703)
+     | > loader_time: 37.8289  (36.568299770355225)
+
+
+[1m   --> TIME: 2024-05-01 10:58:21 -- STEP: 4/2032 -- GLOBAL_STEP: 4[0m
+     | > decoder_loss: 6.524782180786133  (5.230933666229248)
+     | > postnet_loss: 8.565217018127441  (7.292299866676331)
+     | > similarity_loss: 2.9229652881622314  (3.2436774373054504)
+     | > infonce_loss: 4.215977191925049  (4.398120701313019)
+     | > stopnet_loss: 0.6633456349372864  (0.6588232517242432)
+     | > decoder_coarse_loss: 6.496049880981445  (5.207507610321045)
+     | > decoder_ddc_loss: 0.0159907229244709  (0.015044167637825012)
+     | > ga_loss: 0.04230934754014015  (0.046803101897239685)
+     | > decoder_diff_spec_loss: 0.3059612810611725  (0.3729872778058052)
+     | > postnet_diff_spec_loss: 4.468036651611328  (4.545066237449646)
+     | > decoder_ssim_loss: 0.9762910008430481  (0.9702833741903305)
+     | > postnet_ssim_loss: 0.9587987661361694  (0.9496223330497742)
+     | > loss: 9.737409591674805  (8.949224472045898)
+     | > align_error: 0.9045371562242508  (0.8944484293460846)
+     | > grad_norm: tensor(4.0937, device='cuda:0')  (tensor(4.3699, device='cuda:0'))
+     | > current_lr: 2.5000000000000002e-08 
+     | > step_time: 0.4602  (0.5276752710342407)
+     | > loader_time: 39.395  (37.27496498823166)
+
+
+[1m   --> TIME: 2024-05-01 10:58:58 -- STEP: 5/2032 -- GLOBAL_STEP: 5[0m
+     | > decoder_loss: 6.617922306060791  (5.508331394195556)
+     | > postnet_loss: 8.640665054321289  (7.561972904205322)
+     | > similarity_loss: 2.9260916709899902  (3.1801602840423584)
+     | > infonce_loss: 4.643550872802734  (4.447206735610962)
+     | > stopnet_loss: 0.6968048214912415  (0.6664195656776428)
+     | > decoder_coarse_loss: 6.620260715484619  (5.49005823135376)
+     | > decoder_ddc_loss: 0.011017339304089546  (0.014238801971077918)
+     | > ga_loss: 0.036898039281368256  (0.0448220893740654)
+     | > decoder_diff_spec_loss: 0.3599269688129425  (0.37037521600723267)
+     | > postnet_diff_spec_loss: 4.459563255310059  (4.527965641021728)
+     | > decoder_ssim_loss: 0.976472020149231  (0.9715211033821106)
+     | > postnet_ssim_loss: 0.9564356207847595  (0.9509849905967712)
+     | > loss: 9.934271812438965  (9.146233940124512)
+     | > align_error: 0.9252421259880066  (0.900607168674469)
+     | > grad_norm: tensor(4.0228, device='cuda:0')  (tensor(4.3005, device='cuda:0'))
+     | > current_lr: 2.5000000000000002e-08 
+     | > step_time: 0.38  (0.49813141822814944)
+     | > loader_time: 36.6326  (37.146483421325684)
+
+
+[1m   --> TIME: 2024-05-01 10:59:38 -- STEP: 6/2032 -- GLOBAL_STEP: 6[0m
+     | > decoder_loss: 6.122513771057129  (5.610695123672485)
+     | > postnet_loss: 8.150592803955078  (7.660076220830281)
+     | > similarity_loss: 2.8604390621185303  (3.1268734137217202)
+     | > infonce_loss: 4.146886348724365  (4.397153337796529)
+     | > stopnet_loss: 0.6779930591583252  (0.6683484812577566)
+     | > decoder_coarse_loss: 6.129236221313477  (5.596587896347046)
+     | > decoder_ddc_loss: 0.011983233503997326  (0.013862873893231153)
+     | > ga_loss: 0.04126258194446564  (0.044228838135798774)
+     | > decoder_diff_spec_loss: 0.35975944995880127  (0.36860592166582745)
+     | > postnet_diff_spec_loss: 4.472804069519043  (4.518772045771281)
+     | > decoder_ssim_loss: 0.9329938888549805  (0.9650999009609222)
+     | > postnet_ssim_loss: 0.9189515709877014  (0.9456460873285929)
+     | > loss: 9.410847663879395  (9.190336227416992)
+     | > align_error: 0.9131495282053947  (0.9026975619296232)
+     | > grad_norm: tensor(4.1828, device='cuda:0')  (tensor(4.2809, device='cuda:0'))
+     | > current_lr: 2.5000000000000002e-08 
+     | > step_time: 0.5953  (0.5143275260925293)
+     | > loader_time: 39.2741  (37.50109346707662)
+
+
+[1m   --> TIME: 2024-05-01 11:00:15 -- STEP: 7/2032 -- GLOBAL_STEP: 7[0m
+     | > decoder_loss: 6.476462364196777  (5.734376158033099)
+     | > postnet_loss: 8.52432632446289  (7.7835405213492255)
+     | > similarity_loss: 2.842374324798584  (3.086230686732701)
+     | > infonce_loss: 3.7394442558288574  (4.303194897515433)
+     | > stopnet_loss: 0.6640022397041321  (0.6677275896072388)
+     | > decoder_coarse_loss: 6.458393573760986  (5.719702993120466)
+     | > decoder_ddc_loss: 0.018009789288043976  (0.014455290378204413)
+     | > ga_loss: 0.042491476982831955  (0.043980643685374944)
+     | > decoder_diff_spec_loss: 0.3641299307346344  (0.3679664943899427)
+     | > postnet_diff_spec_loss: 4.507438659667969  (4.517152990613665)
+     | > decoder_ssim_loss: 0.9702243208885193  (0.965831960950579)
+     | > postnet_ssim_loss: 0.9550336003303528  (0.9469871606145587)
+     | > loss: 9.590417861938477  (9.247490746634346)
+     | > align_error: 0.883761465549469  (0.8999924053038869)
+     | > grad_norm: tensor(4.0541, device='cuda:0')  (tensor(4.2485, device='cuda:0'))
+     | > current_lr: 2.5000000000000002e-08 
+     | > step_time: 0.4308  (0.5023999895368304)
+     | > loader_time: 36.8011  (37.40110101018633)
+
+
+[1m   --> TIME: 2024-05-01 11:00:51 -- STEP: 8/2032 -- GLOBAL_STEP: 8[0m
+     | > decoder_loss: 5.969694137573242  (5.7637909054756165)
+     | > postnet_loss: 8.024713516235352  (7.8136871457099915)
+     | > similarity_loss: 3.193753719329834  (3.0996710658073425)
+     | > infonce_loss: 3.833033800125122  (4.244424760341644)
+     | > stopnet_loss: 0.6811975240707397  (0.6694113314151764)
+     | > decoder_coarse_loss: 5.937900543212891  (5.746977686882019)
+     | > decoder_ddc_loss: 0.01097471546381712  (0.014020218513906002)
+     | > ga_loss: 0.035768408328294754  (0.04295411426573992)
+     | > decoder_diff_spec_loss: 0.29307839274406433  (0.3586054816842079)
+     | > postnet_diff_spec_loss: 4.411208152770996  (4.503909885883331)
+     | > decoder_ssim_loss: 0.9608013033866882  (0.9652031287550926)
+     | > postnet_ssim_loss: 0.9436467885971069  (0.9465696141123772)
+     | > loss: 9.254740715026855  (9.24839699268341)
+     | > align_error: 0.9361510276794434  (0.9045122331008315)
+     | > grad_norm: tensor(4.0183, device='cuda:0')  (tensor(4.2197, device='cuda:0'))
+     | > current_lr: 2.5000000000000002e-08 
+     | > step_time: 0.4514  (0.4960209727287293)
+     | > loader_time: 35.9223  (37.216245263814926)
+
+
+[1m   --> TIME: 2024-05-01 11:01:32 -- STEP: 9/2032 -- GLOBAL_STEP: 9[0m
+     | > decoder_loss: 5.598627090454102  (5.745439370473226)
+     | > postnet_loss: 7.625917911529541  (7.792823897467719)
+     | > similarity_loss: 3.012230157852173  (3.0899554093678794)
+     | > infonce_loss: 4.007652282714844  (4.218116707271999)
+     | > stopnet_loss: 0.7220026850700378  (0.6752548151546054)
+     | > decoder_coarse_loss: 5.563841819763184  (5.726629257202148)
+     | > decoder_ddc_loss: 0.019023604691028595  (0.014576150311364068)
+     | > ga_loss: 0.04349059611558914  (0.04301372336016761)
+     | > decoder_diff_spec_loss: 0.30574047565460205  (0.3527315921253628)
+     | > postnet_diff_spec_loss: 4.427574157714844  (4.495428138309055)
+     | > decoder_ssim_loss: 0.9791761636734009  (0.9667556881904602)
+     | > postnet_ssim_loss: 0.9538645148277283  (0.9473801586363051)
+     | > loss: 9.062867164611816  (9.227782567342123)
+     | > align_error: 0.882255345582962  (0.902039245598846)
+     | > grad_norm: tensor(3.8708, device='cuda:0')  (tensor(4.1809, device='cuda:0'))
+     | > current_lr: 2.5000000000000002e-08 
+     | > step_time: 0.5116  (0.49775653415256077)
+     | > loader_time: 40.4608  (37.576751444074844)
+
+
+[1m   --> TIME: 2024-05-01 11:02:11 -- STEP: 10/2032 -- GLOBAL_STEP: 10[0m
+     | > decoder_loss: 6.459135055541992  (5.8168089389801025)
+     | > postnet_loss: 8.497637748718262  (7.863305282592774)
+     | > similarity_loss: 2.730253219604492  (3.0539851903915407)
+     | > infonce_loss: 4.132881164550781  (4.209593152999878)
+     | > stopnet_loss: 0.6939074397087097  (0.6771200776100159)
+     | > decoder_coarse_loss: 6.463294506072998  (5.800295782089234)
+     | > decoder_ddc_loss: 0.018991265445947647  (0.015017661824822425)
+     | > ga_loss: 0.04344456270337105  (0.04305680729448795)
+     | > decoder_diff_spec_loss: 0.37613242864608765  (0.3550716757774353)
+     | > postnet_diff_spec_loss: 4.4168925285339355  (4.487574577331543)
+     | > decoder_ssim_loss: 0.976116418838501  (0.9676917612552642)
+     | > postnet_ssim_loss: 0.9595710635185242  (0.948599249124527)
+     | > loss: 9.668856620788574  (9.271889972686768)
+     | > align_error: 0.9016344174742699  (0.9019987627863884)
+     | > grad_norm: tensor(3.8666, device='cuda:0')  (tensor(4.1495, device='cuda:0'))
+     | > current_lr: 2.5000000000000002e-08 
+     | > step_time: 0.3933  (0.4873081684112549)
+     | > loader_time: 38.6329  (37.682369112968445)
+

@@ -21,7 +21,6 @@ Group 841, Aalborg University 2024
 ```
 AVS8
 ├── tts_model/tts_model--en--ek1--tacotron2
-│   │
 │   ├── config.json - 
 │   └── model_file.pth - 
 │
@@ -33,6 +32,6 @@ AVS8
 
 
 # Usage
-- "tts_pipeline.py"
+- Run "tts_pipeline.py"
 
 ## License

@@ -109,6 +109,9 @@ libriTTS/
 runs/
 vocoder/
 tts_model/
+wandb/
+model/
+output/
 
 # editor, os cache directory
 .vscode/
@@ -117,3 +120,6 @@ __MACOSX/
 
 #playground
 torch_playground.py
+
+#CLAAUDIA
+slurm*
