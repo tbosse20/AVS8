@@ -20,6 +20,7 @@ import wandb
 # os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Disable TensorFlow INFO and WARNING messages
 import argparse
 from dataset.dataset_util import download_dataset
+import gc
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-n", "--notes", type=str, help="Notes for the run")
@@ -45,6 +46,7 @@ if not os.path.exists(dataset_path):
     download_libri_tts(dataset_path, subset="libri-tts-clean-100") #這裡是Ollie做的
 
 print("downloaded data")
+gc.collect()
 # define dataset config
 dataset_config = BaseDatasetConfig(formatter="libri_tts", meta_file_train="", path=dataset_path)
 
@@ -117,7 +119,7 @@ train_samples, eval_samples = load_tts_samples(
 # it maps speaker-id to speaker-name in the model and data-loader
 speaker_manager = SpeakerManager()
 speaker_manager.set_ids_from_data(train_samples + eval_samples, parse_key="speaker_name")
-
+gc.collect()
 # init model
 model = Tacotron2(tacotron2_config, ap, tokenizer, speaker_manager=speaker_manager)
 # model.load_checkpoint(config=TACO_CONFIG, checkpoint_path=TACO_MODEL)
@@ -147,7 +149,7 @@ trainer = Trainer(
     eval_samples=eval_samples,
     test_samples=eval_samples, # TODO: Load and change this to test_samples
 )
-
+gc.collect()
 # Dev mode: reduce the number of samples
 if args.dev:    
     trainer.setup_small_run(8)

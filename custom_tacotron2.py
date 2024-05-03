@@ -25,7 +25,7 @@ from librosa.core import resample
 from transformers import AutoFeatureExtractor, Wav2Vec2ForXVector, logging
 from librosa.util import fix_length
 import wandb
-
+import gc
 #####
 
 #NEW PATH#
