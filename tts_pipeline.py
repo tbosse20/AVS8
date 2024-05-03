@@ -101,7 +101,7 @@ ap = AudioProcessor.init_from_config(tacotron2_config)  #, verbose=False)
 # INITIALIZE THE TOKENIZER
 # Tokenizer is used to convert text to sequences of token IDs.
 # If characters are not defined in the config, default characters are passed to the config
-tokenizer, config = TTSTokenizer.init_from_config(config)
+tokenizer, config = TTSTokenizer.init_from_config(tacotron2_config)
 
 # LOAD DATA SAMPLES
 # Each sample is a list of ```[text, audio_file_path, speaker_name]```
@@ -140,13 +140,19 @@ model = Tacotron2(tacotron2_config, ap, tokenizer, speaker_manager=speaker_manag
 # # INITIALIZE THE TRAINER
 # # Trainer provides a generic API to train all the 🐸TTS models with all its perks like mixed-precision training,
 # # distributed training, etc.
+
+# train_samples = train_samples[:32]
+# eval_samples = eval_samples[:32]
+
 trainer = Trainer(
     config=tacotron2_config,
     output_path=output_path,
     args=TrainerArgs(),
     model=model,
-    train_samples=train_samples,
-    eval_samples=eval_samples,
+    # train_samples=train_samples,
+    # eval_samples=eval_samples,
+    # train_loader=model.get_data_loader(config=tacotron2_config, assets=None, is_eval=False, samples=train_samples, verbose=False, num_gpus=1),
+    # eval_loader=model.get_data_loader(config=tacotron2_config, assets=None, is_eval=True, samples=eval_samples, verbose=False, num_gpus=1),
     test_samples=eval_samples, # TODO: Load and change this to test_samples
 )
 gc.collect()
