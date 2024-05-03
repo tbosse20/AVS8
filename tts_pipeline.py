@@ -149,8 +149,8 @@ trainer = Trainer(
     output_path=output_path,
     args=TrainerArgs(),
     model=model,
-    # train_samples=train_samples,
-    # eval_samples=eval_samples,
+    train_samples=train_samples,
+    eval_samples=eval_samples,
     # train_loader=model.get_data_loader(config=tacotron2_config, assets=None, is_eval=False, samples=train_samples, verbose=False, num_gpus=1),
     # eval_loader=model.get_data_loader(config=tacotron2_config, assets=None, is_eval=True, samples=eval_samples, verbose=False, num_gpus=1),
     test_samples=eval_samples, # TODO: Load and change this to test_samples
