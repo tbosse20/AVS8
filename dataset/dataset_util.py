@@ -5,7 +5,7 @@ def download_dataset(dataset_path):
 
     subsets = {
         "libri-tts-clean-100": 'train-clean-100',  # 這裡是Ollie做的
-        "libri-tts-test-clean": 'test-clean',  # 這裡是Tonko做的
+        # "libri-tts-test-clean": 'test-clean',  # 這裡是Tonko做的
     }
 
     subfolders = os.listdir(os.path.join(dataset_path, "LibriTTS"))
