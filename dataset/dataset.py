@@ -17,6 +17,7 @@ import torchaudio
 from librosa.core import resample
 from librosa.util import fix_length
 from transformers import AutoFeatureExtractor, Wav2Vec2ForXVector, logging
+import gc
 #####
 
 # to prevent too many open files error as suggested here
@@ -442,7 +443,7 @@ class TTSDataset(Dataset):
             # convert list of dicts to dict of lists
             batch = {k: [dic[k] for dic in batch] for k in batch[0]}
             #NEW ADD SPK_EMBEDDING
-            batch["wav"] = [fix_length(w, size=int(len(w)*1.1)) for w in batch["wav"]]
+            batch["wav"] = [fix_length(w, size=int(len(w)*1.05)) for w in batch["wav"]]
             wav_lengths = [w.shape[0] for w in batch["wav"]]
             
             max_wav_len = max(wav_lengths)
@@ -458,6 +459,7 @@ class TTSDataset(Dataset):
                 w[zero_indices:zero_indices + num_zeros] = 0
                 masked_embedding = spk_embedding(w)
                 pos_emb_list.append(masked_embedding)
+            gc.collect()
             #####
             # get language ids from language names
             if self.language_id_mapping is not None:
