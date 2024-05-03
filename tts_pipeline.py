@@ -15,6 +15,7 @@ from TTS.api import load_config
 from TTS.tts.utils.synthesis import synthesis
 from TTS.vocoder.models.gan import GAN
 import torchaudio
+import gc
 
 VOCODER_MODEL = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
 VOCODER_CONFIG = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/config.json"
@@ -27,12 +28,13 @@ current_path = os.path.dirname(os.path.abspath(__file__))
 output_path = os.path.join(current_path, "runs")
 dataset_path = os.path.join(current_path, "libriTTS")
 
+
 # download the dataset if not downloaded
 if not os.path.exists(dataset_path):
     from TTS.utils.downloaders import download_libri_tts
 
     download_libri_tts(dataset_path, subset="libri-tts-clean-100") #這裡是Ollie做的
-
+gc.collect()
 print("downloaded data")
 # define dataset config
 dataset_config = BaseDatasetConfig(formatter="libri_tts", meta_file_train="", path=dataset_path)
@@ -75,7 +77,7 @@ ap = AudioProcessor.init_from_config(config)
 # Tokenizer is used to convert text to sequences of token IDs.
 # If characters are not defined in the config, default characters are passed to the config
 tokenizer, config = TTSTokenizer.init_from_config(config)
-
+gc.collect()
 # LOAD DATA SAMPLES
 # Each sample is a list of ```[text, audio_file_path, speaker_name]```
 # You can define your custom sample loader returning the list of samples.
@@ -87,7 +89,7 @@ train_samples, eval_samples = load_tts_samples(
     eval_split_max_size=config.eval_split_max_size,
     eval_split_size=config.eval_split_size,
 )
-
+gc.collect()
 # init speaker manager for multi-speaker training
 # it maps speaker-id to speaker-name in the model and data-loader
 speaker_manager = SpeakerManager()
@@ -113,6 +115,7 @@ model = Tacotron2(config, ap, tokenizer, speaker_manager=speaker_manager)
 # # INITIALIZE THE TRAINER
 # # Trainer provides a generic API to train all the 🐸TTS models with all its perks like mixed-precision training,
 # # distributed training, etc.
+gc.collect()
 trainer = Trainer(
     TrainerArgs(), config, output_path, model=model, train_samples=train_samples, eval_samples=eval_samples
 )

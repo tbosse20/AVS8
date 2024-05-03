@@ -24,7 +24,7 @@ import torchaudio
 from librosa.core import resample
 from transformers import AutoFeatureExtractor, Wav2Vec2ForXVector, logging
 from librosa.util import fix_length
-
+import gc
 #####
 
 #NEW PATH#
@@ -398,6 +398,8 @@ class Tacotron2(BaseTacotron):
         speaker_emb_dict = {}
         for speaker_id, spk_emb2 in zip(speaker_ids, outputs["spk_emb2"]):
             speaker_emb_dict[speaker_id] = spk_emb2
+
+        gc.collect()
         # compute loss
         with autocast(enabled=False):  # use float32 for the criterion
             loss_dict = criterion(
@@ -422,7 +424,7 @@ class Tacotron2(BaseTacotron):
                 pos_emb,
                 #####
             )
-
+        gc.collect()
         # compute alignment error (the lower the better )
         align_error = 1 - alignment_diagonal_score(outputs["alignments"])
         loss_dict["align_error"] = align_error
