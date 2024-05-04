@@ -156,6 +156,7 @@ trainer = Trainer(
     test_samples=eval_samples, # TODO: Load and change this to test_samples
 )
 gc.collect()
+
 # Dev mode: reduce the number of samples
 if args.dev:    
     trainer.setup_small_run(8)
