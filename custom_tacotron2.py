@@ -26,12 +26,36 @@ from transformers import AutoFeatureExtractor, Wav2Vec2ForXVector, logging
 from librosa.util import fix_length
 import wandb
 import gc
+import time
 #####
 
 #NEW PATH#
 VOCODER_CONFIG_PATH = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/config.json"
 VOCODER_MODEL = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
 #####
+
+def retry_load_models(model_name, cache_dir="./.transformers", attempts: int = 5, retry_delay: int = 3):
+    
+    for attempt in range(attempts):
+        try:
+            # Try loading from local cache
+            model = Wav2Vec2ForXVector.from_pretrained(
+                model_name,
+                cache_dir=cache_dir,
+                revision="main",
+            )   
+            feature_extractor = AutoFeatureExtractor.from_pretrained(
+                model_name,
+                cache_dir=cache_dir,
+                revision="main",
+            )
+            break
+        
+        except OSError as e:
+            # Download if not found locally
+            time.sleep(retry_delay)
+
+    return model, feature_extractor
 
 class Tacotron2(BaseTacotron):
     """Tacotron2 model implementation inherited from :class:`TTS.tts.models.base_tacotron.BaseTacotron`.
@@ -116,12 +140,14 @@ class Tacotron2(BaseTacotron):
         #NEW VOCODER#
         self.vocoder = GAN(load_config(VOCODER_CONFIG_PATH))
         self.vocoder.load_checkpoint(config=load_config(VOCODER_CONFIG_PATH), checkpoint_path=VOCODER_MODEL, eval=True)
-
-        #NEW SPK EMBEDDING#
+        
+        # NEW SPK EMBEDDING #
         self.spk_emb_model = Wav2Vec2ForXVector.from_pretrained("./encoderwav2vec2", resume_download=True)
         self.feature_extractor = AutoFeatureExtractor.from_pretrained("./featureextractorwav2vec2", resume_download=True)
         # self.spk_emb_model.save_pretrained("./encoderwav2vec2")
-        # self.feature_extractor.save_pretrained("./featureextractorwav2vec2") 
+        # self.feature_extractor.save_pretrained("./featureextractorwav2vec2")
+        
+        # self.spk_emb_model, self.feature_extractor = retry_load_models("anton-l/wav2vec2-base-superb-sv")
         #####
 
         # global style token layers

@@ -59,9 +59,9 @@ audio_config = BaseAudioConfig(sample_rate=24000, resample=False, do_trim_silenc
 config = {
     "batch_size": 16,
     "eval_batch_size": 8,
-    "num_loader_workers": 1,
-    "num_eval_loader_workers": 1,
-    "precompute_num_workers": 1,
+    "num_loader_workers": 0,
+    "num_eval_loader_workers": 0,
+    "precompute_num_workers": 0,
     "run_eval": True,
     "test_delay_epochs": -1,
     "epochs": 3 if args.dev else 100,
@@ -141,9 +141,6 @@ model = Tacotron2(tacotron2_config, ap, tokenizer, speaker_manager=speaker_manag
 # # Trainer provides a generic API to train all the 🐸TTS models with all its perks like mixed-precision training,
 # # distributed training, etc.
 
-# train_samples = train_samples[:32]
-# eval_samples = eval_samples[:32]
-
 trainer = Trainer(
     config=tacotron2_config,
     output_path=output_path,
@@ -151,8 +148,6 @@ trainer = Trainer(
     model=model,
     train_samples=train_samples,
     eval_samples=eval_samples,
-    # train_loader=model.get_data_loader(config=tacotron2_config, assets=None, is_eval=False, samples=train_samples, verbose=False, num_gpus=1),
-    # eval_loader=model.get_data_loader(config=tacotron2_config, assets=None, is_eval=True, samples=eval_samples, verbose=False, num_gpus=1),
     test_samples=eval_samples, # TODO: Load and change this to test_samples
 )
 gc.collect()
