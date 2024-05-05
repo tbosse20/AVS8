@@ -422,8 +422,8 @@ class TTSDataset(Dataset):
         #NEW COMPUTE EMBEDDINGS
         def spk_embedding(audio, sr:int = 16000) -> torch.Tensor:
             logging.set_verbosity_error()
-            feat_extractor = AutoFeatureExtractor.from_pretrained("anton-l/wav2vec2-base-superb-sv")
-            spk_emb_model = Wav2Vec2ForXVector.from_pretrained("anton-l/wav2vec2-base-superb-sv")
+            feat_extractor = AutoFeatureExtractor.from_pretrained(os.path.join(os.getcwd(), "featureextractorwav2vec2"))
+            spk_emb_model = Wav2Vec2ForXVector.from_pretrained(os.path.join(os.getcwd(),"encoderwav2vec2"))
             audio = resample(np.array(audio), orig_sr=sr, target_sr=16000)
             inputs = feat_extractor(audio, sampling_rate=16000, return_tensors="pt")
             with torch.no_grad():

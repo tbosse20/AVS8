@@ -59,9 +59,9 @@ audio_config = BaseAudioConfig(sample_rate=24000, resample=False, do_trim_silenc
 config = {
     "batch_size": 16,
     "eval_batch_size": 8,
-    "num_loader_workers": 0,
-    "num_eval_loader_workers": 0,
-    "precompute_num_workers": 0,
+    "num_loader_workers": 2,
+    "num_eval_loader_workers": 2,
+    "precompute_num_workers": 2,
     "run_eval": True,
     "test_delay_epochs": -1,
     "epochs": 3 if args.dev else 100,
