@@ -23,8 +23,8 @@ from dataset.dataset_util import download_dataset
 import gc
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-n", "--notes", type=str, help="Notes for the run")
-parser.add_argument("-dev", action="store_true", help="Enable development mode")
+parser.add_argument("-n",       type=str,               help="Notes for the run")
+parser.add_argument("-dev",     action="store_true",    help="Enable development mode")
 args = parser.parse_args()
 
 VOCODER_MODEL = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
@@ -153,7 +153,7 @@ trainer = Trainer(
 gc.collect()
 
 # Dev mode: reduce the number of samples
-if args.dev:    
+if args.dev:
     trainer.setup_small_run(8)
 
 trainer.fit()
