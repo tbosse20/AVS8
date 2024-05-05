@@ -120,7 +120,9 @@ class Tacotron2(BaseTacotron):
         #NEW SPK EMBEDDING#
         self.spk_emb_model = Wav2Vec2ForXVector.from_pretrained("anton-l/wav2vec2-base-superb-sv", resume_download=True)
         self.feature_extractor = AutoFeatureExtractor.from_pretrained("anton-l/wav2vec2-base-superb-sv", resume_download=True)
-        #####
+	self.spk_emb_model.save_pretrained("./encoderwav2vec2")
+        self.feature_extractor.save_pretrained("./featureextractorwav2vec2") 
+ #####
 
         # global style token layers
         if self.gst and self.use_gst:
