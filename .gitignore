@@ -121,5 +121,8 @@ __MACOSX/
 #playground
 torch_playground.py
 
+#encoders
+encoderwav2vec2/
+featureextractorwav2vec2/
 #CLAAUDIA
 slurm*
