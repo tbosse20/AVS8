@@ -1,0 +1,17 @@
+
+parser.add_argument("-id",      type=str,               help="Resume W&B run from given id")
+parser.add_argument("-run",     type=str,               help="Run folder to get weights from. Ex: 'run-May-05-2024_12+07AM-d53301e'")
+
+if args.id:
+    # Load saved model state dict and trainer
+    try:
+        # Handle potential file path issues (e.g., missing directory)
+        model_state_dict = torch.load(f"{args.resume_id}/model.pth")
+        trainer = trainer.load_from_checkpoint(
+            f"{args.resume_id}/trainer.pth",
+            model_state_dict=model_state_dict)
+        wandb.init(resume=args.resume_id)
+        print(f"Resuming training from W&B run: {args.resume_id}")
+    except FileNotFoundError:
+        print(f"Error: Could not find checkpoint files for W&B run ID {args.resume_id}. Starting a new run.")
+    
