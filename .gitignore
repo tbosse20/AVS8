@@ -112,6 +112,7 @@ tts_model/
 wandb/
 model/
 output/
+.transformers/
 
 # editor, os cache directory
 .vscode/

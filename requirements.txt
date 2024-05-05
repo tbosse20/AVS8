@@ -10,7 +10,7 @@ torch
 torchaudio
 torchvision
 tqdm==4.65.0
-transformers==4.33.3
+transformers
 TTS
 wandb
 trainer
