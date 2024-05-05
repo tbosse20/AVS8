@@ -451,6 +451,8 @@ class Tacotron2(BaseTacotron):
         # compute alignment error (the lower the better )
         align_error = 1 - alignment_diagonal_score(outputs["alignments"])
         loss_dict["align_error"] = align_error
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
         return outputs, loss_dict
 
     def get_optimizer(self) -> List:
