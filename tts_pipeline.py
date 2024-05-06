@@ -60,7 +60,7 @@ config = {
     "test_delay_epochs": -1,
     "epochs": 2 if args.dev else 100,
     "lr": 1e-4,
-    "print_step": 1,
+    "print_step": 50,
     "print_eval": True,
     "mixed_precision": False,
     "output_path": output_path,
