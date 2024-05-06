@@ -230,7 +230,13 @@ class Tacotron2(BaseTacotron):
         return embeddings
 
     def forward(  # pylint: disable=dangerous-default-value=None
-        self, text, text_lengths, mel_specs=None, mel_lengths=None, aux_input={"speaker_ids": None, "d_vectors": None}, spk_emb1=None
+        self,
+        text,
+        text_lengths,
+        mel_specs=None,
+        mel_lengths=None,
+        aux_input={"speaker_ids": None, "d_vectors": None},
+        spk_emb1=None,
     ):
         """Forward pass for training with Teacher Forcing.
 

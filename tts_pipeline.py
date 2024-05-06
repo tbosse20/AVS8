@@ -18,8 +18,10 @@ import gc
 
 # Python cmd line arguments
 parser = argparse.ArgumentParser()
-parser.add_argument("-n", "--notes", type=str,      help="Notes for the run")
-parser.add_argument("-dev", action="store_true",    help="Enable development mode")
+parser.add_argument("-n", "--notes",    type=str,               help="Notes for the run")
+parser.add_argument("--dev",            action="store_true",    help="Enable development mode")
+parser.add_argument("--test_only",      action="store_true",    help="Run test phase only")
+parser.add_argument("--base",           action="store_true",    help="Model baseline mode")
 args = parser.parse_args()
 
 # Vocoder
@@ -68,19 +70,22 @@ config = {
     "min_text_len": 0,
     "max_text_len": 500,
     "min_audio_len": 5000,
-    "max_audio_len": 500000,
+    "max_audio_len": 250000,
     "double_decoder_consistency": True,
     "text_cleaner": "english_cleaners",
-    # "infoNCE_alpha": 0.2,
+    "infoNCE_alpha": 0.0 if args.base else 0.25,
+    "similarity_loss_alpha": 0.0 if args.base else 0.25,
 }
 
 wandb.init(
-    project="AVSP8",                            # Project name
-    entity="qwewef",                            # Entity name
-    config=config,                              # Configuration dictionary
-    notes=args.notes if args.notes else "",     # Notes
+    project="AVSP8",                                        # Project name
+    entity="qwewef",                                        # Entity name
+    config=config,                                          # Configuration dictionary
+    notes=args.notes if args.notes else "",                 # Notes
     tags=[
-        "dev" if args.dev else "full"           # Run mode tag
+        "dev" if args.dev else "product",                   # Run development mode
+        "only_test" if args.test_only else "train_test",    # Phases of the run
+        "baseline" if args.base else "new_model",      # Model type
     ]
 )
 
@@ -90,7 +95,7 @@ train_samples, eval_samples, test_samples = dataset_util.load_samples(dataset_co
 # init speaker manager for multi-speaker training
 # it maps speaker-id to speaker-name in the model and data-loader
 speaker_manager = SpeakerManager()
-speaker_manager.set_ids_from_data(train_samples + eval_samples, parse_key="speaker_name")
+speaker_manager.set_ids_from_data(train_samples + eval_samples + test_samples, parse_key="speaker_name")
 gc.collect()
 
 # init model
@@ -103,16 +108,15 @@ model = Tacotron2(tacotron2_config, ap, tokenizer, speaker_manager=speaker_manag
 trainer = Trainer(
     config=tacotron2_config,
     output_path=output_path,
-    args=TrainerArgs(),
     model=model,
     train_samples=train_samples,
     eval_samples=eval_samples,
     test_samples=test_samples,
+    args=TrainerArgs(
+        skip_train_epoch=args.test_only,    # Skip training phase
+        small_run=4 if args.dev else None,  # Reduce number of samples
+    ),
 )
 gc.collect()
-
-# Dev mode: reduce the number of samples
-if args.dev:
-    trainer.setup_small_run(8)
 
 trainer.fit()
