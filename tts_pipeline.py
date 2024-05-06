@@ -1,7 +1,7 @@
 import os
 from trainer import Trainer, TrainerArgs
 # import numpy as np
-from TTS.tts.models.tacotron2 import Tacotron2
+# from TTS.tts.models.tacotron2 import Tacotron2
 from custom_tacotron2 import Tacotron2
 from TTS.tts.utils.speakers import SpeakerManager
 import wandb
@@ -113,7 +113,7 @@ trainer = Trainer(
     eval_samples=eval_samples,
     test_samples=test_samples,
     args=TrainerArgs(
-        skip_train_epoch=args.test_only,    # Skip training phase
+        # skip_train_epoch=args.test_only,    # Skip training phase
         small_run=4 if args.dev else None,  # Reduce number of samples
     ),
 )

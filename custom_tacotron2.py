@@ -382,8 +382,15 @@ class Tacotron2(BaseTacotron):
             else:
                 embedded_speakers = aux_input["d_vectors"]
 
+            print(encoder_outputs.shape)
+            print(embedded_speakers.shape)
             encoder_outputs = self._concat_speaker_embedding(encoder_outputs, embedded_speakers)
+            # embedded_speakers = embedded_speakers.permute(1, 0, 2)
+            # encoder_outputs = torch.cat((encoder_outputs, embedded_speakers), dim=0)
+            # exit()
 
+        # print(encoder_outputs)
+        # print(encoder_outputs.shape)
         decoder_outputs, alignments, stop_tokens = self.decoder.inference(encoder_outputs)
         postnet_outputs = self.postnet(decoder_outputs)
         postnet_outputs = decoder_outputs + postnet_outputs
@@ -396,6 +403,8 @@ class Tacotron2(BaseTacotron):
         waveform = waveform.cpu().detach().numpy()
         waveform = waveform.astype(np.float32)
         waveform = torch.from_numpy(waveform)
+        # waveform = torch.squeeze(waveform)  # Reshape to remove singleton dimension
+        print(waveform.shape)
         torchaudio.save("output.wav", waveform, 22050)
         #####
         
