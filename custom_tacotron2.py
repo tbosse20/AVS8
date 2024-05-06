@@ -260,14 +260,14 @@ class Tacotron2(BaseTacotron):
                 # B x 1 x speaker_embed_dim
                 #NEW USE SPK_EMB1 TO CONCAT
                 spk_emb1 = torch.stack(spk_emb1, dim=0)
-                embedded_speakers = spk_emb1
+                embedded_speakers = spk_emb1.to("cuda")
                 # embedded_speakers = self.speaker_embedding(aux_input["speaker_ids"])[:, None]
 
             else:
                 # B x 1 x speaker_embed_dim
                 embedded_speakers = torch.unsqueeze(aux_input["d_vectors"], 1)
             encoder_outputs = self._concat_speaker_embedding(encoder_outputs, embedded_speakers)
-            
+
         # capacitron
         if self.capacitron_vae and self.use_capacitron_vae:
             # B x capacitron_VAE_embedding_dim
