@@ -342,8 +342,8 @@ class TacotronLoss(torch.nn.Module):
         self.postnet_ssim_alpha = c.postnet_ssim_alpha
         #NEW Had to comment this out?
         # self.spk_emb_sim_alpha = c.spk_emb_sim_alpha
-        self.infoNCE_alpha = 0.25     # c.infoNCE_alpha
-        self.similarity_loss_alpha = 0.25
+        self.infoNCE_alpha = 0     # c.infoNCE_alpha
+        self.similarity_loss_alpha = 0
         #####
         self.config = c
 
@@ -422,42 +422,44 @@ class TacotronLoss(torch.nn.Module):
         return_dict["postnet_loss"] = postnet_loss
         
         #NEW GET COS SIM LOSS
-        spk_emb1 = torch.stack(spk_emb1, dim=0) # [4, 1, 512]
-        sim_loss = self.criterion_spkemb(spk_emb1, spk_emb2)
-        normalized_sim_loss_sum = torch.sum(-(sim_loss - 1) / 2, dim=0)
-        return_dict["similarity_loss"] = normalized_sim_loss_sum
-        loss += self.similarity_loss_alpha * normalized_sim_loss_sum[0]
+        if self.similarity_loss_alpha > 0:
+            spk_emb1 = torch.stack(spk_emb1, dim=0) # [4, 1, 512]
+            sim_loss = self.criterion_spkemb(spk_emb1, spk_emb2)
+            normalized_sim_loss_sum = torch.sum(-(sim_loss - 1) / 2, dim=0)
+            return_dict["similarity_loss"] = normalized_sim_loss_sum
+            loss += self.similarity_loss_alpha * normalized_sim_loss_sum[0]
         #####
 
         #NEW GET INFONCE LOSS
 
-        #fix shapes
-        pos_emb = torch.stack(pos_emb, dim=0)
-        pos_emb = torch.squeeze(pos_emb, 1)
-        spk_emb2 = torch.squeeze(spk_emb2, 1)
+            #fix shapes
+            pos_emb = torch.stack(pos_emb, dim=0)
+            pos_emb = torch.squeeze(pos_emb, 1)
+            spk_emb2 = torch.squeeze(spk_emb2, 1)
 
-        batch_neg_embs = []
-        for sample in spk_emb2:
-            for key, value in speaker_emb_dict.items():
-                # Check if the value (tensor) matches the search tensor
-                if torch.all(torch.eq(value, sample)):
-                    target_spk_id = key
-                    break
-            neg_embs = [value for key, value in speaker_emb_dict.items() if key != target_spk_id]
-            neg_embs_tensor = torch.stack(neg_embs, dim=0)
-            neg_embs_tensor = torch.squeeze(neg_embs_tensor, 1)
-            batch_neg_embs.append(neg_embs_tensor)
-        min_len = min([len(neg_embs) for neg_embs in batch_neg_embs])
-        batch_neg_embs = [neg_embs[:min_len] for neg_embs in batch_neg_embs]
-        batch_neg_embs = torch.stack(batch_neg_embs, dim=0)
-        infonce_loss_output = self.infonce_loss(spk_emb2, pos_emb, batch_neg_embs)
-        
-        # NEW Log embeddings as image
-        # wandb.log({"spk_emb": wandb.Image(spk_emb2.detach().cpu().numpy())})
-        # wandb.log({"pos_emb": wandb.Image(pos_emb.detach().cpu().numpy())})
-        
-        return_dict["infonce_loss"] = infonce_loss_output
-        loss += infonce_loss_output * self.infoNCE_alpha
+        if self.infoNCE_alpha > 0:
+            batch_neg_embs = []
+            for sample in spk_emb2:
+                for key, value in speaker_emb_dict.items():
+                    # Check if the value (tensor) matches the search tensor
+                    if torch.all(torch.eq(value, sample)):
+                        target_spk_id = key
+                        break
+                neg_embs = [value for key, value in speaker_emb_dict.items() if key != target_spk_id]
+                neg_embs_tensor = torch.stack(neg_embs, dim=0)
+                neg_embs_tensor = torch.squeeze(neg_embs_tensor, 1)
+                batch_neg_embs.append(neg_embs_tensor)
+            min_len = min([len(neg_embs) for neg_embs in batch_neg_embs])
+            batch_neg_embs = [neg_embs[:min_len] for neg_embs in batch_neg_embs]
+            batch_neg_embs = torch.stack(batch_neg_embs, dim=0)
+            infonce_loss_output = self.infonce_loss(spk_emb2, pos_emb, batch_neg_embs)
+            
+            # NEW Log embeddings as image
+            # wandb.log({"spk_emb": wandb.Image(spk_emb2.detach().cpu().numpy())})
+            # wandb.log({"pos_emb": wandb.Image(pos_emb.detach().cpu().numpy())})
+            
+            return_dict["infonce_loss"] = infonce_loss_output
+            loss += infonce_loss_output * self.infoNCE_alpha
         #####
                 
         if self.use_capacitron_vae:
