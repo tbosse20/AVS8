@@ -78,7 +78,7 @@ wandb.init(
     project="AVSP8",                            # Project name
     entity="qwewef",                            # Entity name
     config=config,                              # Configuration dictionary
-    notes=args.notes if args.notes else "",     # Notes
+    # notes=args.notes if args.notes else "",     # Notes
     tags=[
         "dev" if args.dev else "full"           # Run mode tag
     ]
