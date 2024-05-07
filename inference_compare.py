@@ -8,6 +8,7 @@ import wandb
 import argparse
 import TTS.tts.utils.synthesis as synthesis
 import torch
+from custom_tacotron2_config import Tacotron2Config
 
 # Python cmd line arguments
 parser = argparse.ArgumentParser()
@@ -27,7 +28,7 @@ dataset_subsets = {
 
 # define model config
 config = {
-    "batch_size": 16,
+    "batch_size": 4,
     "eval_batch_size": 8,
     "num_loader_workers": 0,
     "num_eval_loader_workers": 0,
@@ -70,20 +71,21 @@ speaker_manager.set_ids_from_data(train_samples + eval_samples + test_samples, p
 tacotron2 = Tacotron2(tacotron2_config, ap, tokenizer, speaker_manager=speaker_manager)
 
 # Load checkpoint
-# tacotron2.load_checkpoint( TODO: Insert correct weight path )
+# weights_config = Tacotron2Config("weights/config.json")
+# tacotron2.load_checkpoint(config=weights_config, checkpoint_path="weights/best_model_1752.pth")
 
-trainer = Trainer(
-    config=tacotron2_config,
-    output_path=output_path,
-    model=tacotron2,
-    train_samples=train_samples,
-    eval_samples=eval_samples,
-    test_samples=test_samples,
-    args=TrainerArgs(
-        # skip_train_epoch=True,
-        small_run=4,
-    ),
-)
+# trainer = Trainer(
+#     config=tacotron2_config,
+#     output_path=output_path,
+#     model=tacotron2,
+#     train_samples=train_samples,
+#     eval_samples=eval_samples,
+#     test_samples=test_samples,
+#     args=TrainerArgs(
+#         # skip_train_epoch=True,
+#         small_run=4,
+#     ),
+# )
 
 
 # test_dataloader = trainer.get_test_dataloader(None, test_samples, False)
@@ -107,12 +109,12 @@ d_vectors = batch["d_vectors"]
 spk_emb1 = batch["spk_emb"]
 pos_emb = batch["pos_emb"]
 aux_input = {"speaker_ids": speaker_ids, "d_vectors": d_vectors}
-forward_outputs = tacotron2.forward(text_input, text_lengths, mel_input, mel_lengths, aux_input, spk_emb1)
-infere_outputs = tacotron2.inference(text_input, aux_input, spk_emb1, save_wav=False)
+# forward_outputs = tacotron2.forward(text_input, text_lengths, mel_input, mel_lengths, aux_input, spk_emb1)
+infere_outputs = tacotron2.inference(text_input, aux_input, spk_emb1, save_wav=True)
 
 
-cos_sim = torch.nn.CosineSimilarity(dim=2)
-print(cos_sim(torch.stack(spk_emb1, dim=0), infere_outputs["spk_emb2"]))
+# cos_sim = torch.nn.CosineSimilarity(dim=2)
+# print(cos_sim(torch.stack(spk_emb1, dim=0), infere_outputs["spk_emb2"]))
 '''
 # Run 'trainer_eval_outputs'
 from trainer.generic_utils import KeepAverage

@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from typing import Dict, List, Union
-
+import os
 import torch
 from torch import nn
 from torch.cuda.amp.autocast_mode import autocast
@@ -400,16 +400,18 @@ class Tacotron2(BaseTacotron):
         postnet_outputs = self.postnet(decoder_outputs)
         postnet_outputs = decoder_outputs + postnet_outputs
         decoder_outputs, postnet_outputs, alignments = self.shape_outputs(decoder_outputs, postnet_outputs, alignments)
+        
         #NEW INFERENCE USING VOCODER#
         waveform = self.vocoder.inference(postnet_outputs.permute(0, 2, 1))
-        print(waveform.shape)
+        
+        # Save waveform to disk
         if save_wav:
-            # Detach from batch and convert to NumPy array
-            waveform = waveform.squeeze(0)
-            waveform = waveform.cpu().detach().numpy()
-            waveform = waveform.astype(np.float32)
-            waveform = torch.from_numpy(waveform)
-            torchaudio.save("output.wav", waveform, 22050)
+            output_folder = "output_wavs"
+            if not os.path.exists(output_folder):
+                os.makedirs(output_folder)
+            for i, sample in enumerate(waveform):
+                output_file = os.path.join(output_folder, f"output_{i}.wav")
+                torchaudio.save(output_file, sample, 22050)
         #####
 
         spk_embedding2_output = self.spk_embedding(waveform)

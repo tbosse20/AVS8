@@ -112,6 +112,8 @@ vocoder/
 wandb/
 runs/
 tts_model/
+output_wavs/
+weights/
 
 # editor, os cache directory
 .vscode/
