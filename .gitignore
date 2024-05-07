@@ -112,7 +112,7 @@ vocoder/
 wandb/
 runs/
 tts_model/
-output_wavs/
+output/
 weights/
 
 # editor, os cache directory

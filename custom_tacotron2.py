@@ -402,7 +402,7 @@ class Tacotron2(BaseTacotron):
         
         # Save waveform to disk
         if save_wav:
-            output_folder = "output_wavs"
+            output_folder = "output"
             if not os.path.exists(output_folder):
                 os.makedirs(output_folder)
             for i, sample in enumerate(waveform):

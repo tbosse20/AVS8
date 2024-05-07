@@ -4,6 +4,8 @@ from custom_tacotron2 import Tacotron2
 from TTS.tts.utils.speakers import SpeakerManager
 import wandb
 from custom_tacotron2_config import Tacotron2Config
+import matplotlib.pyplot as plt
+import torchaudio
 
 # Dataset and save path
 current_path = os.path.dirname(os.path.abspath(__file__))
@@ -18,7 +20,7 @@ dataset_subsets = {
 
 # define model config
 config = {
-    "batch_size": 4,
+    "batch_size": 1,
     "eval_batch_size": 8,
     "num_loader_workers": 0,
     "num_eval_loader_workers": 0,
@@ -62,9 +64,10 @@ speaker_manager.set_ids_from_data(train_samples + eval_samples + test_samples, p
 tacotron2 = Tacotron2(tacotron2_config, ap, tokenizer, speaker_manager=speaker_manager)
 
 # Load checkpoint
-# weights_config = Tacotron2Config("weights/config.json")
-# tacotron2.load_checkpoint(config=weights_config, checkpoint_path="weights/best_model_1752.pth")
+weights_config = Tacotron2Config("weights/config_5256.json")
+tacotron2.load_checkpoint(config=weights_config, checkpoint_path="weights/best_model_1752.pth")
 
+# Load dataloader with test samples
 test_dataloader = tacotron2.get_data_loader(
     config=tacotron2_config,
     assets=None,
@@ -74,11 +77,17 @@ test_dataloader = tacotron2.get_data_loader(
     num_gpus=0
 )
 batch = next(iter(test_dataloader))
-print('\nraw_text samples:')
-for raw_text in batch["raw_text"]:
-    print(f'> "{raw_text}"')
-batch = tacotron2.format_batch(batch)
 
+# Display first sample as text and audio
+print(f'\nraw_text sample:')
+raw_text = batch["raw_text"][0]
+print(f'> {raw_text}')
+# waveform = batch["waveform"][0]
+# input_file = os.path.join('output', 'input_wav.wav')
+# torchaudio.save(input_file, waveform, 22050)
+
+# Format batch and get all values
+batch = tacotron2.format_batch(batch)
 text_input = batch["text_input"]
 text_lengths = batch["text_lengths"]
 mel_input = batch["mel_input"]
@@ -88,4 +97,30 @@ d_vectors = batch["d_vectors"]
 spk_emb1 = batch["spk_emb"]
 pos_emb = batch["pos_emb"]
 aux_input = {"speaker_ids": speaker_ids, "d_vectors": d_vectors}
-infere_outputs = tacotron2.inference(text_input, aux_input, spk_emb1, save_wav=True)
+inference_outputs = tacotron2.inference(text_input, aux_input, spk_emb1, save_wav=True)
+
+# Create a figure and axes for subplots
+fig, axes = plt.subplots(1, 2, figsize=(12, 6))
+
+# Plot mel_input
+im1 = axes[0].imshow(mel_input[0].numpy().T, aspect='auto', origin='lower')
+axes[0].set_title('Input Mel Spectrogram')
+axes[0].set_xlabel('Frame')
+axes[0].set_ylabel('Mel Filter')
+plt.colorbar(im1, ax=axes[0])
+
+# Plot model output
+im2 = axes[1].imshow(inference_outputs['model_outputs'][0].numpy().T, aspect='auto', origin='lower')
+axes[1].set_title('Output Mel Spectrogram')
+axes[1].set_xlabel('Frame')
+axes[1].set_ylabel('Mel Filter')
+plt.colorbar(im2, ax=axes[1])
+
+# Add a common title for the whole figure
+plt.suptitle('Comparison of Input and Output Mel Spectrograms')
+
+# Save the figure
+plt.savefig(os.path.join('output', 'mel_spectrogram_comparison.png'))
+
+# Show the plot
+plt.show()
