@@ -105,6 +105,13 @@ data/
 input/
 saved/
 datasets/
+encoderwav2vec2/
+featureextractorwav2vec2/
+libriTTS/
+vocoder/
+wandb/
+runs/
+tts_model/
 
 # editor, os cache directory
 .vscode/

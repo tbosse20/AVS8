@@ -16,7 +16,7 @@ import os
 current_dir = os.getcwd()
 data_dir = os.path.join(current_dir, "data")
 
-train_set, test_set = LIBRITTS_Dataset(data_dir, test=True)
+train_set, test_set = LIBRITTS_Dataset(data_dir, test=True, download=True)
 train_set, valid_set = train_valid_split(train_set)
 
 # train_loader, valid_loader, test_loader = (load_data(x, 1) for x in [train_set, valid_set, test_set])
