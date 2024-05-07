@@ -1,5 +1,5 @@
 import os
-from TTS.tts.configs.tacotron2_config import Tacotron2Config
+from custom_tacotron2_config import Tacotron2Config
 from TTS.utils.audio import AudioProcessor
 from TTS.tts.utils.text.tokenizer import TTSTokenizer
 from TTS.tts.datasets import load_tts_samples
@@ -25,13 +25,13 @@ def download_dataset(folder_name, dataset_path, subsets, formatter):
     
     return dataset_configs
 
-def load_tacotron2_config(config):
+def load_tacotron2_config(config, verbose=False):
     tacotron2_config = Tacotron2Config(**config)
 
     # INITIALIZE THE AUDIO PROCESSOR
     # Audio processor is used for feature extraction and audio I/O.
     # It mainly serves to the dataloader and the training loggers.
-    ap = AudioProcessor.init_from_config(tacotron2_config)  #, verbose=False)
+    ap = AudioProcessor.init_from_config(tacotron2_config, verbose=verbose)
 
     # INITIALIZE THE TOKENIZER
     # Tokenizer is used to convert text to sequences of token IDs.
@@ -52,7 +52,10 @@ def load_samples(dataset_configs, tacotron2_config):
         eval_split_max_size=tacotron2_config.eval_split_max_size,
         eval_split_size=tacotron2_config.eval_split_size,
     )
-    test_samples = load_tts_samples(dataset_configs[1], eval_split_max_size=tacotron2_config.eval_split_max_size)
+    test_samples, _ = load_tts_samples(
+        dataset_configs[1],
+        eval_split_max_size=tacotron2_config.eval_split_max_size,
+    )
     
     return train_samples, eval_samples, test_samples
 
