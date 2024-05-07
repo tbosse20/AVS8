@@ -398,8 +398,8 @@ class Tacotron2(BaseTacotron):
             # encoder_outputs = torch.cat((encoder_outputs, embedded_speakers), dim=0)
             # exit()
 
-        # print(encoder_outputs)
-        # print(encoder_outputs.shape)
+        print(encoder_outputs)
+        print(encoder_outputs.shape)
         decoder_outputs, alignments, stop_tokens = self.decoder.inference(encoder_outputs)
         postnet_outputs = self.postnet(decoder_outputs)
         postnet_outputs = decoder_outputs + postnet_outputs

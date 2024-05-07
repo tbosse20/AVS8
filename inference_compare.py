@@ -84,10 +84,6 @@ trainer = Trainer(
     ),
 )
 
-# trainer.fit()
-# exit()
-trainer.fit()
-exit()
 
 # test_dataloader = trainer.get_test_dataloader(None, test_samples, False)
 test_dataloader = tacotron2.get_data_loader(
