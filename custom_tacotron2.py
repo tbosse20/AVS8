@@ -264,7 +264,11 @@ class Tacotron2(BaseTacotron):
         if self.use_speaker_embedding or self.use_d_vector_file:
             if not self.use_d_vector_file:
                 # B x 1 x speaker_embed_dim
-                embedded_speakers = self.speaker_embedding(aux_input["speaker_ids"])[:, None]
+                # NEW USE SPK_EMB1 TO CONCAT
+                spk_emb1 = torch.stack(spk_emb1, dim=0)
+                embedded_speakers = spk_emb1.to("cuda")
+                # embedded_speakers = self.speaker_embedding(aux_input["speaker_ids"])[:, None]
+                ###
             else:
                 # B x 1 x speaker_embed_dim
                 embedded_speakers = torch.unsqueeze(aux_input["d_vectors"], 1)

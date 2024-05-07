@@ -6,6 +6,7 @@ from TTS.tts.utils.speakers import SpeakerManager
 from trainer import Trainer, TrainerArgs
 import wandb
 import argparse
+import TTS.tts.utils.synthesis as synthesis
 
 # Python cmd line arguments
 parser = argparse.ArgumentParser()
@@ -70,18 +71,20 @@ tacotron2 = Tacotron2(tacotron2_config, ap, tokenizer, speaker_manager=speaker_m
 # Load checkpoint
 # tacotron2.load_checkpoint( TODO: Insert correct weight path )
 
-# trainer = Trainer(
-#     config=tacotron2_config,
-#     output_path=output_path,
-#     model=tacotron2,
-#     train_samples=train_samples,
-#     eval_samples=eval_samples,
-#     test_samples=test_samples,
-#     args=TrainerArgs(
-#         # skip_train_epoch=True,
-#         small_run=4,
-#     ),
-# )
+trainer = Trainer(
+    config=tacotron2_config,
+    output_path=output_path,
+    model=tacotron2,
+    train_samples=train_samples,
+    eval_samples=eval_samples,
+    test_samples=test_samples,
+    args=TrainerArgs(
+        # skip_train_epoch=True,
+        small_run=4,
+    ),
+)
+trainer.test_run()
+exit()
 # trainer.fit()
 # exit()
 
@@ -97,39 +100,44 @@ test_dataloader = tacotron2.get_data_loader(
 batch = next(iter(test_dataloader))
 batch = tacotron2.format_batch(batch)
 
-# # Run 'trainer_eval_outputs'
-# from trainer.generic_utils import KeepAverage
-# trainer.keep_avg_eval = KeepAverage()
-# trainer_eval_outputs, _ = trainer.eval_step(batch, step=0)
-# print('trainer_eval_outputs')
-# print(trainer_eval_outputs.keys())
-# print()
+tacotron2.test_run()
+# synthesis.synthesis(tacotron2, 'Hello, my name is Ollie.', tacotron2_config, False)
+exit()
 
-# # Run 'forward pass'
-# text_input = batch["text_input"]
-# text_lengths = batch["text_lengths"]
-# mel_input = batch["mel_input"]
-# mel_lengths = batch["mel_lengths"]
-# speaker_ids = batch["speaker_ids"]
-# d_vectors = batch["d_vectors"]
-# spk_emb1 = batch["spk_emb"]
-# pos_emb = batch["pos_emb"]
-# aux_input = {"speaker_ids": speaker_ids, "d_vectors": d_vectors}
-# forward_outputs = tacotron2.forward(text_input, text_lengths, mel_input, mel_lengths, aux_input, spk_emb1)
-# print('forward_outputs')
-# print(forward_outputs.keys())
-# print()
+# Run 'trainer_eval_outputs'
+from trainer.generic_utils import KeepAverage
+trainer.keep_avg_eval = KeepAverage()
+trainer_eval_outputs, _ = trainer.eval_step(batch, step=0)
+print('trainer_eval_outputs')
+print(trainer_eval_outputs.keys())
+print()
 
-# # Run 'tacotron2_eval_outputs'
-# tacotron2.eval()
-# tacotron2_eval_outputs = tacotron2.eval_step(batch, criterion=tacotron2.get_criterion())
-# print('tacotron2_eval_outputs')
-# print(tacotron2_eval_outputs)
+# Run 'forward pass'
+text_input = batch["text_input"]
+text_lengths = batch["text_lengths"]
+mel_input = batch["mel_input"]
+mel_lengths = batch["mel_lengths"]
+speaker_ids = batch["speaker_ids"]
+d_vectors = batch["d_vectors"]
+spk_emb1 = batch["spk_emb"]
+pos_emb = batch["pos_emb"]
+aux_input = {"speaker_ids": speaker_ids, "d_vectors": d_vectors}
+forward_outputs = tacotron2.forward(text_input, text_lengths, mel_input, mel_lengths, aux_input, spk_emb1)
+print('forward_outputs')
+print(forward_outputs.keys())
+print()
+
+# Run 'tacotron2_eval_outputs'
+tacotron2.eval()
+tacotron2_eval_outputs = tacotron2.eval_step(batch, criterion=tacotron2.get_criterion())
+print('tacotron2_eval_outputs')
+print(tacotron2_eval_outputs)
+print()
 
 # Run inference
 tacotron2.eval()
-import torch
 print(batch["text_input"].shape)
 tacotron2_inference_outputs = tacotron2.inference(batch["text_input"], batch)
 print('tacotron2_inference_outputs')
-print(tacotron2_inference_outputs)
+print(tacotron2_inference_outputs.keys())
+print()
