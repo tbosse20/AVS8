@@ -1,5 +1,5 @@
 import os
-from TTS.tts.configs.tacotron2_config import Tacotron2Config
+from custom_tacotron2_config import Tacotron2Config
 from TTS.utils.audio import AudioProcessor
 from TTS.tts.utils.text.tokenizer import TTSTokenizer
 from TTS.tts.datasets import load_tts_samples
