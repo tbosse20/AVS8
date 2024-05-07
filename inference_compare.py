@@ -83,8 +83,7 @@ trainer = Trainer(
         small_run=4,
     ),
 )
-trainer.test_run()
-exit()
+
 # trainer.fit()
 # exit()
 
@@ -100,10 +99,19 @@ test_dataloader = tacotron2.get_data_loader(
 batch = next(iter(test_dataloader))
 batch = tacotron2.format_batch(batch)
 
-tacotron2.test_run()
-# synthesis.synthesis(tacotron2, 'Hello, my name is Ollie.', tacotron2_config, False)
-exit()
+text_input = batch["text_input"]
+text_lengths = batch["text_lengths"]
+mel_input = batch["mel_input"]
+mel_lengths = batch["mel_lengths"]
+speaker_ids = batch["speaker_ids"]
+d_vectors = batch["d_vectors"]
+spk_emb1 = batch["spk_emb"]
+pos_emb = batch["pos_emb"]
+aux_input = {"speaker_ids": speaker_ids, "d_vectors": d_vectors}
+forward_outputs = tacotron2.inference(text_input, aux_input, spk_emb1, save_wav=True)
 
+
+'''
 # Run 'trainer_eval_outputs'
 from trainer.generic_utils import KeepAverage
 trainer.keep_avg_eval = KeepAverage()
@@ -141,3 +149,4 @@ tacotron2_inference_outputs = tacotron2.inference(batch["text_input"], batch)
 print('tacotron2_inference_outputs')
 print(tacotron2_inference_outputs.keys())
 print()
+'''
