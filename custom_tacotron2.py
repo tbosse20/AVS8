@@ -337,7 +337,7 @@ class Tacotron2(BaseTacotron):
         return outputs
 
     @torch.no_grad()
-    def inference(self, text, aux_input=None):
+    def inference(self, text, aux_input=None, spk_emb1=None, save_wav=False):
         """Forward pass for inference with no Teacher-Forcing.
 
         Shapes:
@@ -388,6 +388,8 @@ class Tacotron2(BaseTacotron):
 
             print(encoder_outputs.shape)
             print(embedded_speakers.shape)
+            spk_emb1 = torch.stack(spk_emb1, dim=0)
+            embedded_speakers = spk_emb1.to("cuda")
             encoder_outputs = self._concat_speaker_embedding(encoder_outputs, embedded_speakers)
             # embedded_speakers = embedded_speakers.permute(1, 0, 2)
             # encoder_outputs = torch.cat((encoder_outputs, embedded_speakers), dim=0)
@@ -402,21 +404,24 @@ class Tacotron2(BaseTacotron):
         #NEW INFERENCE USING VOCODER#
         waveform = self.vocoder.inference(postnet_outputs.permute(0, 2, 1))
         
-        # Detach from batch and convert to NumPy array
-        waveform = waveform.squeeze(0)
-        waveform = waveform.cpu().detach().numpy()
-        waveform = waveform.astype(np.float32)
-        waveform = torch.from_numpy(waveform)
-        # waveform = torch.squeeze(waveform)  # Reshape to remove singleton dimension
-        print(waveform.shape)
-        torchaudio.save("output.wav", waveform, 22050)
+        if save_wav:
+            # Detach from batch and convert to NumPy array
+            waveform = waveform.squeeze(0)
+            waveform = waveform.cpu().detach().numpy()
+            waveform = waveform.astype(np.float32)
+            waveform = torch.from_numpy(waveform)
+            torchaudio.save("output.wav", waveform, 22050)
         #####
-        
+
+        spk_embedding2_output = self.spk_embedding(waveform)
+
         outputs = {
             "model_outputs": postnet_outputs,
             "decoder_outputs": decoder_outputs,
             "alignments": alignments,
             "stop_tokens": stop_tokens,
+            "spk_emb2": spk_embedding2_output,
+            "waveform": waveform if save_wav else None,
         }
          # NEW save outputs to log wandb
         # wandb.log({

@@ -148,3 +148,13 @@ a.cpu()
 print(a)
 # print
 
+def how_fast_am_i():
+    import time
+    import os
+    start = time.time()
+    feat_extractor = AutoFeatureExtractor.from_pretrained(os.path.join(os.getcwd(), "featureextractorwav2vec2"))
+    spk_emb_model = Wav2Vec2ForXVector.from_pretrained(os.path.join(os.getcwd(),"encoderwav2vec2"))
+    end = time.time()
+    print(end - start)
+
+how_fast_am_i()

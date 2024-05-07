@@ -164,6 +164,11 @@ class TTSDataset(Dataset):
         self.pitch_computed = False
         self.tokenizer = tokenizer
 
+        #NEW EMBEDDING AND FEAT EXTRACTOR
+        self.feat_extractor = AutoFeatureExtractor.from_pretrained(os.path.join(os.getcwd(), "featureextractorwav2vec2"))
+        self.spk_emb_model = Wav2Vec2ForXVector.from_pretrained(os.path.join(os.getcwd(),"encoderwav2vec2"))
+
+
         if self.tokenizer.use_phonemes:
             self.phoneme_dataset = PhonemeDataset(
                 self.samples, self.tokenizer, phoneme_cache_path, precompute_num_workers=precompute_num_workers
@@ -422,12 +427,11 @@ class TTSDataset(Dataset):
         #NEW COMPUTE EMBEDDINGS
         def spk_embedding(audio, sr:int = 16000) -> torch.Tensor:
             logging.set_verbosity_error()
-            feat_extractor = AutoFeatureExtractor.from_pretrained(os.path.join(os.getcwd(), "featureextractorwav2vec2"))  # TODO: Move to init
-            spk_emb_model = Wav2Vec2ForXVector.from_pretrained(os.path.join(os.getcwd(),"encoderwav2vec2"))  # TODO: Move to init
+            
             audio = resample(np.array(audio), orig_sr=sr, target_sr=16000)
-            inputs = feat_extractor(audio, sampling_rate=16000, return_tensors="pt")
+            inputs = self.feat_extractor(audio, sampling_rate=16000, return_tensors="pt")
             with torch.no_grad():
-                embeddings = spk_emb_model(**inputs).embeddings
+                embeddings = self.spk_emb_model(**inputs).embeddings
             embeddings = torch.nn.functional.normalize(embeddings, dim=-1).cpu()
         
             return embeddings
