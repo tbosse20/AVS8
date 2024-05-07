@@ -33,7 +33,7 @@ config = {
     "precompute_num_workers": 0,
     "run_eval": True,
     "test_delay_epochs": -1,
-    "epochs": 1,
+    "epochs": 2,
     "lr": 1e-4,
     "print_step": 50,
     "print_eval": True,
@@ -83,10 +83,10 @@ trainer = Trainer(
         small_run=4,
     ),
 )
-trainer.test_run()
-exit()
-# trainer.fit()
+# trainer.test_run()
 # exit()
+trainer.fit()
+exit()
 
 # test_dataloader = trainer.get_test_dataloader(None, test_samples, False)
 test_dataloader = tacotron2.get_data_loader(
