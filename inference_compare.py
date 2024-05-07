@@ -20,8 +20,8 @@ dataset_subsets = {
 
 # define model config
 config = {
-    "batch_size": 1,
-    "eval_batch_size": 8,
+    "batch_size": 4,
+    "eval_batch_size": 4,
     "num_loader_workers": 0,
     "num_eval_loader_workers": 0,
     "precompute_num_workers": 0,
@@ -64,12 +64,14 @@ speaker_manager.set_ids_from_data(train_samples + eval_samples + test_samples, p
 tacotron2 = Tacotron2(tacotron2_config, ap, tokenizer, speaker_manager=speaker_manager)
 
 # Load checkpoint
-weights_config = Tacotron2Config("weights/config_5256.json")
-tacotron2.load_checkpoint(config=weights_config, checkpoint_path="weights/best_model_1752.pth")
-
+# CLAAUDIA: /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-May-07-2024_12+08AM-3f6f821/
+# Marko Local: /home/putak/university/8semester/Project/
+weights_config = Tacotron2Config("/home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-May-07-2024_12+08AM-3f6f821/config.json")
+tacotron2.load_checkpoint(config=weights_config, checkpoint_path="/home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-May-07-2024_12+08AM-3f6f821/best_model_5256.pth")
+print("LOADED!")
 # Load dataloader with test samples
 test_dataloader = tacotron2.get_data_loader(
-    config=tacotron2_config,
+    config=weights_config,
     assets=None,
     is_eval=False,
     samples=test_samples,
@@ -79,9 +81,9 @@ test_dataloader = tacotron2.get_data_loader(
 batch = next(iter(test_dataloader))
 
 # Display first sample as text and audio
-print(f'\nraw_text sample:')
-raw_text = batch["raw_text"][0]
-print(f'> {raw_text}')
+# print(f'\nraw_text sample:')
+# raw_text = batch["raw_text"][0]
+# print(f'> {raw_text}')
 # waveform = batch["waveform"][0]
 # input_file = os.path.join('output', 'input_wav.wav')
 # torchaudio.save(input_file, waveform, 22050)
@@ -98,7 +100,10 @@ spk_emb1 = batch["spk_emb"]
 pos_emb = batch["pos_emb"]
 aux_input = {"speaker_ids": speaker_ids, "d_vectors": d_vectors}
 inference_outputs = tacotron2.inference(text_input, aux_input, spk_emb1, save_wav=True)
+print("INFERENCE DONE")
 
+
+'''
 # Create a figure and axes for subplots
 fig, axes = plt.subplots(1, 2, figsize=(12, 6))
 
@@ -121,6 +126,6 @@ plt.suptitle('Comparison of Input and Output Mel Spectrograms')
 
 # Save the figure
 plt.savefig(os.path.join('output', 'mel_spectrogram_comparison.png'))
-
+'''
 # Show the plot
-plt.show()
+# plt.show()
