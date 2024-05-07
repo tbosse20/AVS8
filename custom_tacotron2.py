@@ -289,7 +289,6 @@ class Tacotron2(BaseTacotron):
             capacitron_vae_outputs = None
 
         encoder_outputs = encoder_outputs * input_mask.unsqueeze(2).expand_as(encoder_outputs)
-
         # B x mel_dim x T_out -- B x T_out//r x T_in -- B x T_out//r
         decoder_outputs, alignments, stop_tokens = self.decoder(encoder_outputs, mel_specs, input_mask)
         # sequence masking
@@ -386,8 +385,6 @@ class Tacotron2(BaseTacotron):
             else:
                 embedded_speakers = aux_input["d_vectors"]
 
-            print(encoder_outputs.shape)
-            print(embedded_speakers.shape)
             spk_emb1 = torch.stack(spk_emb1, dim=0)
             if torch.cuda.is_available():
                 embedded_speakers = spk_emb1.to("cuda")
@@ -398,15 +395,14 @@ class Tacotron2(BaseTacotron):
             # encoder_outputs = torch.cat((encoder_outputs, embedded_speakers), dim=0)
             # exit()
 
-        print(encoder_outputs)
-        print(encoder_outputs.shape)
+        print("HELLO INFERENCE", encoder_outputs.shape)
         decoder_outputs, alignments, stop_tokens = self.decoder.inference(encoder_outputs)
         postnet_outputs = self.postnet(decoder_outputs)
         postnet_outputs = decoder_outputs + postnet_outputs
         decoder_outputs, postnet_outputs, alignments = self.shape_outputs(decoder_outputs, postnet_outputs, alignments)
         #NEW INFERENCE USING VOCODER#
         waveform = self.vocoder.inference(postnet_outputs.permute(0, 2, 1))
-        
+        print(waveform.shape)
         if save_wav:
             # Detach from batch and convert to NumPy array
             waveform = waveform.squeeze(0)

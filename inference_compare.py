@@ -7,6 +7,7 @@ from trainer import Trainer, TrainerArgs
 import wandb
 import argparse
 import TTS.tts.utils.synthesis as synthesis
+import torch
 
 # Python cmd line arguments
 parser = argparse.ArgumentParser()
@@ -106,9 +107,12 @@ d_vectors = batch["d_vectors"]
 spk_emb1 = batch["spk_emb"]
 pos_emb = batch["pos_emb"]
 aux_input = {"speaker_ids": speaker_ids, "d_vectors": d_vectors}
-forward_outputs = tacotron2.inference(text_input, aux_input, spk_emb1, save_wav=True)
+forward_outputs = tacotron2.forward(text_input, text_lengths, mel_input, mel_lengths, aux_input, spk_emb1)
+infere_outputs = tacotron2.inference(text_input, aux_input, spk_emb1, save_wav=False)
 
 
+cos_sim = torch.nn.CosineSimilarity(dim=2)
+print(cos_sim(torch.stack(spk_emb1, dim=0), infere_outputs["spk_emb2"]))
 '''
 # Run 'trainer_eval_outputs'
 from trainer.generic_utils import KeepAverage
