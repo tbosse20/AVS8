@@ -38,6 +38,7 @@ config = {
     "max_audio_len": 250000,
     "double_decoder_consistency": True,
     "text_cleaner": "english_cleaners",
+    "shuffle": True,
 }
 
 # wandb.init(
@@ -73,6 +74,9 @@ test_dataloader = tacotron2.get_data_loader(
     num_gpus=0
 )
 batch = next(iter(test_dataloader))
+print('\nraw_text samples:')
+for raw_text in batch["raw_text"]:
+    print(f'> "{raw_text}"')
 batch = tacotron2.format_batch(batch)
 
 text_input = batch["text_input"]
@@ -84,5 +88,4 @@ d_vectors = batch["d_vectors"]
 spk_emb1 = batch["spk_emb"]
 pos_emb = batch["pos_emb"]
 aux_input = {"speaker_ids": speaker_ids, "d_vectors": d_vectors}
-print(text_input)
 infere_outputs = tacotron2.inference(text_input, aux_input, spk_emb1, save_wav=True)
