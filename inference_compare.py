@@ -84,4 +84,5 @@ d_vectors = batch["d_vectors"]
 spk_emb1 = batch["spk_emb"]
 pos_emb = batch["pos_emb"]
 aux_input = {"speaker_ids": speaker_ids, "d_vectors": d_vectors}
+print(text_input)
 infere_outputs = tacotron2.inference(text_input, aux_input, spk_emb1, save_wav=True)
