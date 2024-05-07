@@ -3,7 +3,6 @@ from dataset import dataset_util
 from custom_tacotron2 import Tacotron2
 from TTS.tts.utils.speakers import SpeakerManager
 import wandb
-from custom_tacotron2_config import Tacotron2Config
 import matplotlib.pyplot as plt
 import torchaudio
 
@@ -20,7 +19,7 @@ dataset_subsets = {
 
 # define model config
 config = {
-    "batch_size": 1,
+    "batch_size": 8,
     "eval_batch_size": 8,
     "num_loader_workers": 0,
     "num_eval_loader_workers": 0,
@@ -53,6 +52,7 @@ config = {
 dataset_configs = dataset_util.download_dataset("LibriTTS", dataset_path, dataset_subsets, formatter="libri_tts")
 
 ap, tokenizer, tacotron2_config = dataset_util.load_tacotron2_config(config)
+# ap, tokenizer, tacotron2_config = dataset_util.load_tacotron2_config("weights/config_5256.json")
 train_samples, eval_samples, test_samples = dataset_util.load_samples(dataset_configs, tacotron2_config)
     
 # init speaker manager for multi-speaker training
@@ -63,9 +63,61 @@ speaker_manager.set_ids_from_data(train_samples + eval_samples + test_samples, p
 # Load models
 tacotron2 = Tacotron2(tacotron2_config, ap, tokenizer, speaker_manager=speaker_manager)
 
+import torch
+state_dict_1 = torch.load("tacotron2.pth", map_location=torch.device('cpu'))
+state_dict_2 = torch.load("weights/best_model_5256.pth", map_location=torch.device('cpu'))
+# del state_dict_2['model']['speaker_embedding.weight']
+# Make a copy of the state dictionary
+state_dict_copy = state_dict_2.copy()
+
+# # Create a list of keys to delete
+# keys_to_delete = []
+# for key in state_dict_2['model'].keys():
+#     if 'coarse' in key:
+#         keys_to_delete.append(key)
+
+# # Delete the specified keys from the state dictionary copy
+# for key in keys_to_delete:
+#     del state_dict_copy['model'][key]
+
+# state_dict_copy['model']['speaker_embedding.weight'] = state_dict_copy['model']['speaker_embedding.weight'][:247, :]
+target = torch.ones(276, 512)
+target[:247, :] = state_dict_copy['model']['speaker_embedding.weight']
+state_dict_copy['model']['speaker_embedding.weight'] = target
+# state_dict_copy['model']['decoder.attention_rnn.weight_ih'] = state_dict_copy['model']['decoder.attention_rnn.weight_ih'][:, :768]
+# state_dict_copy['model']['decoder.attention.inputs_layer.linear_layer.weight'] = state_dict_copy['model']['decoder.attention.inputs_layer.linear_layer.weight'][:, :512]
+# state_dict_copy['model']['decoder.decoder_rnn.weight_ih'] = state_dict_copy['model']['decoder.decoder_rnn.weight_ih'][:, :1536]
+# state_dict_copy['model']['decoder.linear_projection.linear_layer.weight'] = state_dict_copy['model']['decoder.linear_projection.linear_layer.weight'][:, :1536]
+
+# Save the modified state dictionary
+torch.save(state_dict_copy, "weights/new_best_model_5256.pth")
+
+# state_dict_2 = state_dict_copy['model']
+# # Check if the keys (parameter names) are the same in both state dictionaries
+# if state_dict_1.keys() == state_dict_2.keys():
+#     # Iterate over the keys (parameter names) and compare the parameters
+#     for key in state_dict_1.keys():
+#         param1 = state_dict_1[key]
+#         param2 = state_dict_2[key]
+#         if param1.shape != param2.shape:
+#             print(f"'{key}' are not equal.")
+#             print(f"Model 1: {param1.shape}")
+#             print(f"Model 2: {param2.shape}")
+#             print()
+# else:
+#     print("The models have different architectures or parameters.")
+#     print(f'Model 1: {len(list(state_dict_1.keys()))} keys')
+#     print(f'Model 2: {len(list(state_dict_2.keys()))} keys')
+#     for i in range(len(list(state_dict_2.keys()))):
+#         state_dict_1_key = list(state_dict_1.keys())[i]
+#         state_dict_2_key = list(state_dict_2.keys())[i]
+#         if state_dict_1_key != state_dict_2_key:
+#             print(i, state_dict_1_key, '-', state_dict_2_key)
+# exit()
+
 # Load checkpoint
-weights_config = Tacotron2Config("weights/config_5256.json")
-tacotron2.load_checkpoint(config=weights_config, checkpoint_path="weights/best_model_1752.pth")
+# weights_config = Tacotron2Config("weights/config_5256.json")
+# tacotron2.load_checkpoint(config=tacotron2_config, checkpoint_path="weights/new_best_model_5256.pth", eval=True)
 
 # Load dataloader with test samples
 test_dataloader = tacotron2.get_data_loader(
@@ -101,26 +153,19 @@ inference_outputs = tacotron2.inference(text_input, aux_input, spk_emb1, save_wa
 
 # Create a figure and axes for subplots
 fig, axes = plt.subplots(1, 2, figsize=(12, 6))
-
 # Plot mel_input
 im1 = axes[0].imshow(mel_input[0].numpy().T, aspect='auto', origin='lower')
 axes[0].set_title('Input Mel Spectrogram')
 axes[0].set_xlabel('Frame')
 axes[0].set_ylabel('Mel Filter')
 plt.colorbar(im1, ax=axes[0])
-
 # Plot model output
 im2 = axes[1].imshow(inference_outputs['model_outputs'][0].numpy().T, aspect='auto', origin='lower')
 axes[1].set_title('Output Mel Spectrogram')
 axes[1].set_xlabel('Frame')
 axes[1].set_ylabel('Mel Filter')
 plt.colorbar(im2, ax=axes[1])
-
 # Add a common title for the whole figure
 plt.suptitle('Comparison of Input and Output Mel Spectrograms')
-
 # Save the figure
 plt.savefig(os.path.join('output', 'mel_spectrogram_comparison.png'))
-
-# Show the plot
-plt.show()

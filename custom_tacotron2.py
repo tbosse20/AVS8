@@ -391,7 +391,8 @@ class Tacotron2(BaseTacotron):
             else:
                 embedded_speakers = spk_emb1
             encoder_outputs = self._concat_speaker_embedding(encoder_outputs, embedded_speakers)
-
+            
+        print(encoder_outputs.shape)
         decoder_outputs, alignments, stop_tokens = self.decoder.inference(encoder_outputs)
         postnet_outputs = self.postnet(decoder_outputs)
         postnet_outputs = decoder_outputs + postnet_outputs
