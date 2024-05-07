@@ -52,7 +52,7 @@ def load_samples(dataset_configs, tacotron2_config):
         eval_split_max_size=tacotron2_config.eval_split_max_size,
         eval_split_size=tacotron2_config.eval_split_size,
     )
-    test_samples = load_tts_samples(dataset_configs[1], eval_split_max_size=tacotron2_config.eval_split_max_size)
+    test_samples, _ = load_tts_samples(dataset_configs[1], eval_split_max_size=tacotron2_config.eval_split_max_size)
     
     return train_samples, eval_samples, test_samples
 

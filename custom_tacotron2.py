@@ -381,7 +381,10 @@ class Tacotron2(BaseTacotron):
                 embedded_speakers = aux_input["d_vectors"]
 
             spk_emb1 = torch.stack(spk_emb1, dim=0)
-            embedded_speakers = spk_emb1.to("cuda")
+            if torch.cuda.is_available():
+                embedded_speakers = spk_emb1.to("cuda")
+            else:
+                embedded_speakers = spk_emb1
             encoder_outputs = self._concat_speaker_embedding(encoder_outputs, embedded_speakers)
 
         decoder_outputs, alignments, stop_tokens = self.decoder.inference(encoder_outputs)
