@@ -116,8 +116,13 @@ torch.save(state_dict_copy, "weights/new_best_model_5256.pth")
 # exit()
 
 # Load checkpoint
+# CLAAUDIA: /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-May-07-2024_12+08AM-3f6f821/
+# Marko Local: /home/putak/university/8semester/Project/
+# weights_config = Tacotron2Config("/home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-May-07-2024_12+08AM-3f6f821/config.json")
+# tacotron2.load_checkpoint(config=weights_config, checkpoint_path="/home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-May-07-2024_12+08AM-3f6f821/best_model_5256.pth")
 # weights_config = Tacotron2Config("weights/config_5256.json")
 # tacotron2.load_checkpoint(config=tacotron2_config, checkpoint_path="weights/new_best_model_5256.pth", eval=True)
+print("LOADED!")
 
 # Load dataloader with test samples
 test_dataloader = tacotron2.get_data_loader(
@@ -131,9 +136,9 @@ test_dataloader = tacotron2.get_data_loader(
 batch = next(iter(test_dataloader))
 
 # Display first sample as text and audio
-print(f'\nraw_text sample:')
-raw_text = batch["raw_text"][0]
-print(f'> {raw_text}')
+# print(f'\nraw_text sample:')
+# raw_text = batch["raw_text"][0]
+# print(f'> {raw_text}')
 # waveform = batch["waveform"][0]
 # input_file = os.path.join('output', 'input_wav.wav')
 # torchaudio.save(input_file, waveform, 22050)
@@ -150,6 +155,7 @@ spk_emb1 = batch["spk_emb"]
 pos_emb = batch["pos_emb"]
 aux_input = {"speaker_ids": speaker_ids, "d_vectors": d_vectors}
 inference_outputs = tacotron2.inference(text_input, aux_input, spk_emb1, save_wav=True)
+print("INFERENCE DONE")
 
 # Create a figure and axes for subplots
 fig, axes = plt.subplots(1, 2, figsize=(12, 6))
