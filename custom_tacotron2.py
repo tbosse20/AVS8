@@ -266,7 +266,7 @@ class Tacotron2(BaseTacotron):
                 # B x 1 x speaker_embed_dim
                 # NEW USE SPK_EMB1 TO CONCAT
                 spk_emb1 = torch.stack(spk_emb1, dim=0)
-                embedded_speakers = spk_emb1.to("cuda")
+                embedded_speakers = spk_emb1.to("cuda") if torch.cuda.is_available() else spk_emb1
                 # embedded_speakers = self.speaker_embedding(aux_input["speaker_ids"])[:, None]
                 ###
             else:
