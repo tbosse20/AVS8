@@ -1,0 +1,219 @@
+13:4: not a valid test operator: (
+13:4: not a valid test operator: 535.171.04
+
+=============
+== PyTorch ==
+=============
+
+NVIDIA Release 24.01 (build 80741402)
+PyTorch Version 2.2.0a0+81ea7a4
+
+Container image Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+Copyright (c) 2014-2023 Facebook Inc.
+Copyright (c) 2011-2014 Idiap Research Institute (Ronan Collobert)
+Copyright (c) 2012-2014 Deepmind Technologies    (Koray Kavukcuoglu)
+Copyright (c) 2011-2012 NEC Laboratories America (Koray Kavukcuoglu)
+Copyright (c) 2011-2013 NYU                      (Clement Farabet)
+Copyright (c) 2006-2010 NEC Laboratories America (Ronan Collobert, Leon Bottou, Iain Melvin, Jason Weston)
+Copyright (c) 2006      Idiap Research Institute (Samy Bengio)
+Copyright (c) 2001-2004 Idiap Research Institute (Ronan Collobert, Samy Bengio, Johnny Mariethoz)
+Copyright (c) 2015      Google Inc.
+Copyright (c) 2015      Yangqing Jia
+Copyright (c) 2013-2016 The Caffe contributors
+All rights reserved.
+
+Various files include modifications (c) NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+
+This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+By pulling and using the container, you accept the terms and conditions of this license:
+https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+
+NOTE: CUDA Forward Compatibility mode ENABLED.
+  Using CUDA 12.3 driver version 545.23.08 with kernel driver version 535.171.04.
+  See https://docs.nvidia.com/deploy/cuda-compatibility/ for details.
+
+RuntimeError: module compiled against API version 0x10 but this version of numpy is 0xf . Check the section C-API incompatibility at the Troubleshooting ImportError section at https://numpy.org/devdocs/user/troubleshooting-importerror.html#c-api-incompatibility for indications on how to solve this problem .
+wandb: Currently logged in as: x0917364931 (qwewef). Use `wandb login --relogin` to force relogin
+wandb: wandb version 0.17.0 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.16.2
+wandb: Run data is saved locally in /home/student.aau.dk/lk83xy/avs8/AVS8/wandb/run-20240508_223902-lb2y6wz0
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run breezy-elevator-264
+wandb: ⭐️ View project at https://wandb.ai/qwewef/AVSP8
+wandb: 🚀 View run at https://wandb.ai/qwewef/AVSP8/runs/lb2y6wz0
+ > Training Environment:
+ | > Backend: Torch
+ | > Mixed precision: False
+ | > Precision: float32
+ | > Current device: 0
+ | > Num. of GPUs: 1
+ | > Num. of CPUs: 48
+ | > Num. of Torch Threads: 20
+ | > Torch seed: 54321
+ | > Torch CUDNN: True
+ | > Torch CUDNN deterministic: False
+ | > Torch CUDNN benchmark: False
+ | > Torch TF32 MatMul: True
+ > Start Tensorboard: tensorboard --logdir=/home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-May-08-2024_10+39PM-a85e72e
+
+ > Model has 166296084 parameters
+
+[4m[1m > EPOCH: 0/100[0m
+ --> /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-May-08-2024_10+39PM-a85e72e
+
+[1m > TRAINING (2024-05-08 22:40:12) [0m
+Datasets downloaded successfully!
+ | > Found 33236 files in /home/student.aau.dk/lk83xy/avs8/AVS8/libriTTS/LibriTTS/train-clean-100
+ | > Found 4837 files in /home/student.aau.dk/lk83xy/avs8/AVS8/libriTTS/LibriTTS/test-clean
+ > Init speaker_embedding layer.
+ > Generator Model: fullband_melgan_generator
+ > Discriminator Model: melgan_multiscale_discriminator
+ > Setting up Audio Processor...
+ | > sample_rate:22050
+ | > resample:False
+ | > num_mels:80
+ | > log_func:np.log10
+ | > min_level_db:-100
+ | > frame_shift_ms:None
+ | > frame_length_ms:None
+ | > ref_level_db:20
+ | > fft_size:1024
+ | > power:1.5
+ | > preemphasis:0.0
+ | > griffin_lim_iters:60
+ | > signal_norm:True
+ | > symmetric_norm:True
+ | > mel_fmin:0
+ | > mel_fmax:None
+ | > pitch_fmin:1.0
+ | > pitch_fmax:640.0
+ | > spec_gain:20.0
+ | > stft_pad_mode:reflect
+ | > max_norm:4.0
+ | > clip_norm:True
+ | > do_trim_silence:True
+ | > trim_db:45
+ | > do_sound_norm:False
+ | > do_amp_to_db_linear:True
+ | > do_amp_to_db_mel:True
+ | > do_rms_norm:False
+ | > db_level:None
+ | > stats_path:None
+ | > base:10
+ | > hop_length:256
+ | > win_length:1024
+ > Init speaker_embedding layer.
+ > Generator Model: fullband_melgan_generator
+ > Discriminator Model: melgan_multiscale_discriminator
+ > Model's reduction rate `r` is set to: 2
+********************************************************************************
+Model loaded from checkpoint: /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-May-08-2024_10+58AM-1a0b8e6/
+********************************************************************************
+ > `speakers.pth` is saved to /home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-May-08-2024_10+39PM-a85e72e/speakers.pth.
+ > `speakers_file` is updated in the config.json.
+
+
+> DataLoader initialization
+| > Tokenizer:
+	| > add_blank: False
+	| > use_eos_bos: False
+	| > use_phonemes: False
+| > Number of instances : 32904
+ | > Preprocessing samples
+ | > Max text length: 238
+ | > Min text length: 2
+ | > Avg text length: 72.98415869844442
+ | 
+ | > Max audio length: 249862.0
+ | > Min audio length: 10101.0
+ | > Avg audio length: 103586.72177822178
+ | > Num. instances discarded samples: 4876
+ | > Batch group size: 0.
+/usr/local/lib/python3.10/dist-packages/torch/functional.py:507: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at ../aten/src/ATen/native/TensorShape.cpp:3549.)
+  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
+
+[1m   --> TIME: 2024-05-08 22:42:00 -- STEP: 0/1752 -- GLOBAL_STEP: 0[0m
+     | > decoder_loss: 5.183503150939941  (5.183503150939941)
+     | > postnet_loss: 6.852924823760986  (6.852924823760986)
+     | > similarity_loss: 2.0296385288238525  (2.0296385288238525)
+     | > infonce_loss: 3.6020021438598633  (3.6020021438598633)
+     | > stopnet_loss: 0.7095910906791687  (0.7095910906791687)
+     | > decoder_coarse_loss: 5.1192803382873535  (5.1192803382873535)
+     | > decoder_ddc_loss: 0.0014490355970337987  (0.0014490355970337987)
+     | > ga_loss: 0.0030742331873625517  (0.0030742331873625517)
+     | > decoder_diff_spec_loss: 0.16775944828987122  (0.16775944828987122)
+     | > postnet_diff_spec_loss: 4.335677623748779  (4.335677623748779)
+     | > decoder_ssim_loss: 0.4642268419265747  (0.4642268419265747)
+     | > postnet_ssim_loss: 0.4544808864593506  (0.4544808864593506)
+     | > loss: 7.777698040008545  (7.777698040008545)
+     | > align_error: 0.9927674056962132  (0.9927674056962132)
+     | > grad_norm: tensor(4.0454, device='cuda:0')  (tensor(4.0454, device='cuda:0'))
+     | > current_lr: 2.5000000000000002e-08 
+     | > step_time: 23.3975  (23.39745259284973)
+     | > loader_time: 84.0926  (84.09263610839844)
+
+
+[1m   --> TIME: 2024-05-08 22:48:12 -- STEP: 25/1752 -- GLOBAL_STEP: 25[0m
+     | > decoder_loss: 5.404903888702393  (5.2951070594787595)
+     | > postnet_loss: 7.089274883270264  (6.984940872192383)
+     | > similarity_loss: 1.9604969024658203  (1.982508854866028)
+     | > infonce_loss: 3.560553550720215  (3.7305102157592773)
+     | > stopnet_loss: 0.7094855308532715  (0.7082264137268066)
+     | > decoder_coarse_loss: 5.337704181671143  (5.227755069732666)
+     | > decoder_ddc_loss: 0.001719502848573029  (0.0015852428041398525)
+     | > ga_loss: 0.0038450120482593775  (0.0034368647541850807)
+     | > decoder_diff_spec_loss: 0.180013507604599  (0.17662235140800475)
+     | > postnet_diff_spec_loss: 4.435757637023926  (4.397512569427489)
+     | > decoder_ssim_loss: 0.43127429485321045  (0.45052156925201414)
+     | > postnet_ssim_loss: 0.4203917980194092  (0.44042091846466064)
+     | > loss: 7.934232711791992  (7.897281761169434)
+     | > align_error: 0.9917675778269768  (0.9923142330348491)
+     | > grad_norm: tensor(4.2944, device='cuda:0')  (tensor(4.1465, device='cuda:0'))
+     | > current_lr: 2.5000000000000002e-08 
+     | > step_time: 3.5056  (3.8248808097839357)
+     | > loader_time: 0.0076  (10.82709852218628)
+
+
+[1m   --> TIME: 2024-05-08 22:54:44 -- STEP: 50/1752 -- GLOBAL_STEP: 50[0m
+     | > decoder_loss: 5.367238998413086  (5.241962480545044)
+     | > postnet_loss: 7.059906005859375  (6.933025712966919)
+     | > similarity_loss: 1.9177422523498535  (1.968214840888977)
+     | > infonce_loss: 3.648472309112549  (3.7431422376632693)
+     | > stopnet_loss: 0.7076676487922668  (0.7080430746078491)
+     | > decoder_coarse_loss: 5.298102378845215  (5.174189376831053)
+     | > decoder_ddc_loss: 0.0014426030684262514  (0.0016117915371432901)
+     | > ga_loss: 0.0032336770091205835  (0.0034583081770688294)
+     | > decoder_diff_spec_loss: 0.1693030148744583  (0.17492198050022126)
+     | > postnet_diff_spec_loss: 4.241487503051758  (4.3854790401458725)
+     | > decoder_ssim_loss: 0.5517933368682861  (0.4587180829048157)
+     | > postnet_ssim_loss: 0.5402064323425293  (0.44842292547225954)
+     | > loss: 7.922760486602783  (7.857756662368774)
+     | > align_error: 0.9924822309985757  (0.992158170202747)
+     | > grad_norm: tensor(3.8718, device='cuda:0')  (tensor(4.0992, device='cuda:0'))
+     | > current_lr: 2.5000000000000002e-08 
+     | > step_time: 3.9111  (3.859775414466858)
+     | > loader_time: 0.0156  (11.301761898994446)
+
+
+[1m   --> TIME: 2024-05-08 23:01:51 -- STEP: 75/1752 -- GLOBAL_STEP: 75[0m
+     | > decoder_loss: 5.433159828186035  (5.270435428619384)
+     | > postnet_loss: 7.114358901977539  (6.960540491739909)
+     | > similarity_loss: 2.098544120788574  (1.9699284903208414)
+     | > infonce_loss: 3.7841591835021973  (3.7463354047139488)
+     | > stopnet_loss: 0.7096706628799438  (0.7078144574165344)
+     | > decoder_coarse_loss: 5.363039493560791  (5.202427654266356)
+     | > decoder_ddc_loss: 0.002112535061314702  (0.0016181939855838816)
+     | > ga_loss: 0.004914099350571632  (0.003452462203179797)
+     | > decoder_diff_spec_loss: 0.17921166121959686  (0.17375611046950024)
+     | > postnet_diff_spec_loss: 4.3081746101379395  (4.387800203959146)
+     | > decoder_ssim_loss: 0.511515200138092  (0.4568027702967326)
+     | > postnet_ssim_loss: 0.5028938055038452  (0.44665318886439004)
+     | > loss: 8.058533668518066  (7.879151185353597)
+     | > align_error: 0.9895071256905794  (0.9921057602204383)
+     | > grad_norm: tensor(4.1784, device='cuda:0')  (tensor(4.1116, device='cuda:0'))
+     | > current_lr: 2.5000000000000002e-08 
+     | > step_time: 3.0195  (3.881415599187215)
+     | > loader_time: 0.0098  (11.924060503641764)
+
