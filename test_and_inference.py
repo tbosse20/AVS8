@@ -207,12 +207,25 @@ if __name__ == "__main__":
 
     # Load checkpoint
     # weights_path = "/home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-May-07-2024_12+08AM-3f6f821/"  # CLAAUDIA
-    # weights_path = "/home/putak/university/8semester/Project/"                                    # Marko Local
+    # weights_path = "/home/putak/university/8semester/Project/"                                    # Marko Local    
     tacotron2.load_checkpoint(
         config=tacotron2_config,
         checkpoint_path="runs/run-May-08-2024_05+08PM-a4d5ca5/best_model_1.pth",
         eval=True
     )
+
+    ## Proper way of loading the model from TTS demo! ##
+    # # from TTS.tts.configs.tacotron2_config import Tacotron2Config
+    # # from TTS.tts.models.tacotron2 import Tacotron2
+    # # config = Tacotron2Config()
+    # # config.load_json("/home/putak/university/8semester/Project/AVS8/runs/run-May-08-2024_10+21AM-42ddebb/config.json")
+    # # TACOTRON_MODEL = Tacotron2.init_from_config(config)
+    # # print("Loading TACOTRON model! ")
+    # # TACOTRON_MODEL.load_checkpoint(config, checkpoint_path="/home/putak/university/8semester/Project/AVS8/runs/run-May-08-2024_10+21AM-42ddebb/best_model_1.pth")
+    # # if torch.cuda.is_available():
+    # #     TACOTRON_MODEL.cuda()
+
+    # # print("Model Loaded!")
     print("LOADED!")
 
     # Perform test

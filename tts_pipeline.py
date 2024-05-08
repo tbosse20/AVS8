@@ -2,6 +2,7 @@ import os
 from trainer import Trainer, TrainerArgs
 # import numpy as np
 # from TTS.tts.models.tacotron2 import Tacotron2
+from TTS.tts.configs.tacotron2_config import Tacotron2Config
 from custom_tacotron2 import Tacotron2
 from TTS.tts.utils.speakers import SpeakerManager
 import wandb
@@ -20,7 +21,7 @@ import test_and_inference
 # Python cmd line arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("-n", "--notes",    type=str,               help="Notes for the run")
-parser.add_argument("--checkpoint",     type=str,               help="Path to weights checkpoint")
+parser.add_argument("--checkpoint_run", type=str,               help="Path to run checkpoint")
 parser.add_argument("--dev",            action="store_true",    help="Enable development mode")
 parser.add_argument("--base",           action="store_true",    help="Model baseline mode")
 parser.add_argument("--unstaffed",      action="store_true",    help="Disable workers")
@@ -115,14 +116,16 @@ gc.collect()
 model = Tacotron2(tacotron2_config, ap, tokenizer, speaker_manager=speaker_manager)
 
 # Load weights
-if args.checkpoint:
+if args.checkpoint_run:
+    config = Tacotron2Config()
+    config.load_json(os.path.join(args.checkpoint_run, "config.json"))
+    model = Tacotron2.init_from_config(config)
     model.load_checkpoint(
-        config=tacotron2_config,
-        checkpoint_path=args.checkpoint,
+        config=config,
+        checkpoint_path=os.path.join(args.checkpoint_run, "best_model.pth"),
         eval=True,
     )
-    print('Loaded checkpoint:', args.checkpoint)
-
+    print(80*"*" + '\nModel loaded from checkpoint:', args.checkpoint_run + "\n" + 80*"*")
 # # INITIALIZE THE TRAINER
 # # Trainer provides a generic API to train all the 🐸TTS models with all its perks like mixed-precision training,
 # # distributed training, etc.
