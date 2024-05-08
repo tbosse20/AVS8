@@ -342,7 +342,11 @@ class TacotronLoss(torch.nn.Module):
         self.postnet_ssim_alpha = c.postnet_ssim_alpha
         #NEW Had to comment this out?
         # self.spk_emb_sim_alpha = c.spk_emb_sim_alpha
+<<<<<<< Updated upstream
         self.infoNCE_alpha = 0.25 #c.infoNCE_alpha
+=======
+        self.infoNCE_alpha = 0.25 #c.infoNCE_alpha
+>>>>>>> Stashed changes
         self.similarity_loss_alpha = 0.25 #c.similarity_loss_alpha
         #####
         self.config = c
