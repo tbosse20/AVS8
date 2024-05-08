@@ -114,8 +114,10 @@ runs/
 tts_model/
 output/
 weights/
+slurm-*
 
 # editor, os cache directory
 .vscode/
 .idea/
 __MACOSX/
+

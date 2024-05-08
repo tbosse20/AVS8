@@ -122,7 +122,7 @@ if args.checkpoint_run:
     model = Tacotron2.init_from_config(config)
     model.load_checkpoint(
         config=config,
-        checkpoint_path=os.path.join(args.checkpoint_run, "best_model.pth"),
+        checkpoint_path=os.path.join(args.checkpoint_run, "checkpoint_2476.pth"),
         eval=True,
     )
     print(80*"*" + '\nModel loaded from checkpoint:', args.checkpoint_run + "\n" + 80*"*")
