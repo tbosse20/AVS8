@@ -101,23 +101,31 @@ def inference(tacotron2: Tacotron2, samples: list, config, idx=0):
     )
     batch = next(iter(test_dataloader))
 
+    speaker_name = batch["speaker_names"][idx]
+    speaker_id = batch["speaker_ids"][idx]
+    speaker = f'{speaker_name} ({speaker_id})'
+    
     # Display first sample as text and audio
     print(f'\nraw_text sample:\n> {batch["raw_text"][idx]}')
+    # Save txt file
+    with open(os.path.join('output', 'raw_text_{speaker}.txt'), 'w') as f:
+        f.write(batch["raw_text"][idx])
 
     # Convert mel_input to waveform and save it
-    # waveform = batch["waveform"][idx]
-    # input_file = os.path.join('output', f'input_{idx}.wav')
-    # torchaudio.save(input_file, waveform.cpu(), 22050)
+    waveform = batch["waveform"][idx].T
+    input_file = os.path.join('output', f'input__{speaker}.wav')
+    torchaudio.save(input_file, waveform.cpu(), 22050)
 
     # Format batch and get all values
     batch = tacotron2.format_batch(batch)
 
     # Perform inference
     inference_outputs = tacotron2.inference(
-        text=batch["text_input"][idx].clone().detach().unsqueeze(0),
-        aux_input={"speaker_ids": (batch["speaker_ids"][idx])},
-        spk_emb1=(batch["spk_emb"][idx]),
-        save_wav=True
+        text        = batch["text_input"][idx].clone().detach().unsqueeze(0),
+        aux_input   = {"speaker_ids": (batch["speaker_ids"][idx])},
+        spk_emb1    = (batch["spk_emb"][idx]),
+        save_wav    = True,
+        speaker     = speaker,
     )
 
     # Create a figure and axes for subplots
@@ -125,23 +133,27 @@ def inference(tacotron2: Tacotron2, samples: list, config, idx=0):
 
     # Plot mel_input
     im1 = axes[0].imshow(batch["mel_input"][idx].numpy().T, aspect='auto', origin='lower')
-    axes[0].set_title('Input Mel Spectrogram')
+    axes[0].set_title('Ground truth Mel-Spectrogram')
     axes[0].set_xlabel('Frame')
     axes[0].set_ylabel('Mel Filter')
-    plt.colorbar(im1, ax=axes[0])
 
     # Plot model output
     im2 = axes[1].imshow(inference_outputs['model_outputs'][0].numpy().T, aspect='auto', origin='lower')
-    axes[1].set_title('Output Mel Spectrogram')
+    axes[1].set_title('Output Mel-Spectrogram')
     axes[1].set_xlabel('Frame')
     axes[1].set_ylabel('Mel Filter')
-    plt.colorbar(im2, ax=axes[1])
+
+    # Create a colorbar in a separate axis
+    cax = fig.add_axes([0.92, 0.2, 0.02, 0.6])
+
+    # Use the colorbar from the first image
+    fig.colorbar(im1, cax=cax)
 
     # Add a common title for the whole figure
-    plt.suptitle('Comparison of Input and Output Mel Spectrograms')
+    plt.suptitle(f'Compare Input and Output Mel-Spectrograms - {speaker}')
 
     # Save the figure
-    plt.savefig(os.path.join('output', 'mel_spectrogram_comparison.png'))
+    plt.savefig(os.path.join('output', f'mel_spect_comp_{speaker}.png'))
 
 
 if __name__ == "__main__":

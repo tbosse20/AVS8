@@ -325,7 +325,7 @@ class BaseTTS(BaseTrainerModel):
                 energy_cache_path=config.get("energy_cache_path", None),
                 samples=samples,
                 ap=self.ap,
-                return_wav=config.return_wav if "return_wav" in config else False,
+                return_wav=True, # NEW Hardcode return_wav=True
                 batch_group_size=0 if is_eval else config.batch_group_size * config.batch_size,
                 min_text_len=config.min_text_len,
                 max_text_len=config.max_text_len,
@@ -356,7 +356,6 @@ class BaseTTS(BaseTrainerModel):
                 dataset,
                 batch_size=config.eval_batch_size if is_eval else config.batch_size,
                 shuffle=config.shuffle if sampler is None else False,  # if there is no other sampler
-                # shuffle=False,  # NEW HARDCODE SHUFFLE FALSE
                 collate_fn=dataset.collate_fn,
                 drop_last=config.drop_last,  # setting this False might cause issues in AMP training.
                 sampler=sampler,

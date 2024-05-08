@@ -338,7 +338,7 @@ class Tacotron2(BaseTacotron):
         return outputs
 
     @torch.no_grad()
-    def inference(self, text, aux_input=None, spk_emb1=None, save_wav=False):
+    def inference(self, text, aux_input=None, spk_emb1=None, save_wav=False, speaker=None):
         """Forward pass for inference with no Teacher-Forcing.
 
         Shapes:
@@ -410,7 +410,7 @@ class Tacotron2(BaseTacotron):
             if not os.path.exists(output_folder):
                 os.makedirs(output_folder)
             for i, sample in enumerate(waveform):
-                output_file = os.path.join(output_folder, f"output_{i}.wav")
+                output_file = os.path.join(output_folder, f"output_{speaker}.wav")
                 torchaudio.save(output_file, sample, 22050)
         #####
 
