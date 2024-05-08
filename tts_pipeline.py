@@ -22,6 +22,7 @@ parser.add_argument("-n", "--notes",    type=str,               help="Notes for 
 parser.add_argument("--dev",            action="store_true",    help="Enable development mode")
 parser.add_argument("--test_only",      action="store_true",    help="Run test phase only")
 parser.add_argument("--base",           action="store_true",    help="Model baseline mode")
+parser.add_argument("--unstaffed",      action="store_true",    help="Disable workers")
 args = parser.parse_args()
 
 # Vocoder
@@ -55,9 +56,9 @@ gc.collect()
 config = {
     "batch_size": 16,
     "eval_batch_size": 8,
-    "num_loader_workers": 4,
-    "num_eval_loader_workers": 4,
-    "precompute_num_workers": 4,
+    "num_loader_workers": 0 if args.unstaffed else 4,
+    "num_eval_loader_workers": 0 if args.unstaffed else 4,
+    "precompute_num_workers": 0 if args.unstaffed else 4,
     "run_eval": True,
     "test_delay_epochs": 100,
     "epochs": 2 if args.dev else 100,
