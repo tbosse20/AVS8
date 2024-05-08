@@ -15,15 +15,23 @@ import wandb
 import argparse
 import dataset.dataset_util as dataset_util
 import gc
+import test_and_inference
 
 # Python cmd line arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("-n", "--notes",    type=str,               help="Notes for the run")
+parser.add_argument("--checkpoint",     type=str,               help="Path to weights checkpoint")
 parser.add_argument("--dev",            action="store_true",    help="Enable development mode")
-parser.add_argument("--test_only",      action="store_true",    help="Run test phase only")
 parser.add_argument("--base",           action="store_true",    help="Model baseline mode")
 parser.add_argument("--unstaffed",      action="store_true",    help="Disable workers")
+
+# Select mode of operation
+parser.add_argument("--train",          action="store_true",    help="Train model only")
+parser.add_argument("--test",           action="store_true",    help="Run test phase only")
+parser.add_argument("--inference",      action="store_true",    help="Run inference on single sample")
 args = parser.parse_args()
+
+assert not (args.test and args.inference), "Cannot run test and inference at the same time."
 
 # Vocoder
 VOCODER_MODEL = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
@@ -79,6 +87,7 @@ config = {
     "shuffle": True,
 }
 
+# Initialize wandb
 wandb.init(
     project="AVSP8",                                        # Project name
     entity="qwewef",                                        # Entity name
@@ -86,7 +95,7 @@ wandb.init(
     notes=args.notes if args.notes else "",                 # Notes
     tags=[
         "dev" if args.dev else "product",                   # Run development mode
-        "only_test" if args.test_only else "train_test",    # Phases of the run
+        "only_test" if args.test else "train_test",    # Phases of the run
         "baseline" if args.base else "new_model",      # Model type
     ]
 )
@@ -102,7 +111,15 @@ gc.collect()
 
 # init model
 model = Tacotron2(tacotron2_config, ap, tokenizer, speaker_manager=speaker_manager)
-# model.load_checkpoint(config=TACO_CONFIG, checkpoint_path=TACO_MODEL)
+
+# Load weights
+if args.checkpoint:
+    model.load_checkpoint(
+        config=tacotron2_config,
+        checkpoint_path=args.checkpoint,
+        eval=True,
+    )
+    print('Loaded checkpoint:', args.checkpoint)
 
 # # INITIALIZE THE TRAINER
 # # Trainer provides a generic API to train all the 🐸TTS models with all its perks like mixed-precision training,
@@ -115,10 +132,18 @@ trainer = Trainer(
     eval_samples=eval_samples,
     test_samples=test_samples,
     args=TrainerArgs(
-        # skip_train_epoch=args.test_only,    # Skip training phase
+        # skip_train_epoch=args.test,    # Skip training phase
         small_run=8 if args.dev else None,  # Reduce number of samples
     ),
 )
 gc.collect()
 
-trainer.fit()
+# Run the selected phase
+if args.train:
+    trainer.fit()
+elif args.test:
+    test_and_inference.test_cos_sim(model, test_samples, tacotron2_config)
+elif args.inference:
+    test_and_inference.inference(model, test_samples, tacotron2_config)
+else:
+    print("No phase selected.")
