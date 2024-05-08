@@ -85,20 +85,22 @@ config = {
     "infoNCE_alpha": 0.0 if args.base else 0.25,
     "similarity_loss_alpha": 0.0 if args.base else 0.25,
     "shuffle": True,
+    "return_wav": True,
 }
 
 # Initialize wandb
-wandb.init(
-    project="AVSP8",                                        # Project name
-    entity="qwewef",                                        # Entity name
-    config=config,                                          # Configuration dictionary
-    notes=args.notes if args.notes else "",                 # Notes
-    tags=[
-        "dev" if args.dev else "product",                   # Run development mode
-        "only_test" if args.test else "train_test",    # Phases of the run
-        "baseline" if args.base else "new_model",      # Model type
-    ]
-)
+if args.train or args.test:
+    wandb.init(
+        project="AVSP8",                                        # Project name
+        entity="qwewef",                                        # Entity name
+        config=config,                                          # Configuration dictionary
+        notes=args.notes if args.notes else "",                 # Notes
+        tags=[
+            "dev" if args.dev else "product",                   # Run development mode
+            "only_test" if args.test else "train_test",    # Phases of the run
+            "baseline" if args.base else "new_model",      # Model type
+        ]
+    )
 
 ap, tokenizer, tacotron2_config = dataset_util.load_tacotron2_config(config)
 train_samples, eval_samples, test_samples = dataset_util.load_samples(dataset_configs, tacotron2_config)

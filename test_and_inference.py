@@ -85,7 +85,7 @@ def test_cos_sim(tacotron2: Tacotron2, samples: list, config):
     plot_funcs.plot_boxplot(cos_sims_np, 'output/cos_similarity_boxplot.png')
 
 
-def inference(tacotron2: Tacotron2, samples: list, config):
+def inference(tacotron2: Tacotron2, samples: list, config, idx=0):
 
     # Set model to evaluation mode
     tacotron2.eval()
@@ -102,23 +102,21 @@ def inference(tacotron2: Tacotron2, samples: list, config):
     batch = next(iter(test_dataloader))
 
     # Display first sample as text and audio
-    print(f'\nraw_text sample:')
-    raw_text = batch["raw_text"][0]
-    print(f'> {raw_text}')
+    print(f'\nraw_text sample:\n> {batch["raw_text"][idx]}')
 
-    # Save waveform as wav file
-    # waveform = batch["waveform"][0]
-    # input_file = os.path.join('output', 'input_wav.wav')
-    # torchaudio.save(input_file, waveform, 22050)
+    # Convert mel_input to waveform and save it
+    # waveform = batch["waveform"][idx]
+    # input_file = os.path.join('output', f'input_{idx}.wav')
+    # torchaudio.save(input_file, waveform.cpu(), 22050)
 
     # Format batch and get all values
     batch = tacotron2.format_batch(batch)
 
     # Perform inference
     inference_outputs = tacotron2.inference(
-        text=batch["text_input"][0].clone().detach().unsqueeze(0),
-        aux_input={"speaker_ids": (batch["speaker_ids"][0])},
-        spk_emb1=(batch["spk_emb"][0]),
+        text=batch["text_input"][idx].clone().detach().unsqueeze(0),
+        aux_input={"speaker_ids": (batch["speaker_ids"][idx])},
+        spk_emb1=(batch["spk_emb"][idx]),
         save_wav=True
     )
 
@@ -126,7 +124,7 @@ def inference(tacotron2: Tacotron2, samples: list, config):
     fig, axes = plt.subplots(1, 2, figsize=(12, 6))
 
     # Plot mel_input
-    im1 = axes[0].imshow(batch["mel_input"][0].numpy().T, aspect='auto', origin='lower')
+    im1 = axes[0].imshow(batch["mel_input"][idx].numpy().T, aspect='auto', origin='lower')
     axes[0].set_title('Input Mel Spectrogram')
     axes[0].set_xlabel('Frame')
     axes[0].set_ylabel('Mel Filter')
