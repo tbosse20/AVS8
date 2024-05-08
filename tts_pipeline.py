@@ -59,7 +59,7 @@ config = {
     "num_eval_loader_workers": 4,
     "precompute_num_workers": 4,
     "run_eval": True,
-    "test_delay_epochs": -1,
+    "test_delay_epochs": 100,
     "epochs": 2 if args.dev else 100,
     "lr": 1e-4,
     "print_step": 25,
@@ -75,6 +75,7 @@ config = {
     "text_cleaner": "english_cleaners",
     "infoNCE_alpha": 0.0 if args.base else 0.25,
     "similarity_loss_alpha": 0.0 if args.base else 0.25,
+    "shuffle": True,
 }
 
 wandb.init(
@@ -114,7 +115,7 @@ trainer = Trainer(
     test_samples=test_samples,
     args=TrainerArgs(
         # skip_train_epoch=args.test_only,    # Skip training phase
-        small_run=4 if args.dev else None,  # Reduce number of samples
+        small_run=8 if args.dev else None,  # Reduce number of samples
     ),
 )
 gc.collect()

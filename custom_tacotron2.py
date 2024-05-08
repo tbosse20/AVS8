@@ -100,7 +100,9 @@ class Tacotron2(BaseTacotron):
 
         # init multi-speaker layers
         if self.use_speaker_embedding or self.use_d_vector_file:
+            #NEW COMMENTED THIS ONE OUT
             self.init_multispeaker(config)
+            # self.embedded_speaker_dim = 512
             self.decoder_in_features += self.embedded_speaker_dim  # add speaker embedding dim
 
         if self.use_gst:
@@ -375,24 +377,25 @@ class Tacotron2(BaseTacotron):
             )
 
         if self.num_speakers > 1:
-            if not self.use_d_vector_file:
-                embedded_speakers = self.speaker_embedding(aux_input["speaker_ids"])[None]
-                # reshape embedded_speakers
-                if embedded_speakers.ndim == 1:
-                    embedded_speakers = embedded_speakers[None, None, :]
-                elif embedded_speakers.ndim == 2:
-                    embedded_speakers = embedded_speakers[None, :]
-            else:
-                embedded_speakers = aux_input["d_vectors"]
-
-            spk_emb1 = torch.stack(spk_emb1, dim=0)
-            if torch.cuda.is_available():
-                embedded_speakers = spk_emb1.to("cuda")
-            else:
-                embedded_speakers = spk_emb1
-            encoder_outputs = self._concat_speaker_embedding(encoder_outputs, embedded_speakers)
+            #NEW COMMENTED OUT TO ONLY USE SPK_EMB1
+            # if not self.use_d_vector_file:
+            #     embedded_speakers = self.speaker_embedding(aux_input["speaker_ids"])[None]
+            #     # reshape embedded_speakers
+            #     if embedded_speakers.ndim == 1:
+            #         embedded_speakers = embedded_speakers[None, None, :]
+            #     elif embedded_speakers.ndim == 2:
+            #         embedded_speakers = embedded_speakers[None, :]
+            # else:
+            #     embedded_speakers = aux_input["d_vectors"]
+            if spk_emb1 is not None:
+                spk_emb1 = torch.stack(spk_emb1, dim=0)
+                if torch.cuda.is_available():
+                    embedded_speakers = spk_emb1.to("cuda")
+                else:
+                    embedded_speakers = spk_emb1
+                
+                encoder_outputs = self._concat_speaker_embedding(encoder_outputs, embedded_speakers)
             
-        print(encoder_outputs.shape)
         decoder_outputs, alignments, stop_tokens = self.decoder.inference(encoder_outputs)
         postnet_outputs = self.postnet(decoder_outputs)
         postnet_outputs = decoder_outputs + postnet_outputs

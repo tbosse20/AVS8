@@ -64,11 +64,11 @@ speaker_manager.set_ids_from_data(train_samples + eval_samples + test_samples, p
 tacotron2 = Tacotron2(tacotron2_config, ap, tokenizer, speaker_manager=speaker_manager)
 
 import torch
-state_dict_1 = torch.load("tacotron2.pth", map_location=torch.device('cpu'))
-state_dict_2 = torch.load("weights/best_model_5256.pth", map_location=torch.device('cpu'))
+# state_dict_1 = torch.load("tacotron2.pth", map_location=torch.device('cpu'))
+# state_dict_2 = torch.load("weights/best_model_5256.pth", map_location=torch.device('cpu'))
 # del state_dict_2['model']['speaker_embedding.weight']
 # Make a copy of the state dictionary
-state_dict_copy = state_dict_2.copy()
+# state_dict_copy = state_dict_2.copy()
 
 # # Create a list of keys to delete
 # keys_to_delete = []
@@ -81,16 +81,16 @@ state_dict_copy = state_dict_2.copy()
 #     del state_dict_copy['model'][key]
 
 # state_dict_copy['model']['speaker_embedding.weight'] = state_dict_copy['model']['speaker_embedding.weight'][:247, :]
-target = torch.ones(276, 512)
-target[:247, :] = state_dict_copy['model']['speaker_embedding.weight']
-state_dict_copy['model']['speaker_embedding.weight'] = target
+# target = torch.ones(276, 512)
+# target[:247, :] = state_dict_copy['model']['speaker_embedding.weight']
+# state_dict_copy['model']['speaker_embedding.weight'] = target
 # state_dict_copy['model']['decoder.attention_rnn.weight_ih'] = state_dict_copy['model']['decoder.attention_rnn.weight_ih'][:, :768]
 # state_dict_copy['model']['decoder.attention.inputs_layer.linear_layer.weight'] = state_dict_copy['model']['decoder.attention.inputs_layer.linear_layer.weight'][:, :512]
 # state_dict_copy['model']['decoder.decoder_rnn.weight_ih'] = state_dict_copy['model']['decoder.decoder_rnn.weight_ih'][:, :1536]
 # state_dict_copy['model']['decoder.linear_projection.linear_layer.weight'] = state_dict_copy['model']['decoder.linear_projection.linear_layer.weight'][:, :1536]
 
 # Save the modified state dictionary
-torch.save(state_dict_copy, "weights/new_best_model_5256.pth")
+# torch.save(state_dict_copy, "weights/new_best_model_5256.pth")
 
 # state_dict_2 = state_dict_copy['model']
 # # Check if the keys (parameter names) are the same in both state dictionaries
@@ -121,7 +121,7 @@ torch.save(state_dict_copy, "weights/new_best_model_5256.pth")
 # weights_config = Tacotron2Config("/home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-May-07-2024_12+08AM-3f6f821/config.json")
 # tacotron2.load_checkpoint(config=weights_config, checkpoint_path="/home/student.aau.dk/lk83xy/avs8/AVS8/runs/run-May-07-2024_12+08AM-3f6f821/best_model_5256.pth")
 # weights_config = Tacotron2Config("weights/config_5256.json")
-# tacotron2.load_checkpoint(config=tacotron2_config, checkpoint_path="weights/new_best_model_5256.pth", eval=True)
+tacotron2.load_checkpoint(config=tacotron2_config, checkpoint_path="/home/putak/university/8semester/Project/AVS8/runs/run-May-08-2024_10+21AM-42ddebb/best_model_1.pth", eval=True)
 print("LOADED!")
 
 # Load dataloader with test samples
