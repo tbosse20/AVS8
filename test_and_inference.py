@@ -150,10 +150,10 @@ def inference(tacotron2: Tacotron2, samples: list, config, idx=0):
     fig.colorbar(im1, cax=cax)
 
     # Add a common title for the whole figure
-    plt.suptitle('Comparison of Input and Output Mel-Spectrograms ({speaker})')
+    plt.suptitle(f'Compare Input and Output Mel-Spectrograms - {speaker}')
 
     # Save the figure
-    plt.savefig(os.path.join('output', f'mel_spectrogram_comparison_{speaker}.png'))
+    plt.savefig(os.path.join('output', f'mel_spect_comp_{speaker}.png'))
 
 
 if __name__ == "__main__":
