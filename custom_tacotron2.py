@@ -388,7 +388,7 @@ class Tacotron2(BaseTacotron):
             # else:
             #     embedded_speakers = aux_input["d_vectors"]
             if spk_emb1 is not None:
-                spk_emb1 = torch.stack(spk_emb1, dim=0)
+                # spk_emb1 = torch.stack(spk_emb1, dim=0)
                 if torch.cuda.is_available():
                     embedded_speakers = spk_emb1.to("cuda")
                 else:

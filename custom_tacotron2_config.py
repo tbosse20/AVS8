@@ -27,3 +27,7 @@ class Tacotron2Config(TacotronConfig):
         default=0.25,
         metadata={"help": "[More information needed]. Defaults to 0.25"},
     )
+    return_wav: bool = field(
+        default=False,
+        metadata={"help": "[More information needed]. Defaults to False"},
+    )
