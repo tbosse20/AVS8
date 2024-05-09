@@ -20,7 +20,7 @@ import test_and_inference
 
 # Python cmd line arguments
 parser = argparse.ArgumentParser()
-parser.add_argument("-n", "--notes",    type=str,               help="Notes for the run")
+parser.add_argument("-n", "--notes",    action="store_true",    help="Notes for the run")
 parser.add_argument("--checkpoint_run", type=str,               help="Path to run checkpoint")
 parser.add_argument("--dev",            action="store_true",    help="Enable development mode")
 parser.add_argument("--base",           action="store_true",    help="Model baseline mode")
@@ -95,7 +95,7 @@ if args.train or args.test:
         project="AVSP8",                                        # Project name
         entity="qwewef",                                        # Entity name
         config=config,                                          # Configuration dictionary
-        notes=args.notes if args.notes else "",                 # Notes
+        notes=args.checkpoint_run if args.notes else "",                 # Notes
         tags=[
             "dev" if args.dev else "product",                   # Run development mode
             "only_test" if args.test else "train_test",    # Phases of the run
@@ -115,32 +115,57 @@ gc.collect()
 # init model
 model = Tacotron2(tacotron2_config, ap, tokenizer, speaker_manager=speaker_manager)
 
+import re
+def get_largest(f):
+    s = re.findall(r'\d+$', f)
+    return (int(s[0]) if s else -1, f)
+
 # Load weights
 if args.checkpoint_run:
+    pth_list = os.listdir(args.checkpoint_run)
+    checkpoint_list = [f for f in pth_list if f.startswith('checkpoint')]
+    try:
+        largest_checkpoint = max(checkpoint_list, key=get_largest)
+    except ValueError:
+        largest_checkpoint = "best_model.pth"
+
     config = Tacotron2Config()
     config.load_json(os.path.join(args.checkpoint_run, "config.json"))
     model = Tacotron2.init_from_config(config)
     model.load_checkpoint(
         config=config,
-        checkpoint_path=os.path.join(args.checkpoint_run, "checkpoint_2476.pth"),
+        checkpoint_path=os.path.join(args.checkpoint_run, largest_checkpoint),
         eval=True,
     )
     print(80*"*" + '\nModel loaded from checkpoint:', args.checkpoint_run + "\n" + 80*"*")
 # # INITIALIZE THE TRAINER
 # # Trainer provides a generic API to train all the 🐸TTS models with all its perks like mixed-precision training,
-# # distributed training, etc.
-trainer = Trainer(
-    config=tacotron2_config,
-    output_path=output_path,
-    model=model,
-    train_samples=train_samples,
-    eval_samples=eval_samples,
-    test_samples=test_samples,
-    args=TrainerArgs(
-        # skip_train_epoch=args.test,    # Skip training phase
-        small_run=8 if args.dev else None,  # Reduce number of samples
-    ),
-)
+# # distributed training, etc. continue_path=args.checkpoint_run
+    trainer = Trainer(
+        config=config,
+        output_path=output_path,
+        model=model,
+        train_samples=train_samples,
+        eval_samples=eval_samples,
+        test_samples=test_samples,
+        args=TrainerArgs(continue_path=args.checkpoint_run, # Such an elegant way to continue training
+            # skip_train_epoch=args.test,    # Skip training phase
+            small_run=8 if args.dev else None,  # Reduce number of samples
+        ),
+    )
+else:
+    trainer = Trainer(
+        config=tacotron2_config,
+        output_path=output_path,
+        model=model,
+        train_samples=train_samples,
+        eval_samples=eval_samples,
+        test_samples=test_samples,
+        args=TrainerArgs(
+            # skip_train_epoch=args.test,    # Skip training phase
+            small_run=8 if args.dev else None,  # Reduce number of samples
+        ),
+    )
 gc.collect()
 
 # Run the selected phase
