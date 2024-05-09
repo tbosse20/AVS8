@@ -16,23 +16,22 @@ import wandb
 import argparse
 import dataset.dataset_util as dataset_util
 import gc
+import re
 import test_and_inference
 
 # Python cmd line arguments
 parser = argparse.ArgumentParser()
-parser.add_argument("-n", "--notes",    action="store_true",    help="Notes for the run")
-parser.add_argument("--checkpoint_run", type=str,               help="Path to run checkpoint")
-parser.add_argument("--dev",            action="store_true",    help="Enable development mode")
-parser.add_argument("--base",           action="store_true",    help="Model baseline mode")
-parser.add_argument("--unstaffed",      action="store_true",    help="Disable workers")
+parser.add_argument("-n", "--notes",    type=str,            help="Notes for the run")
+parser.add_argument("--checkpoint_run", type=str,            help="Path to run checkpoint")
+parser.add_argument("--dev",            action="store_true", help="Enable development mode")
+parser.add_argument("--base",           action="store_true", help="Model baseline mode")
+parser.add_argument("--unstaffed",      action="store_true", help="Disable workers")
 
 # Select mode of operation
-parser.add_argument("--train",          action="store_true",    help="Train model only")
-parser.add_argument("--test",           action="store_true",    help="Run test phase only")
-parser.add_argument("--inference",      action="store_true",    help="Run inference on single sample")
+parser.add_argument("--train",          action="store_true", help="Train model only")
+parser.add_argument("--test",           action="store_true", help="Run test phase only")
+parser.add_argument("--inference",      action="store_true", help="Run inference on single sample")
 args = parser.parse_args()
-
-assert not (args.test and args.inference), "Cannot run test and inference at the same time."
 
 # Vocoder
 VOCODER_MODEL = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
@@ -89,15 +88,22 @@ config = {
     "return_wav": True,
 }
 
+# Make notes to add to the wandb config
+notes = ""
+if args.checkpoint_run:
+    notes += f'checkpoint={args.checkpoint_run}'
+if args.notes:
+    notes += f', {args.notes}'
+
 # Initialize wandb
 if args.train or args.test:
     wandb.init(
-        project="AVSP8",                                        # Project name
-        entity="qwewef",                                        # Entity name
-        config=config,                                          # Configuration dictionary
-        notes=args.checkpoint_run if args.notes else "",                 # Notes
+        project="AVSP8",                                   # Project name
+        entity="qwewef",                                   # Entity name
+        config=config,                                     # Configuration dictionary
+        notes=notes,                                       # Add notes to config
         tags=[
-            "dev" if args.dev else "product",                   # Run development mode
+            "dev" if args.dev else "product",              # Run development mode
             "only_test" if args.test else "train_test",    # Phases of the run
             "baseline" if args.base else "new_model",      # Model type
         ]
@@ -115,7 +121,6 @@ gc.collect()
 # init model
 model = Tacotron2(tacotron2_config, ap, tokenizer, speaker_manager=speaker_manager)
 
-import re
 def get_largest(f):
     s = re.findall(r'\d+$', f)
     return (int(s[0]) if s else -1, f)
@@ -138,10 +143,12 @@ if args.checkpoint_run:
         eval=True,
     )
     print(80*"*" + '\nModel loaded from checkpoint:', args.checkpoint_run + "\n" + 80*"*")
-    
-# # INITIALIZE THE TRAINER
-# # Trainer provides a generic API to train all the 🐸TTS models with all its perks like mixed-precision training,
-# # distributed training, etc. continue_path=args.checkpoint_run
+        
+# Run the selected phase
+if args.train:
+    # # INITIALIZE THE TRAINER
+    # # Trainer provides a generic API to train all the 🐸TTS models with all its perks like mixed-precision training,
+    # # distributed training, etc. continue_path=args.checkpoint_run
     trainer = Trainer(
         config=config,
         output_path=output_path,
@@ -149,32 +156,16 @@ if args.checkpoint_run:
         train_samples=train_samples,
         eval_samples=eval_samples,
         test_samples=test_samples,
-        args=TrainerArgs(continue_path=args.checkpoint_run, # Such an elegant way to continue training
-            # skip_train_epoch=args.test,    # Skip training phase
-            small_run=8 if args.dev else None,  # Reduce number of samples
-        ),
-    )
-else:
-    trainer = Trainer(
-        config=tacotron2_config,
-        output_path=output_path,
-        model=model,
-        train_samples=train_samples,
-        eval_samples=eval_samples,
-        test_samples=test_samples,
         args=TrainerArgs(
-            # skip_train_epoch=args.test,    # Skip training phase
+            continue_path=args.checkpoint_run,  # Such an elegant way to continue training
+            # skip_train_epoch=args.test,       # Skip training phase
             small_run=8 if args.dev else None,  # Reduce number of samples
         ),
     )
-gc.collect()
-
-# Run the selected phase
-if args.train:
+    gc.collect()
     trainer.fit()
-elif args.test:
-    test_and_inference.test_cos_sim(model, test_samples, tacotron2_config)
-elif args.inference:
+    
+if args.test:
+    test_and_inference.test_cos_sim(model, test_samples, tacotron2_config, args.dev)
+if args.inference:
     test_and_inference.inference(model, test_samples, tacotron2_config)
-else:
-    print("No phase selected.")

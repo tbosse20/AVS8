@@ -11,7 +11,7 @@ import plot_funcs
 import gc
 
 
-def test_cos_sim(tacotron2: Tacotron2, samples: list, config):
+def test_cos_sim(tacotron2: Tacotron2, samples: list, config, dev=False):
     """
     Run cosine similarity between two speaker embeddings.
 
@@ -74,7 +74,7 @@ def test_cos_sim(tacotron2: Tacotron2, samples: list, config):
         gc.collect()
 
         # Break after n batch
-        if batch_num >= 2:
+        if batch_num >= 2 and dev:
             break
 
     # Convert list to numpy array
