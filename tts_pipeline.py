@@ -138,6 +138,7 @@ if args.checkpoint_run:
         eval=True,
     )
     print(80*"*" + '\nModel loaded from checkpoint:', args.checkpoint_run + "\n" + 80*"*")
+    
 # # INITIALIZE THE TRAINER
 # # Trainer provides a generic API to train all the 🐸TTS models with all its perks like mixed-precision training,
 # # distributed training, etc. continue_path=args.checkpoint_run
