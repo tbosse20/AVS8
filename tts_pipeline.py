@@ -20,16 +20,16 @@ import test_and_inference
 
 # Python cmd line arguments
 parser = argparse.ArgumentParser()
-parser.add_argument("-n", "--notes",    type=str,            help="Notes for the run")
-parser.add_argument("--checkpoint_run", type=str,            help="Path to run checkpoint")
-parser.add_argument("--dev",            action="store_true", help="Enable development mode")
-parser.add_argument("--base",           action="store_true", help="Model baseline mode")
-parser.add_argument("--unstaff",      action="store_true",   help="Disable workers")
+parser.add_argument("-n", "--notes",    type=str,               help="Notes for the run")
+parser.add_argument("--checkpoint_run", type=str,               help="Path to run checkpoint")
+parser.add_argument("--dev",            action="store_true",    help="Enable development mode")
+parser.add_argument("--base",           action="store_true",    help="Model baseline mode")
+parser.add_argument("--unstaff",        action="store_true",    help="Disable workers")
 
 # Select mode of operation
-parser.add_argument("--train",          action="store_true", help="Train model only")
-parser.add_argument("--test",           action="store_true", help="Run test phase only")
-parser.add_argument("--inference",      action="store_true", help="Run inference on single sample")
+parser.add_argument("--train",          action="store_true",    help="Train model only")
+parser.add_argument("--test",           action="store_true",    help="Run test phase only")
+parser.add_argument("--inference",      action="store_true",    help="Run inference on single sample")
 args = parser.parse_args()
 
 # Vocoder
@@ -110,7 +110,7 @@ if args.train or args.test:
 
 ap, tokenizer, tacotron2_config = dataset_util.load_tacotron2_config(config)
 train_samples, eval_samples, test_samples = dataset_util.load_samples(dataset_configs, tacotron2_config)
-    
+
 # init speaker manager for multi-speaker training
 # it maps speaker-id to speaker-name in the model and data-loader
 speaker_manager = SpeakerManager()
@@ -120,14 +120,20 @@ gc.collect()
 # init model
 model = Tacotron2(tacotron2_config, ap, tokenizer, speaker_manager=speaker_manager)
 
+
 def get_largest(f):
     s = re.findall(r'\d+$', f)
     return (int(s[0]) if s else -1, f)
 
+
 # Load weights
 if args.checkpoint_run:
     pth_list = os.listdir(args.checkpoint_run)
-    checkpoint_list = [f for f in pth_list if f.startswith('checkpoint')]
+    checkpoint_list = [
+        f
+        for f in pth_list
+        if f.startswith('checkpoint') or f.startswith('best_model')
+    ]
     try:
         largest_checkpoint = max(checkpoint_list, key=get_largest)
     except ValueError:
@@ -136,13 +142,16 @@ if args.checkpoint_run:
     # Load model from checkpoint
     tacotron2_config = Tacotron2Config()
     tacotron2_config.load_json(os.path.join(args.checkpoint_run, "config.json"))
-    
+
     # Update config values as needed
     if args.unstaff:
         tacotron2_config.num_loader_workers = 0
         tacotron2_config.num_eval_loader_workers = 0
         tacotron2_config.precompute_num_workers = 0
-    
+
+    # Update 'speaker.pth' path automatically
+    tacotron2_config.speakers_file = os.path.join(args.checkpoint_run, 'speakers.pth')
+
     # Load model from checkpoint
     model = Tacotron2.init_from_config(tacotron2_config)
     model.load_checkpoint(
@@ -150,9 +159,9 @@ if args.checkpoint_run:
         checkpoint_path=os.path.join(args.checkpoint_run, largest_checkpoint),
         eval=True,
     )
-    print(80*"*" + '\nModel loaded from checkpoint:', args.checkpoint_run + "\n" + 80*"*")
-    
-        
+    print(f'\n{80*"*"}' + '\nModel loaded from checkpoint:', args.checkpoint_run + "\n" + 80 * "*")
+
+
 # Run the selected phase
 if args.train:
     # # INITIALIZE THE TRAINER
@@ -173,7 +182,7 @@ if args.train:
     )
     gc.collect()
     trainer.fit()
-    
+
 if args.test:
     test_and_inference.test_cos_sim(model, test_samples, tacotron2_config, args.dev)
 if args.inference:

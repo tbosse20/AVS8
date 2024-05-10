@@ -86,6 +86,8 @@ def test_cos_sim(tacotron2: Tacotron2, samples: list, config, dev=False):
 
 
 def inference(tacotron2: Tacotron2, samples: list, config, idx=0):
+    
+    import json
 
     # Set model to evaluation mode
     tacotron2.eval()
@@ -158,6 +160,14 @@ def inference(tacotron2: Tacotron2, samples: list, config, idx=0):
 
     # Save the figure
     plt.savefig(os.path.join(folder_path, f'mel_spect_comp.png'))
+    
+    # Save specific config elements in folder
+    manual_dict = {
+        "infoNCE_alpha": config.infoNCE_alpha,
+        "similarity_loss_alpha": config.similarity_loss_alpha,
+    }
+    with open(os.path.join(folder_path, 'config.json'), 'w') as f:
+        json.dump(manual_dict, f)
 
 
 if __name__ == "__main__":
