@@ -84,7 +84,7 @@ config = {
     "infoNCE_alpha": 0.0 if args.base else 0.25,
     "similarity_loss_alpha": 0.0 if args.base else 0.25,
     "shuffle": True,
-    "return_wav": True,
+    "return_wav": False,
 }
 
 # Make notes to add to the wandb config
