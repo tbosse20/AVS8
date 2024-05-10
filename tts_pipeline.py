@@ -133,11 +133,11 @@ if args.checkpoint_run:
     except ValueError:
         largest_checkpoint = "best_model.pth"
 
-    config = Tacotron2Config()
-    config.load_json(os.path.join(args.checkpoint_run, "config.json"))
-    model = Tacotron2.init_from_config(config)
+    tacotron2_config = Tacotron2Config()
+    tacotron2_config.load_json(os.path.join(args.checkpoint_run, "config.json"))
+    model = Tacotron2.init_from_config(tacotron2_config)
     model.load_checkpoint(
-        config=config,
+        config=tacotron2_config,
         checkpoint_path=os.path.join(args.checkpoint_run, largest_checkpoint),
         eval=True,
     )
@@ -150,7 +150,7 @@ if args.train:
     # # Trainer provides a generic API to train all the 🐸TTS models with all its perks like mixed-precision training,
     # # distributed training, etc. continue_path=args.checkpoint_run
     trainer = Trainer(
-        config=config,
+        config=tacotron2_config,
         output_path=output_path,
         model=model,
         train_samples=train_samples,
