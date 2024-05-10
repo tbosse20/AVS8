@@ -225,12 +225,12 @@ class TrainerConfig(Coqpit):
     
     # NEW - Implemented variables for loss
     infoNCE_alpha: float = field(
-        default=0.25,
-        metadata={"help": "[More information needed]. Defaults to 0.25"},
+        default=None,
+        metadata={"help": "[More information needed]. Defaults to None"},
     )
     similarity_loss_alpha: float = field(
-        default=0.25,
-        metadata={"help": "[More information needed]. Defaults to 0.25"},
+        default=None,
+        metadata={"help": "[More information needed]. Defaults to None"},
     )
     return_wav: bool = field(
         default=False,

@@ -18,3 +18,17 @@ class Tacotron2Config(TacotronConfig):
     out_channels: int = 80
     encoder_in_features: int = 512
     decoder_in_features: int = 512
+    
+    # NEW - Implemented variables for loss
+    infoNCE_alpha: float = field(
+        default=None,
+        metadata={"help": "[More information needed]. Defaults to None"},
+    )
+    similarity_loss_alpha: float = field(
+        default=None,
+        metadata={"help": "[More information needed]. Defaults to None"},
+    )
+    return_wav: bool = field(
+        default=False,
+        metadata={"help": "[More information needed]. Defaults to False"},
+    )
