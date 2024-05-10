@@ -1,7 +1,7 @@
 import os
-from trainer import Trainer, TrainerArgs
+from custom_trainer import Trainer, TrainerArgs
 # import numpy as np
-from TTS.tts.models.tacotron2 import Tacotron2
+from custom_tacotron2_config import Tacotron2Config
 from custom_tacotron2 import Tacotron2
 from TTS.tts.utils.speakers import SpeakerManager
 import wandb
@@ -15,11 +15,21 @@ import wandb
 import argparse
 import dataset.dataset_util as dataset_util
 import gc
+import re
+import test_and_inference
 
 # Python cmd line arguments
 parser = argparse.ArgumentParser()
-parser.add_argument("-n", "--notes", type=str,      help="Notes for the run")
-parser.add_argument("-dev", action="store_true",    help="Enable development mode")
+parser.add_argument("-n", "--notes",    type=str,            help="Notes for the run")
+parser.add_argument("--checkpoint_run", type=str,            help="Path to run checkpoint")
+parser.add_argument("--dev",            action="store_true", help="Enable development mode")
+parser.add_argument("--base",           action="store_true", help="Model baseline mode")
+parser.add_argument("--unstaff",      action="store_true", help="Disable workers")
+
+# Select mode of operation
+parser.add_argument("--train",          action="store_true", help="Train model only")
+parser.add_argument("--test",           action="store_true", help="Run test phase only")
+parser.add_argument("--inference",      action="store_true", help="Run inference on single sample")
 args = parser.parse_args()
 
 # Vocoder
@@ -53,11 +63,11 @@ gc.collect()
 config = {
     "batch_size": 16,
     "eval_batch_size": 8,
-    "num_loader_workers": 4,
-    "num_eval_loader_workers": 4,
-    "precompute_num_workers": 4,
+    "num_loader_workers": 0 if args.unstaff else 4,
+    "num_eval_loader_workers": 0 if args.unstaff else 4,
+    "precompute_num_workers": 0 if args.unstaff else 4,
     "run_eval": True,
-    "test_delay_epochs": -1,
+    "test_delay_epochs": 100,
     "epochs": 2 if args.dev else 100,
     "lr": 1e-4,
     "print_step": 25,
@@ -71,18 +81,32 @@ config = {
     "max_audio_len": 250000,
     "double_decoder_consistency": True,
     "text_cleaner": "english_cleaners",
-    # "infoNCE_alpha": 0.2,
+    "infoNCE_alpha": 0.0 if args.base else 0.25,
+    "similarity_loss_alpha": 0.0 if args.base else 0.25,
+    "shuffle": True,
+    "return_wav": True,
 }
 
-wandb.init(
-    project="AVSP8",                            # Project name
-    entity="qwewef",                            # Entity name
-    config=config,                              # Configuration dictionary
-    # notes=args.notes if args.notes else "",     # Notes
-    tags=[
-        "dev" if args.dev else "full"           # Run mode tag
-    ]
-)
+# Make notes to add to the wandb config
+notes = ""
+if args.checkpoint_run:
+    notes += f'checkpoint={args.checkpoint_run}'
+if args.notes:
+    notes += f', {args.notes}'
+
+# Initialize wandb
+if args.train or args.test:
+    wandb.init(
+        project="AVSP8",                                   # Project name
+        entity="qwewef",                                   # Entity name
+        config=config,                                     # Configuration dictionary
+        notes=notes,                                       # Add notes to config
+        tags=[
+            "dev" if args.dev else "product",              # Run development mode
+            "only_test" if args.test else "train_test",    # Phases of the run
+            "baseline" if args.base else "new_model",      # Model type
+        ]
+    )
 
 ap, tokenizer, tacotron2_config = dataset_util.load_tacotron2_config(config)
 train_samples, eval_samples, test_samples = dataset_util.load_samples(dataset_configs, tacotron2_config)
@@ -90,29 +114,58 @@ train_samples, eval_samples, test_samples = dataset_util.load_samples(dataset_co
 # init speaker manager for multi-speaker training
 # it maps speaker-id to speaker-name in the model and data-loader
 speaker_manager = SpeakerManager()
-speaker_manager.set_ids_from_data(train_samples + eval_samples, parse_key="speaker_name")
+speaker_manager.set_ids_from_data(train_samples + eval_samples + test_samples, parse_key="speaker_name")
 gc.collect()
 
 # init model
 model = Tacotron2(tacotron2_config, ap, tokenizer, speaker_manager=speaker_manager)
-# model.load_checkpoint(config=TACO_CONFIG, checkpoint_path=TACO_MODEL)
 
-# # INITIALIZE THE TRAINER
-# # Trainer provides a generic API to train all the 🐸TTS models with all its perks like mixed-precision training,
-# # distributed training, etc.
-trainer = Trainer(
-    config=tacotron2_config,
-    output_path=output_path,
-    args=TrainerArgs(),
-    model=model,
-    train_samples=train_samples,
-    eval_samples=eval_samples,
-    test_samples=test_samples,
-)
-gc.collect()
+def get_largest(f):
+    s = re.findall(r'\d+$', f)
+    return (int(s[0]) if s else -1, f)
 
-# Dev mode: reduce the number of samples
-if args.dev:
-    trainer.setup_small_run(8)
+# Load weights
+if args.checkpoint_run:
+    pth_list = os.listdir(args.checkpoint_run)
+    checkpoint_list = [f for f in pth_list if f.startswith('checkpoint')]
+    try:
+        largest_checkpoint = max(checkpoint_list, key=get_largest)
+    except ValueError:
+        largest_checkpoint = "best_model.pth"
 
-trainer.fit()
+    tacotron2_config = Tacotron2Config()
+    tacotron2_config.load_json(os.path.join(args.checkpoint_run, "config.json"))
+    model = Tacotron2.init_from_config(tacotron2_config)
+    model.load_checkpoint(
+        config=tacotron2_config,
+        checkpoint_path=os.path.join(args.checkpoint_run, largest_checkpoint),
+        eval=True,
+    )
+    print(80*"*" + '\nModel loaded from checkpoint:', args.checkpoint_run + "\n" + 80*"*")
+    
+        
+# Run the selected phase
+if args.train:
+    # # INITIALIZE THE TRAINER
+    # # Trainer provides a generic API to train all the 🐸TTS models with all its perks like mixed-precision training,
+    # # distributed training, etc. continue_path=args.checkpoint_run
+    trainer = Trainer(
+        config=tacotron2_config,
+        output_path=output_path,
+        model=model,
+        train_samples=train_samples,
+        eval_samples=eval_samples,
+        test_samples=test_samples,
+        args=TrainerArgs(
+            continue_path=args.checkpoint_run,  # Such an elegant way to continue training
+            # skip_train_epoch=args.test,       # Skip training phase
+            small_run=8 if args.dev else None,  # Reduce number of samples
+        ),
+    )
+    gc.collect()
+    trainer.fit()
+    
+if args.test:
+    test_and_inference.test_cos_sim(model, test_samples, tacotron2_config, args.dev)
+if args.inference:
+    test_and_inference.inference(model, test_samples, tacotron2_config)
