@@ -103,29 +103,33 @@ def inference(tacotron2: Tacotron2, samples: list, config, idx=0):
 
     speaker_name = batch["speaker_names"][idx]
     speaker_id = batch["speaker_ids"][idx]
-    speaker = f'{speaker_name} ({speaker_id})'
+    speaker = f'{speaker_name}_({speaker_id})'
     
+    # Make folder for speaker output
+    folder_path = os.path.join('output', speaker)
+    os.makedirs(folder_path, exist_ok=True)
+                
     # Display first sample as text and audio
     print(f'\nraw_text sample:\n> {batch["raw_text"][idx]}')
     # Save txt file
-    with open(os.path.join('output', 'raw_text_{speaker}.txt'), 'w') as f:
+    with open(os.path.join(folder_path, 'raw_text_.txt'), 'w') as f:
         f.write(batch["raw_text"][idx])
 
     # Convert mel_input to waveform and save it
     waveform = batch["waveform"][idx].T
-    input_file = os.path.join('output', f'input__{speaker}.wav')
+    input_file = os.path.join(folder_path, f'input.wav')
     torchaudio.save(input_file, waveform.cpu(), 22050)
 
     # Format batch and get all values
     batch = tacotron2.format_batch(batch)
 
-    # Perform inference
+    # Perform inference one single sample
     inference_outputs = tacotron2.inference(
         text        = batch["text_input"][idx].clone().detach().unsqueeze(0),
         aux_input   = {"speaker_ids": (batch["speaker_ids"][idx])},
         spk_emb1    = (batch["spk_emb"][idx]),
         save_wav    = True,
-        speaker     = speaker,
+        output_path = os.path.join(folder_path),
     )
 
     # Create a figure and axes for subplots
@@ -153,7 +157,7 @@ def inference(tacotron2: Tacotron2, samples: list, config, idx=0):
     plt.suptitle(f'Compare Input and Output Mel-Spectrograms - {speaker}')
 
     # Save the figure
-    plt.savefig(os.path.join('output', f'mel_spect_comp_{speaker}.png'))
+    plt.savefig(os.path.join(folder_path, f'mel_spect_comp.png'))
 
 
 if __name__ == "__main__":

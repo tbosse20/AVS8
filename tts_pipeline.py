@@ -1,8 +1,6 @@
 import os
 from custom_trainer import Trainer, TrainerArgs
 # import numpy as np
-# from TTS.tts.models.tacotron2 import Tacotron2
-# from TTS.tts.configs.tacotron2_config import Tacotron2Config
 from custom_tacotron2_config import Tacotron2Config
 from custom_tacotron2 import Tacotron2
 from TTS.tts.utils.speakers import SpeakerManager
@@ -144,6 +142,7 @@ if args.checkpoint_run:
         eval=True,
     )
     print(80*"*" + '\nModel loaded from checkpoint:', args.checkpoint_run + "\n" + 80*"*")
+    
         
 # Run the selected phase
 if args.train:
