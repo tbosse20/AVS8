@@ -338,7 +338,7 @@ class Tacotron2(BaseTacotron):
         return outputs
 
     @torch.no_grad()
-    def inference(self, text, aux_input=None, spk_emb1=None, save_wav=False, speaker=None):
+    def inference(self, text, aux_input=None, spk_emb1=None, save_wav=False, output_path=None):
         """Forward pass for inference with no Teacher-Forcing.
 
         Shapes:
@@ -404,13 +404,11 @@ class Tacotron2(BaseTacotron):
         #NEW INFERENCE USING VOCODER#
         waveform = self.vocoder.inference(postnet_outputs.permute(0, 2, 1))
         
-        # Save waveform to disk
-        if save_wav:
-            output_folder = "output"
-            if not os.path.exists(output_folder):
-                os.makedirs(output_folder)
-            for i, sample in enumerate(waveform):
-                output_file = os.path.join(output_folder, f"output_{speaker}.wav")
+        # Save waveform to disk (only works with one sample TODO: fix this)
+        if save_wav and output_path:
+            os.makedirs(output_path, exist_ok=True)
+            for _, sample in enumerate(waveform):
+                output_file = os.path.join(output_path, f"output.wav")
                 torchaudio.save(output_file, sample, 22050)
         #####
 
