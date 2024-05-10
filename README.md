@@ -36,11 +36,7 @@ AVS8
 - "tts_pipeline.py"
 
 # Load weights
-- Download the specific `run` folder from `runs`
-- Rename the `speaker.pth` path in the `config.json` file
-- Rename the `checkpoint_XXXX.pth` in the `run` folder to `checkpoint.pth`
-
-Weights example:
-https://aaudk-my.sharepoint.com/personal/lk83xy_student_aau_dk/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Flk83xy_student_aau_dk%2FDocuments%2Fcheckpoint_2418%2Epth&parent=%2Fpersonal%2Flk83xy_student_aau_dk%2FDocuments&ga=1
+- Download folder: https://aaudk-my.sharepoint.com/:f:/r/personal/lk83xy_student_aau_dk/Documents/about8ksteps?csf=1&web=1&e=3rLqLW.
+- Run `tts_pipeline.py` with --checkpoint_run "/path/run/folder"
 
 ## License
