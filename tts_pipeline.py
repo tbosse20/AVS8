@@ -24,7 +24,7 @@ parser.add_argument("-n", "--notes",    type=str,            help="Notes for the
 parser.add_argument("--checkpoint_run", type=str,            help="Path to run checkpoint")
 parser.add_argument("--dev",            action="store_true", help="Enable development mode")
 parser.add_argument("--base",           action="store_true", help="Model baseline mode")
-parser.add_argument("--unstaff",      action="store_true", help="Disable workers")
+parser.add_argument("--unstaff",      action="store_true",   help="Disable workers")
 
 # Select mode of operation
 parser.add_argument("--train",          action="store_true", help="Train model only")
@@ -133,8 +133,17 @@ if args.checkpoint_run:
     except ValueError:
         largest_checkpoint = "best_model.pth"
 
+    # Load model from checkpoint
     tacotron2_config = Tacotron2Config()
     tacotron2_config.load_json(os.path.join(args.checkpoint_run, "config.json"))
+    
+    # Update config values as needed
+    if args.unstaff:
+        tacotron2_config.num_loader_workers = 0
+        tacotron2_config.num_eval_loader_workers = 0
+        tacotron2_config.precompute_num_workers = 0
+    
+    # Load model from checkpoint
     model = Tacotron2.init_from_config(tacotron2_config)
     model.load_checkpoint(
         config=tacotron2_config,
