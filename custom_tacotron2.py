@@ -34,29 +34,6 @@ VOCODER_CONFIG_PATH = "./vocoder/vocoder_models--universal--libri-tts--fullband-
 VOCODER_MODEL = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
 #####
 
-def retry_load_models(model_name, cache_dir="./.transformers", attempts: int = 5, retry_delay: int = 3):
-    
-    for attempt in range(attempts):
-        try:
-            # Try loading from local cache
-            model = Wav2Vec2ForXVector.from_pretrained(
-                model_name,
-                cache_dir=cache_dir,
-                revision="main",
-            )   
-            feature_extractor = AutoFeatureExtractor.from_pretrained(
-                model_name,
-                cache_dir=cache_dir,
-                revision="main",
-            )
-            break
-        
-        except OSError as e:
-            # Download if not found locally
-            time.sleep(retry_delay)
-
-    return model, feature_extractor
-
 class Tacotron2(BaseTacotron):
     """Tacotron2 model implementation inherited from :class:`TTS.tts.models.base_tacotron.BaseTacotron`.
 

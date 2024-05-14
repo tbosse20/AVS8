@@ -6,7 +6,7 @@ from typing import Callable, Dict, List, Tuple, Union
 
 import numpy as np
 
-from dataset.custom_dataset import *
+from custom_dataset.custom_dataset import *
 from TTS.tts.datasets.formatters import *
 
 

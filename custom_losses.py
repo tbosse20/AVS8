@@ -313,15 +313,7 @@ class ForwardSumLoss(nn.Module):
 ########################
 # MODEL LOSS LAYERS
 ########################
-###
-# decoder_loss_alpha: float = 0.25,
-# postnet_loss_alpha: float = 0.25,
-# postnet_diff_spec_alpha: float = 0.25,
-# decoder_diff_spec_alpha: float = 0.25,
-# decoder_ssim_alpha: float = 0.25,
-# postnet_ssim_alpha: float = 0.25,
-# ga_alpha: float = 5
-###
+
 
 class TacotronLoss(torch.nn.Module):
     """Collection of Tacotron set-up based on provided config."""
@@ -341,7 +333,6 @@ class TacotronLoss(torch.nn.Module):
         self.decoder_ssim_alpha = c.decoder_ssim_alpha
         self.postnet_ssim_alpha = c.postnet_ssim_alpha
         #NEW Had to comment this out?
-        # self.spk_emb_sim_alpha = c.spk_emb_sim_alpha
         self.infoNCE_alpha = c.infoNCE_alpha
         self.similarity_loss_alpha = c.similarity_loss_alpha
         #####
@@ -366,9 +357,7 @@ class TacotronLoss(torch.nn.Module):
         self.criterion_st = BCELossMasked(pos_weight=torch.tensor(self.stopnet_pos_weight)) if c.stopnet else None
 
         #NEW LOSS 
-        # spk_emb sim loss
         self.criterion_spkemb = nn.CosineSimilarity(dim=2)
-        # infoNCE loss
         self.infonce_loss = InfoNCE(negative_mode='paired')
         ####
 

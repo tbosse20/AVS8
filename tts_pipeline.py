@@ -1,19 +1,11 @@
 import os
-from custom_trainer import Trainer, TrainerArgs
-# import numpy as np
+from trainer import Trainer, TrainerArgs
 from custom_tacotron2_config import Tacotron2Config
 from custom_tacotron2 import Tacotron2
 from TTS.tts.utils.speakers import SpeakerManager
 import wandb
-# from TTS.api import load_config
-# from TTS.tts.utils.synthesis import synthesis
-# from TTS.vocoder.models.gan import GAN
-# import torchaudio
-# import logging
-# logging.getLogger("transformers.modeling_utils").setLevel(logging.ERROR)
-# os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Disable TensorFlow INFO and WARNING messages
 import argparse
-import dataset.dataset_util as dataset_util
+import custom_dataset.dataset_util as dataset_util
 import gc
 import re
 import test_and_inference

@@ -13,7 +13,7 @@ import wandb
 # logging.getLogger("transformers.modeling_utils").setLevel(logging.ERROR)
 # os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Disable TensorFlow INFO and WARNING messages
 import argparse
-import dataset.dataset_util as dataset_util
+import custom_dataset.dataset_util as dataset_util
 import gc
 import re
 import test_and_inference
