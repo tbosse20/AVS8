@@ -155,7 +155,7 @@ if args.checkpoint_run:
 
 
 # Run the selected phase
-if args.train:
+if args.train or args.test:
     # # INITIALIZE THE TRAINER
     # # Trainer provides a generic API to train all the 🐸TTS models with all its perks like mixed-precision training,
     # # distributed training, etc. continue_path=args.checkpoint_run
@@ -169,13 +169,14 @@ if args.train:
         args=TrainerArgs(
             continue_path=args.checkpoint_run,  # Such an elegant way to continue training
             # skip_train_epoch=args.test,       # Skip training phase
-            small_run=8 if args.dev else None,  # Reduce number of samples
+            small_run=16 if args.dev else None,  # Reduce number of samples
         ),
     )
     gc.collect()
-    trainer.fit()
 
+if args.train:
+    trainer.fit()
 if args.test:
-    test_and_inference.test_cos_sim(model, test_samples, tacotron2_config, args.dev)
+    trainer.test()
 if args.inference:
     test_and_inference.inference(model, test_samples, tacotron2_config)

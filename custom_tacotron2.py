@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from typing import Dict, List, Union
-import os
+
 import torch
 from torch import nn
 from torch.cuda.amp.autocast_mode import autocast
@@ -27,6 +27,8 @@ from librosa.util import fix_length
 import wandb
 import gc
 import time
+import os
+
 #####
 
 # NEW PATH #
@@ -260,6 +262,7 @@ class Tacotron2(BaseTacotron):
             capacitron_vae_outputs = None
 
         encoder_outputs = encoder_outputs * input_mask.unsqueeze(2).expand_as(encoder_outputs)
+
         # B x mel_dim x T_out -- B x T_out//r x T_in -- B x T_out//r
         decoder_outputs, alignments, stop_tokens = self.decoder(encoder_outputs, mel_specs, input_mask)
         # sequence masking
@@ -276,9 +279,7 @@ class Tacotron2(BaseTacotron):
         
         # NEW INFERENCE USING VOCODER#
         vocoder_input = postnet_outputs.permute(0, 2, 1)
-        # print("POSTENET OUTPUTS: ", postnet_outputs.shape)
         vocoder_output = self.vocoder.inference(vocoder_input)
-
         spk_embedding2_output = self.spk_embedding(vocoder_output)
         outputs["spk_emb2"] = spk_embedding2_output
         #####
@@ -309,7 +310,9 @@ class Tacotron2(BaseTacotron):
         return outputs
 
     @torch.no_grad()
-    def inference(self, text, aux_input=None, spk_emb1=None, save_wav=False, output_path=None):
+    def inference(self, text, aux_input=None,
+                  spk_emb1=None, save_wav=False, output_path=None # NEW
+                  ):
         """Forward pass for inference with no Teacher-Forcing.
 
         Shapes:
@@ -366,8 +369,8 @@ class Tacotron2(BaseTacotron):
         # Save waveform to disk (only works with one sample TODO: fix this)
         if save_wav and output_path:
             os.makedirs(output_path, exist_ok=True)
-            for _, sample in enumerate(waveform):
-                output_file = os.path.join(output_path, f"output.wav")
+            for idx, sample in enumerate(waveform):
+                output_file = os.path.join(output_path, f"output{idx}.wav")
                 torchaudio.save(output_file, sample, 22050)
 
         # NEW 2nd spk embedding #
@@ -424,7 +427,10 @@ class Tacotron2(BaseTacotron):
         
         aux_input = {"speaker_ids": speaker_ids, "d_vectors": d_vectors}
         # NEW add pos_emb1 forward
-        outputs = self.forward(text_input, text_lengths, mel_input, mel_lengths, aux_input, spk_emb1)
+        outputs = self.forward(
+            text_input, text_lengths, mel_input, mel_lengths, aux_input,
+            spk_emb1 # NEW
+        )
 
         # set the [alignment] lengths wrt reduction factor for guided attention
         if mel_lengths.max() % self.decoder.r != 0:
@@ -512,7 +518,6 @@ class Tacotron2(BaseTacotron):
             "ground_truth": plot_spectrogram(gt_spec, ap, output_fig=False),
             "alignment": plot_alignment(align_img, output_fig=False),
         }
-        # wandb.log(figures) # NEW log figures to wandb
 
         if self.bidirectional_decoder or self.double_decoder_consistency:
             figures["alignment_backward"] = plot_alignment(alignments_backward[0].data.cpu().numpy(), output_fig=False)
