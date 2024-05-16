@@ -117,7 +117,7 @@ def inference(tacotron2: Tacotron2, samples: list, config, idx=0):
     with open(os.path.join(folder_path, 'raw_text_.txt'), 'w') as f:
         f.write(batch["raw_text"][idx])
 
-    # Convert mel_input to waveform and save it
+    # Save the waveform input
     waveform = batch["waveform"][idx].T
     input_file = os.path.join(folder_path, f'input.wav')
     torchaudio.save(input_file, waveform.cpu(), 22050)
