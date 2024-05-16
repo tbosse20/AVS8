@@ -1858,7 +1858,7 @@ class Trainer:
             # call the keyboard interrupt callback
             self.callbacks.on_keyboard_interrupt(self)
             # if the output folder is empty remove the run.
-            remove_experiment_folder(self.output_path)
+            # remove_experiment_folder(self.output_path)
             # clear the DDP processes
             if self.num_gpus > 1:
                 dist.destroy_process_group()
@@ -1871,7 +1871,7 @@ class Trainer:
             except SystemExit:
                 os._exit(1)  # pylint: disable=protected-access
         except BaseException:  # pylint: disable=broad-except
-            remove_experiment_folder(self.output_path)
+            # remove_experiment_folder(self.output_path)
             traceback.print_exc()
             sys.exit(1)
 
@@ -2180,3 +2180,4 @@ class Trainer:
     def _is_apex_available() -> bool:
         """Check if Nvidia's APEX is available."""
         return importlib.util.find_spec("apex") is not None
+

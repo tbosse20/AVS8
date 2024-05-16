@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from typing import Dict, List, Union
-import os
+
 import torch
 from torch import nn
 from torch.cuda.amp.autocast_mode import autocast
@@ -10,13 +10,13 @@ from trainer.trainer_utils import get_optimizer, get_scheduler
 from TTS.tts.layers.tacotron.capacitron_layers import CapacitronVAE
 from TTS.tts.layers.tacotron.gst_layers import GST
 from TTS.tts.layers.tacotron.tacotron2 import Decoder, Encoder, Postnet
-from custom_base_tacotron import BaseTacotron
+from custom_base_tacotron import BaseTacotron # NEW
 from TTS.tts.utils.measures import alignment_diagonal_score
 from TTS.tts.utils.speakers import SpeakerManager
 from TTS.tts.utils.text.tokenizer import TTSTokenizer
 from TTS.tts.utils.visual import plot_alignment, plot_spectrogram
 from TTS.utils.capacitron_optimizer import CapacitronOptimizer
-#NEW IMPORTS#
+# NEW IMPORTS #
 from TTS.vocoder.models.gan import GAN
 from TTS.config import load_config
 import numpy as np
@@ -27,35 +27,14 @@ from librosa.util import fix_length
 import wandb
 import gc
 import time
+import os
+
 #####
 
-#NEW PATH#
+# NEW PATH #
 VOCODER_CONFIG_PATH = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/config.json"
 VOCODER_MODEL = "./vocoder/vocoder_models--universal--libri-tts--fullband-melgan/model_file.pth"
 #####
-
-def retry_load_models(model_name, cache_dir="./.transformers", attempts: int = 5, retry_delay: int = 3):
-    
-    for attempt in range(attempts):
-        try:
-            # Try loading from local cache
-            model = Wav2Vec2ForXVector.from_pretrained(
-                model_name,
-                cache_dir=cache_dir,
-                revision="main",
-            )   
-            feature_extractor = AutoFeatureExtractor.from_pretrained(
-                model_name,
-                cache_dir=cache_dir,
-                revision="main",
-            )
-            break
-        
-        except OSError as e:
-            # Download if not found locally
-            time.sleep(retry_delay)
-
-    return model, feature_extractor
 
 class Tacotron2(BaseTacotron):
     """Tacotron2 model implementation inherited from :class:`TTS.tts.models.base_tacotron.BaseTacotron`.
@@ -100,9 +79,7 @@ class Tacotron2(BaseTacotron):
 
         # init multi-speaker layers
         if self.use_speaker_embedding or self.use_d_vector_file:
-            #NEW COMMENTED THIS ONE OUT
             self.init_multispeaker(config)
-            # self.embedded_speaker_dim = 512
             self.decoder_in_features += self.embedded_speaker_dim  # add speaker embedding dim
 
         if self.use_gst:
@@ -148,8 +125,6 @@ class Tacotron2(BaseTacotron):
         self.feature_extractor = AutoFeatureExtractor.from_pretrained("./featureextractorwav2vec2", resume_download=True)
         # self.spk_emb_model.save_pretrained("./encoderwav2vec2")
         # self.feature_extractor.save_pretrained("./featureextractorwav2vec2")
-        
-        # self.spk_emb_model, self.feature_extractor = retry_load_models("anton-l/wav2vec2-base-superb-sv")
         #####
 
         # global style token layers
@@ -205,6 +180,7 @@ class Tacotron2(BaseTacotron):
         mel_outputs_postnet = mel_outputs_postnet.transpose(1, 2)
         return mel_outputs, mel_outputs_postnet, alignments
     
+    # NEW spk embedding 
     def spk_embedding(self, audio_batch, sr:int = 24000) -> torch.Tensor:
         logging.set_verbosity_error()
         wav_lengths = [w.shape[1] for w in audio_batch]
@@ -216,11 +192,6 @@ class Tacotron2(BaseTacotron):
             inputs = self.feature_extractor(audio, sampling_rate=16000, return_tensors="pt")
             if torch.cuda.is_available():
                 # Recommended using ".clone().detach()" to avoid "UserWarning"
-                # print("HELLOO", type(inputs["input_values"]))
-                # inputs["input_values"] = torch.tensor(inputs["input_values"]).clone().detach().to(device="cuda")
-                # inputs["attention_mask"] = torch.tensor(inputs["attention_mask"]).clone().detach().to(device="cuda")
-                # inputs["input_values"] = torch.tensor(inputs["input_values"]).to(device="cuda")
-                # inputs["attention_mask"] = torch.tensor(inputs["attention_mask"]).to(device="cuda")
                 inputs["input_values"] = inputs["input_values"].clone().detach().to(device="cuda")
                 inputs["attention_mask"] = inputs["attention_mask"].clone().detach().to(device="cuda")
             with torch.no_grad():
@@ -230,6 +201,7 @@ class Tacotron2(BaseTacotron):
         embeddings = torch.stack(embeddings)
     
         return embeddings
+    ###
 
     def forward(  # pylint: disable=dangerous-default-value=None
         self,
@@ -238,7 +210,7 @@ class Tacotron2(BaseTacotron):
         mel_specs=None,
         mel_lengths=None,
         aux_input={"speaker_ids": None, "d_vectors": None},
-        spk_emb1=None,
+        spk_emb1=None, # NEW
     ):
         """Forward pass for training with Teacher Forcing.
 
@@ -249,7 +221,6 @@ class Tacotron2(BaseTacotron):
             mel_lengths: :math:`[B]`
             aux_input: 'speaker_ids': :math:`[B, 1]` and  'd_vectors': :math:`[B, C]`
         """
-        #NEW AUDIO FROM MEL SPECTOGRAM
         aux_input = self._format_aux_input(aux_input)
         outputs = {"alignments_backward": None, "decoder_outputs_backward": None}
         # compute mask for padding
@@ -291,6 +262,7 @@ class Tacotron2(BaseTacotron):
             capacitron_vae_outputs = None
 
         encoder_outputs = encoder_outputs * input_mask.unsqueeze(2).expand_as(encoder_outputs)
+
         # B x mel_dim x T_out -- B x T_out//r x T_in -- B x T_out//r
         decoder_outputs, alignments, stop_tokens = self.decoder(encoder_outputs, mel_specs, input_mask)
         # sequence masking
@@ -304,14 +276,14 @@ class Tacotron2(BaseTacotron):
             postnet_outputs = postnet_outputs * output_mask.unsqueeze(1).expand_as(postnet_outputs)
         # B x T_out x mel_dim -- B x T_out x mel_dim -- B x T_out//r x T_in
         decoder_outputs, postnet_outputs, alignments = self.shape_outputs(decoder_outputs, postnet_outputs, alignments)
-        #NEW INFERENCE USING VOCODER#
+        
+        # NEW INFERENCE USING VOCODER#
         vocoder_input = postnet_outputs.permute(0, 2, 1)
-        # print("POSTENET OUTPUTS: ", postnet_outputs.shape)
         vocoder_output = self.vocoder.inference(vocoder_input)
-
         spk_embedding2_output = self.spk_embedding(vocoder_output)
         outputs["spk_emb2"] = spk_embedding2_output
         #####
+        
         if self.bidirectional_decoder:
             decoder_outputs_backward, alignments_backward = self._backward_pass(mel_specs, encoder_outputs, input_mask)
             outputs["alignments_backward"] = alignments_backward
@@ -329,7 +301,7 @@ class Tacotron2(BaseTacotron):
                 "alignments": alignments,
                 "stop_tokens": stop_tokens,
                 "capacitron_vae_outputs": capacitron_vae_outputs,
-                "spk_emb2": spk_embedding2_output,
+                "spk_emb2": spk_embedding2_output, # NEW
             }
         )
         ########
@@ -338,7 +310,9 @@ class Tacotron2(BaseTacotron):
         return outputs
 
     @torch.no_grad()
-    def inference(self, text, aux_input=None, spk_emb1=None, save_wav=False, output_path=None):
+    def inference(self, text, aux_input=None,
+                  spk_emb1=None, save_wav=False, output_path=None # NEW
+                  ):
         """Forward pass for inference with no Teacher-Forcing.
 
         Shapes:
@@ -377,24 +351,12 @@ class Tacotron2(BaseTacotron):
             )
 
         if self.num_speakers > 1:
-            #NEW COMMENTED OUT TO ONLY USE SPK_EMB1
-            # if not self.use_d_vector_file:
-            #     embedded_speakers = self.speaker_embedding(aux_input["speaker_ids"])[None]
-            #     # reshape embedded_speakers
-            #     if embedded_speakers.ndim == 1:
-            #         embedded_speakers = embedded_speakers[None, None, :]
-            #     elif embedded_speakers.ndim == 2:
-            #         embedded_speakers = embedded_speakers[None, :]
-            # else:
-            #     embedded_speakers = aux_input["d_vectors"]
+            # NEW ONLY USE SPK_EMB1
             if spk_emb1 is not None:
                 # spk_emb1 = torch.stack(spk_emb1, dim=0)
-                if torch.cuda.is_available():
-                    embedded_speakers = spk_emb1.to("cuda")
-                else:
-                    embedded_speakers = spk_emb1
-                
+                embedded_speakers = spk_emb1.to("cuda") if torch.cuda.is_available() else spk_emb1
                 encoder_outputs = self._concat_speaker_embedding(encoder_outputs, embedded_speakers)
+            ###
             
         decoder_outputs, alignments, stop_tokens = self.decoder.inference(encoder_outputs)
         postnet_outputs = self.postnet(decoder_outputs)
@@ -407,21 +369,25 @@ class Tacotron2(BaseTacotron):
         # Save waveform to disk (only works with one sample TODO: fix this)
         if save_wav and output_path:
             os.makedirs(output_path, exist_ok=True)
-            for _, sample in enumerate(waveform):
-                output_file = os.path.join(output_path, f"output.wav")
+            for idx, sample in enumerate(waveform):
+                output_file = os.path.join(output_path, f"output{idx}.wav")
                 torchaudio.save(output_file, sample, 22050)
-        #####
 
+        # NEW 2nd spk embedding #
         spk_embedding2_output = self.spk_embedding(waveform)
+        #####
 
         outputs = {
             "model_outputs": postnet_outputs,
             "decoder_outputs": decoder_outputs,
             "alignments": alignments,
             "stop_tokens": stop_tokens,
+            # NEW add 2nd spk embedding and waveform
             "spk_emb2": spk_embedding2_output,
             "waveform": waveform if save_wav else None,
+            ### 
         }
+        
          # NEW save outputs to log wandb
         # wandb.log({
         #     "model_outputs": wandb.Image(postnet_outputs),
@@ -454,12 +420,17 @@ class Tacotron2(BaseTacotron):
         stop_target_lengths = batch["stop_target_lengths"]
         speaker_ids = batch["speaker_ids"]
         d_vectors = batch["d_vectors"]
-        #THIS IS NEW#
+        # THIS IS NEW #
         spk_emb1 = batch["spk_emb"]
         pos_emb = batch["pos_emb"]
         #####
+        
         aux_input = {"speaker_ids": speaker_ids, "d_vectors": d_vectors}
-        outputs = self.forward(text_input, text_lengths, mel_input, mel_lengths, aux_input, spk_emb1)
+        # NEW add pos_emb1 forward
+        outputs = self.forward(
+            text_input, text_lengths, mel_input, mel_lengths, aux_input,
+            spk_emb1 # NEW
+        )
 
         # set the [alignment] lengths wrt reduction factor for guided attention
         if mel_lengths.max() % self.decoder.r != 0:
@@ -469,11 +440,13 @@ class Tacotron2(BaseTacotron):
         else:
             alignment_lengths = mel_lengths // self.decoder.r
 
+        # NEW SPEAKER EMBEDDING DICT #
         speaker_emb_dict = {}
         for speaker_id, spk_emb2 in zip(speaker_ids, outputs["spk_emb2"]):
             speaker_emb_dict[speaker_id] = spk_emb2
-
         gc.collect()
+        ### 
+        
         # compute loss
         with autocast(enabled=False):  # use float32 for the criterion
             loss_dict = criterion(
@@ -491,19 +464,23 @@ class Tacotron2(BaseTacotron):
                 alignment_lengths,
                 None if outputs["alignments_backward"] is None else outputs["alignments_backward"].float(),
                 text_lengths,
-                #NEW INPUT TO LOSS FOR INFONCE LOSS WE NEED SPEAKER_IDS
+                # NEW INPUT TO LOSS FOR INFONCE LOSS WE NEED SPEAKER_IDS
                 speaker_emb_dict,
                 spk_emb1,
                 outputs["spk_emb2"],
                 pos_emb,
                 #####
             )
-        gc.collect()
+        gc.collect() # NEW
+        
         # compute alignment error (the lower the better )
         align_error = 1 - alignment_diagonal_score(outputs["alignments"])
         loss_dict["align_error"] = align_error
+        
+        # NEW empty cache if cuda is available
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
+            
         return outputs, loss_dict
 
     def get_optimizer(self) -> List:
@@ -541,7 +518,6 @@ class Tacotron2(BaseTacotron):
             "ground_truth": plot_spectrogram(gt_spec, ap, output_fig=False),
             "alignment": plot_alignment(align_img, output_fig=False),
         }
-        # wandb.log(figures) # NEW log figures to wandb
 
         if self.bidirectional_decoder or self.double_decoder_consistency:
             figures["alignment_backward"] = plot_alignment(alignments_backward[0].data.cpu().numpy(), output_fig=False)

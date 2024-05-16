@@ -6,7 +6,7 @@ import torch
 from coqpit import Coqpit
 from torch import nn
 
-from custom_loss2 import TacotronLoss
+from custom_losses import TacotronLoss
 from custom_base_tts import BaseTTS
 from TTS.tts.utils.helpers import sequence_mask
 from TTS.tts.utils.speakers import SpeakerManager
