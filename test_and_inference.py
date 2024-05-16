@@ -10,7 +10,6 @@ import numpy as np
 import plot_funcs
 import gc
 
-
 def test_cos_sim(tacotron2: Tacotron2, samples: list, config, dev=False):
     """
     Run cosine similarity between two speaker embeddings.
@@ -88,6 +87,7 @@ def test_cos_sim(tacotron2: Tacotron2, samples: list, config, dev=False):
 def inference(tacotron2: Tacotron2, samples: list, config, idx=0):
     
     import json
+    from random import randint
 
     # Set model to evaluation mode
     tacotron2.eval()
@@ -103,9 +103,11 @@ def inference(tacotron2: Tacotron2, samples: list, config, idx=0):
     )
     batch = next(iter(test_dataloader))
 
+    # Get speaker name and id and add random numbers
     speaker_name = batch["speaker_names"][idx]
     speaker_id = batch["speaker_ids"][idx]
-    speaker = f'{speaker_name}_({speaker_id})'
+    speaker = f'{speaker_name}_({speaker_id})_'
+    speaker += ''.join(["{}".format(randint(0, 9)) for num in range(0, 4)])
     
     # Make folder for speaker output
     folder_path = os.path.join('output', speaker)
@@ -113,14 +115,21 @@ def inference(tacotron2: Tacotron2, samples: list, config, idx=0):
                 
     # Display first sample as text and audio
     print(f'\nraw_text sample:\n> {batch["raw_text"][idx]}')
-    # Save txt file
-    with open(os.path.join(folder_path, 'raw_text_.txt'), 'w') as f:
-        f.write(batch["raw_text"][idx])
 
     # Save the waveform input
     waveform = batch["waveform"][idx].T
     input_file = os.path.join(folder_path, f'input.wav')
     torchaudio.save(input_file, waveform.cpu(), 22050)
+    
+    # Save specific config elements in folder
+    manual_dict = {
+        "infoNCE_alpha": config.infoNCE_alpha,
+        "similarity_loss_alpha": config.similarity_loss_alpha,
+        "raw_text": batch["raw_text"][idx],
+    }
+    json_file = os.path.join(folder_path, 'config.json')
+    with open(json_file, 'w') as f:
+        json.dump(manual_dict, f, indent=4)
 
     # Format batch and get all values
     batch = tacotron2.format_batch(batch)
@@ -160,14 +169,6 @@ def inference(tacotron2: Tacotron2, samples: list, config, idx=0):
 
     # Save the figure
     plt.savefig(os.path.join(folder_path, f'mel_spect_comp.png'))
-    
-    # Save specific config elements in folder
-    manual_dict = {
-        "infoNCE_alpha": config.infoNCE_alpha,
-        "similarity_loss_alpha": config.similarity_loss_alpha,
-    }
-    with open(os.path.join(folder_path, 'config.json'), 'w') as f:
-        json.dump(manual_dict, f)
 
 
 if __name__ == "__main__":

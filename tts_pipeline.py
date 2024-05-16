@@ -77,6 +77,7 @@ config = {
     "similarity_loss_alpha": 0.0 if args.base else 0.25,
     "shuffle": True,
     "return_wav": False,
+    "max_decoder_steps": 1000,
 }
 
 # Make notes to add to the wandb config

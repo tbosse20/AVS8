@@ -35,8 +35,12 @@ AVS8
 # Usage
 - "tts_pipeline.py"
 
-# Load weights
-- Download folder: https://aaudk-my.sharepoint.com/:f:/r/personal/lk83xy_student_aau_dk/Documents/about8ksteps?csf=1&web=1&e=3rLqLW.
-- Run `tts_pipeline.py` with --checkpoint_run "/path/run/folder"
+# Load Weights
+## Weights
+- Baseline (12k steps): [OneDrive - baseline_12k](https://aaudk-my.sharepoint.com/:f:/r/personal/lk83xy_student_aau_dk/Documents/baseline_12k?csf=1&web=1&e=TRvQw3)
+- New version (3k steps): [OneDrive - about8ksteps](https://aaudk-my.sharepoint.com/:f:/r/personal/lk83xy_student_aau_dk/Documents/about8ksteps?csf=1&web=1&e=3rLqLW)
+
+- Download folder with weights.
+- Run `tts_pipeline.py` with --checkpoint_run "/path/to/folder".
 
 ## License

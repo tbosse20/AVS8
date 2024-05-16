@@ -363,7 +363,7 @@ class Tacotron2(BaseTacotron):
         postnet_outputs = decoder_outputs + postnet_outputs
         decoder_outputs, postnet_outputs, alignments = self.shape_outputs(decoder_outputs, postnet_outputs, alignments)
         
-        #NEW INFERENCE USING VOCODER#
+        # NEW INFERENCE USING VOCODER#
         waveform = self.vocoder.inference(postnet_outputs.permute(0, 2, 1))
         
         # Save waveform to disk (only works with one sample TODO: fix this)

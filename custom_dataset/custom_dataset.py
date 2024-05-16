@@ -450,7 +450,8 @@ class TTSDataset(Dataset):
             max_wav_len = max(wav_lengths)
             spk_embeddings_list, pos_emb_list = [], []
             MASKED_PERCENT = 0.2
-            for w in batch["wav"]:
+            for w_original in batch["wav"]:
+                w = w_original.copy()
                 w = fix_length(w, size=max_wav_len)
                 embeddings = spk_embedding(w)
                 spk_embeddings_list.append(embeddings)
