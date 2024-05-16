@@ -1,5 +1,5 @@
 import os
-from trainer import Trainer, TrainerArgs
+from custom_trainer import Trainer, TrainerArgs
 from custom_tacotron2_config import Tacotron2Config
 from custom_tacotron2 import Tacotron2
 from TTS.tts.utils.speakers import SpeakerManager
