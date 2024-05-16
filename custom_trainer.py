@@ -222,20 +222,6 @@ class TrainerConfig(Coqpit):
         default=54321,
         metadata={"help": "Global seed for torch, random and numpy random number generator. Defaults to 54321"},
     )
-    
-    # NEW - Implemented variables for loss
-    # infoNCE_alpha: float = field(
-    #     default=None,
-    #     metadata={"help": "[More information needed]. Defaults to None"},
-    # )
-    # similarity_loss_alpha: float = field(
-    #     default=None,
-    #     metadata={"help": "[More information needed]. Defaults to None"},
-    # )
-    # return_wav: bool = field(
-    #     default=False,
-    #     metadata={"help": "[More information needed]. Defaults to False"},
-    # )
 
 
 @dataclass
@@ -1858,7 +1844,7 @@ class Trainer:
             # call the keyboard interrupt callback
             self.callbacks.on_keyboard_interrupt(self)
             # if the output folder is empty remove the run.
-            # remove_experiment_folder(self.output_path)
+            # remove_experiment_folder(self.output_path) # NEW
             # clear the DDP processes
             if self.num_gpus > 1:
                 dist.destroy_process_group()
@@ -1871,7 +1857,7 @@ class Trainer:
             except SystemExit:
                 os._exit(1)  # pylint: disable=protected-access
         except BaseException:  # pylint: disable=broad-except
-            # remove_experiment_folder(self.output_path)
+            # remove_experiment_folder(self.output_path) # NEW
             traceback.print_exc()
             sys.exit(1)
 
@@ -2180,4 +2166,3 @@ class Trainer:
     def _is_apex_available() -> bool:
         """Check if Nvidia's APEX is available."""
         return importlib.util.find_spec("apex") is not None
-
