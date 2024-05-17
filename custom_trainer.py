@@ -1633,6 +1633,8 @@ class Trainer:
                 if self.config.run_eval
                 else None
             )
+            
+        cos_sims = [] # NEW Initialize "cos_sims" to contain cos_loss
 
         torch.set_grad_enabled(False)
         self.model.eval()
@@ -1645,7 +1647,8 @@ class Trainer:
             batch = self.format_batch(batch)
             loader_time = time.time() - loader_start_time
             self.keep_avg_eval.update_values({"avg_loader_time": loader_time})
-            outputs_, _ = self.eval_step(batch, cur_step)
+            outputs_, loss_dict = self.eval_step(batch, cur_step) # NEW Add "loss_dict" as return
+            cos_sims.append(loss_dict['similarity_loss']) # NEW Add to cos_sims
             if outputs_ is None:
                 logger.info(" [!] `eval_step()` retuned `None` outputs. Skipping evaluation step.")
                 continue
@@ -1671,6 +1674,8 @@ class Trainer:
                 )
             self.dashboard_logger.eval_stats(self.total_steps_done, self.keep_avg_eval.avg_values)
         torch.cuda.empty_cache()
+        
+        return cos_sims # NEW Return "cos_sims"
 
     ##################################
     # TESTING
@@ -1758,9 +1763,11 @@ class Trainer:
         else:
             self.eval_samples = self.test_samples
 
-        self.eval_epoch()
+        cos_sims = self.eval_epoch() # NEW Return "cos_sims"
         self.c_logger.print_epoch_end(self.epochs_done, self.keep_avg_eval.avg_values)
         self.eval_samples = eval_samples_cache
+        
+        return cos_sims # NEW Return "cos_sims"
 
     ###################################
     # FIT FUNCTIONS

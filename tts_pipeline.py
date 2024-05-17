@@ -8,7 +8,9 @@ import argparse
 import custom_dataset.dataset_util as dataset_util
 import gc
 import re
-import test_and_inference
+import custom_inference
+import plot_funcs
+import numpy as np
 
 # Python cmd line arguments
 parser = argparse.ArgumentParser()
@@ -178,6 +180,8 @@ if args.train or args.test:
 if args.train:
     trainer.fit()
 if args.test:
-    trainer.test()
+    cos_sims = trainer.test()
+    np.save('output/cos_similarity.npy', cos_sims)
+    plot_funcs.plot_boxplot(cos_sims)
 if args.inference:
-    test_and_inference.inference(model, test_samples, tacotron2_config)
+    custom_inference.inference(model, test_samples, tacotron2_config)

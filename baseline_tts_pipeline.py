@@ -16,7 +16,7 @@ import argparse
 import custom_dataset.dataset_util as dataset_util
 import gc
 import re
-import test_and_inference
+import custom_inference
 
 # Python cmd line arguments
 parser = argparse.ArgumentParser()
@@ -166,6 +166,6 @@ if args.train:
     trainer.fit()
     
 if args.test:
-    test_and_inference.test_cos_sim(model, test_samples, tacotron2_config, args.dev)
+    custom_inference.test_cos_sim(model, test_samples, tacotron2_config, args.dev)
 if args.inference:
-    test_and_inference.inference(model, test_samples, tacotron2_config)
+    custom_inference.inference(model, test_samples, tacotron2_config)
