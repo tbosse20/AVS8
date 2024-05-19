@@ -4,7 +4,7 @@ import wandb
 import matplotlib.pyplot as plt
 import torchaudio
 
-def inference(tacotron2: Tacotron2, samples: list, config, idx=0):
+def inference(tacotron2: Tacotron2, samples: list, config, idx=0, checkpoint_run=None):
     
     import json
     from random import randint
@@ -46,6 +46,7 @@ def inference(tacotron2: Tacotron2, samples: list, config, idx=0):
         "infoNCE_alpha": config.infoNCE_alpha,
         "similarity_loss_alpha": config.similarity_loss_alpha,
         "raw_text": batch["raw_text"][idx],
+        "weights": os.path.basename(checkpoint_run) if checkpoint_run else 'None',
     }
     json_file = os.path.join(folder_path, 'config.json')
     with open(json_file, 'w') as f:

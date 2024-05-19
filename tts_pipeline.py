@@ -184,4 +184,4 @@ if args.test:
     np.save('output/cos_similarity.npy', cos_sims)
     plot_funcs.plot_boxplot(cos_sims)
 if args.inference:
-    custom_inference.inference(model, test_samples, tacotron2_config)
+    custom_inference.inference(model, test_samples, tacotron2_config, checkpoint_run=args.checkpoint_run)
