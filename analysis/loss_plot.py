@@ -1,6 +1,5 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
 from matplotlib.lines import Line2D
 
 
@@ -12,6 +11,9 @@ def plot_loss(csv_file: str, smooth: int = 25, verbose: bool = False):
         csv_file (str): Path to the CSV file.
         smooth  (int):  Window size smoothing.
         verbose (bool): Show the plot.
+
+    Example:
+        plot_loss("analysis/wandb loss.csv", window_size=25)
     """
 
     # Define colors for each run
@@ -34,6 +36,11 @@ def plot_loss(csv_file: str, smooth: int = 25, verbose: bool = False):
         "quiet-haze-348",
         "fanciful-lion-357",
         "restful-grass-361",
+        "atomic-moon-368",
+        "toasty-sound-371",
+        "lunar-capybara-372",
+        "clear-wildflower-374",
+        "expert-forest-388",
     ]
     slimelime_run_names = [
         # Testing baseline runs
@@ -49,6 +56,11 @@ def plot_loss(csv_file: str, smooth: int = 25, verbose: bool = False):
         "cosmic-sky-356",
         "spring-sun-358",
         "polar-wave-360",
+        "fresh-thunder-368",
+        "astral-thunder-370",
+        "light-water-372",
+        "youthful-sea-374",
+        "denim-capybara-388",
     ]
 
     # Extract track name from file name
@@ -57,6 +69,7 @@ def plot_loss(csv_file: str, smooth: int = 25, verbose: bool = False):
     # Read CSV file into a DataFrame
     df = pd.read_csv(csv_file, sep=",", quotechar='"').dropna()
 
+    # Concatenate the data for each run
     def concat_run_names(run_names):
         return pd.concat(
             [
@@ -109,6 +122,20 @@ def plot_loss(csv_file: str, smooth: int = 25, verbose: bool = False):
 
 
 def process_all_csv(smooth: int = 25):
+    """
+    Process all CSV files in the "analysis" directory.
+
+    Args:
+        smooth (int): Window size smoothing.
+
+    Example:
+        process_all_csv(smooth=100)
+
+    Setup:
+        1. Download all csv files from wandb export
+        2. Rename them "wandb {loss_name}.csv"
+    """
+
     import os
 
     for file in os.listdir("analysis"):
