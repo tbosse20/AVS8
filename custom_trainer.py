@@ -1154,7 +1154,7 @@ class Trainer:
             if optimizer_idx is not None:
                 outputs, loss_dict = self._model_train_step(batch, model, criterion, optimizer_idx=optimizer_idx)
             else:
-                outputs, loss_dict = self._model_train_step(batch, model, criterion)
+                outputs, loss_dict, _ = self._model_train_step(batch, model, criterion)
         return outputs, loss_dict
 
     @staticmethod
