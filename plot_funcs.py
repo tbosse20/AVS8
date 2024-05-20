@@ -29,12 +29,14 @@ def plot_boxplot(numpy_array, file_name):
 
 if __name__ == "__main__":
     
-    file_name = "cosSimilarityLoss_baseline_24.4k_steps_baseline"
+    # Add the number of samples to the file name
+    samples = f'_{123}'
+    
+    # Define the file names
+    file_name = f"cosSimilarityLoss_baseline_24.4k_steps_baseline{samples}"
     
     # Load the cosine similarity values
     cos_sims_np = np.load(f"output/{file_name}.npy")
-    
-    file_name += f'_{len(cos_sims_np)}'
 
     # Call the function to plot the boxplot
     plot_boxplot(cos_sims_np, file_name)
