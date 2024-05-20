@@ -11,6 +11,7 @@ import re
 import custom_inference
 import plot_funcs
 import numpy as np
+import random
 
 # Python cmd line arguments
 parser = argparse.ArgumentParser()
@@ -181,7 +182,9 @@ if args.train:
     trainer.fit()
 if args.test:
     cos_sims = trainer.test()
-    np.save('output/cos_similarity.npy', cos_sims)
-    plot_funcs.plot_boxplot(cos_sims)
+    file_name = f'cosSimilarityLoss_{os.path.basename(args.checkpoint_run)}'
+    file_name += '_baseline' if tacotron2_config.infoNCE_alpha == 0.0 else '_slimelime'
+    np.save(f'output/{file_name}.npy', cos_sims)
+    plot_funcs.plot_boxplot(cos_sims, file_name)
 if args.inference:
     custom_inference.inference(model, test_samples, tacotron2_config, checkpoint_run=args.checkpoint_run)

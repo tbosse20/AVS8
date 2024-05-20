@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def plot_boxplot(numpy_array):
+def plot_boxplot(numpy_array, file_name):
     
     # Generate random data to test
     # numpy_array = np.random.normal(loc=0, scale=1, size=1000)
@@ -16,7 +16,7 @@ def plot_boxplot(numpy_array):
     plt.xlabel("Sample")
     plt.ylabel("Value")
     # plt.title('Cosine Similarity Boxplot')
-    plt.savefig("output/cos_similarity_boxplot.png")
+    plt.savefig(f"output/{file_name}.png")
 
 
 if __name__ == "__main__":
