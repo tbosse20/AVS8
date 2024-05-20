@@ -10,18 +10,31 @@ def plot_boxplot(numpy_array, file_name):
     # Plot boxplot
     # plt.boxplot(numpy_array)
     
+    # Print the number of samples
+    print(f'Cos sim samples: {len(numpy_array)}')
+    
     # Plot the distribution
     plt.hist(numpy_array, bins=30, color='skyblue', edgecolor='black')
     
-    plt.xlabel("Sample")
-    plt.ylabel("Value")
+    plt.xlabel("Cosine Similarity Loss Value")
+    plt.ylabel("Frequency")
     # plt.title('Cosine Similarity Boxplot')
+
+    # Format the x-axis and y-axis ticks to be integers and reduce the number of ticks
+    plt.gca().xaxis.set_major_locator(plt.MaxNLocator(integer=True))
+    plt.gca().yaxis.set_major_locator(plt.MaxNLocator(integer=True))
+
     plt.savefig(f"output/{file_name}.png")
 
 
 if __name__ == "__main__":
+    
+    file_name = "cosSimilarityLoss_baseline_24.4k_steps_baseline"
+    
     # Load the cosine similarity values
-    cos_sims_np = np.load("output/cos_similarity.npy")
+    cos_sims_np = np.load(f"output/{file_name}.npy")
+    
+    file_name += f'_{len(cos_sims_np)}'
 
     # Call the function to plot the boxplot
-    plot_boxplot(cos_sims_np)
+    plot_boxplot(cos_sims_np, file_name)

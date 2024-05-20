@@ -449,7 +449,7 @@ class Tacotron2(BaseTacotron):
         
         # compute loss
         with autocast(enabled=False):  # use float32 for the criterion
-            loss_dict = criterion(
+            loss_dict, sim_loss_list = criterion( # NEW add sim_loss_list
                 outputs["model_outputs"].float(),
                 outputs["decoder_outputs"].float(),
                 mel_input.float(),
@@ -481,7 +481,7 @@ class Tacotron2(BaseTacotron):
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
             
-        return outputs, loss_dict
+        return outputs, loss_dict, sim_loss_list # NEW add sim_loss_list
 
     def get_optimizer(self) -> List:
         if self.use_capacitron_vae:

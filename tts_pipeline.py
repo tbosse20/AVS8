@@ -184,6 +184,7 @@ if args.test:
     cos_sims = trainer.test()
     file_name = f'cosSimilarityLoss_{os.path.basename(args.checkpoint_run)}'
     file_name += '_baseline' if tacotron2_config.infoNCE_alpha == 0.0 else '_slimelime'
+    file_name += f'_{len(cos_sims)}'
     np.save(f'output/{file_name}.npy', cos_sims)
     plot_funcs.plot_boxplot(cos_sims, file_name)
 if args.inference:

@@ -392,6 +392,8 @@ class TacotronLoss(torch.nn.Module):
         postnet_target = linear_input if self.config.model.lower() in ["tacotron"] else mel_input
 
         return_dict = {}
+        sim_loss_list = [] # NEW LIST TO STORE SIMILARITY LOSS VALUES
+        
         # remove lengths if no masking is applied
         if not self.config.loss_masking:
             output_lens = None
@@ -411,9 +413,10 @@ class TacotronLoss(torch.nn.Module):
         return_dict["postnet_loss"] = postnet_loss
         
         #NEW GET COS SIM LOSS
-        if self.similarity_loss_alpha > 0:
+        if self.similarity_loss_alpha > 0 or True:
             spk_emb1 = torch.stack(spk_emb1, dim=0) # [4, 1, 512]
             sim_loss = self.criterion_spkemb(spk_emb1, spk_emb2)
+            sim_loss_list.append(sim_loss)
             normalized_sim_loss_sum = torch.sum(-(sim_loss - 1) / 2, dim=0)
             return_dict["similarity_loss"] = normalized_sim_loss_sum
             loss += self.similarity_loss_alpha * normalized_sim_loss_sum[0]
@@ -565,7 +568,7 @@ class TacotronLoss(torch.nn.Module):
         
         wandb.log(return_dict)
         
-        return return_dict
+        return return_dict, sim_loss_list # NEW RETURN SIM LOSS LIST
 
 
 class GlowTTSLoss(torch.nn.Module):
