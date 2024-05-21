@@ -26,7 +26,7 @@ def inference(tacotron2: Tacotron2, samples: list, config, idx=0, checkpoint_run
     batch = next(iter(test_dataloader))
 
     # Get model type
-    model_type = "Slimeline" if config.infoNCE_alpha > 0 else "Baseline"
+    model_type = "CLmodel" if config.infoNCE_alpha > 0 else "Baseline"
     # Get raw text and format file name
     raw_text = batch["raw_text"][0]
     # Remove new lines and quotes
