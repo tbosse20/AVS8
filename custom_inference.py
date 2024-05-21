@@ -100,8 +100,8 @@ def inference(tacotron2: Tacotron2, samples: list, config, idx=0, checkpoint_run
     for key, value in inference_outputs.items():
         try:
             fig2, ax2 = plt.subplots(figsize=(6, 6))
-            im2 = ax2.imshow(value[0].numpy().T, aspect="auto", origin="lower")
-            ax2.set_title(f"{model_type} {key}")
+            ax2.imshow(value[0].clone().detach().numpy().T, aspect="auto", origin="lower")
+            ax2.set_title(f"{model_type} {key} shape={value.shape}")
             ax2.set_xlabel("Frame")
             ax2.set_ylabel("Mel Filter")
             # Save the second subplot individually
