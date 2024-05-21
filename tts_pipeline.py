@@ -185,7 +185,6 @@ if args.test:
     plot_funcs.save_collected_losses(collected_losses, tacotron2_config.infoNCE_alpha, args.checkpoint_run)
     
 if args.inference:
-    print(len(test_samples))
     custom_inference.inference(
         model,
         test_samples,

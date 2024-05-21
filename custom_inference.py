@@ -97,12 +97,16 @@ def inference(tacotron2: Tacotron2, samples: list, config, idx=0, checkpoint_run
     plt.close(fig1)  # Close the figure to free up resources
 
     # Plot model output
-    fig2, ax2 = plt.subplots(figsize=(6, 6))
-    im2 = ax2.imshow(inference_outputs["model_outputs"][0].numpy().T, aspect="auto", origin="lower")
-    ax2.set_title(f"{model_type} Mel-Spectrogram")
-    ax2.set_xlabel("Frame")
-    ax2.set_ylabel("Mel Filter")
-    # Save the second subplot individually
-    plt.savefig(os.path.join(folder_path, f"{model_type}_mel_spectrogram.png"))
-    plt.close(fig2)  # Close the figure to free up resources
+    for key, value in inference_outputs.items():
+        try:
+            fig2, ax2 = plt.subplots(figsize=(6, 6))
+            im2 = ax2.imshow(value[0].numpy().T, aspect="auto", origin="lower")
+            ax2.set_title(f"{model_type} {key}")
+            ax2.set_xlabel("Frame")
+            ax2.set_ylabel("Mel Filter")
+            # Save the second subplot individually
+            plt.savefig(os.path.join(folder_path, f"{model_type}_{key}.png"))
+            plt.close(fig2)  # Close the figure to free up resources
+        except:
+            pass
 
