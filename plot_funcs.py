@@ -1,20 +1,27 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
 
-def plot_boxplot(file_name, baseline_array, slimelime_array=None):
+folder_path = os.path.join("output", "collected_losses")
     
-    # Set the style of the visualization
-    alpha = 0.4 # Transparency of the histograms
-    bins = 20 # Number of bins for the histograms
+def save_collected_losses(collected_losses, checkpoint_run, infoNCE_alpha):
+    
+    os.makedirs(folder_path, exist_ok=True)
+    
+    for key, value in collected_losses.items():
+        file_name = ''
+        file_name += f'{key}'
+        file_name += f'_{os.path.basename(checkpoint_run)}'
+        file_name += f'_baseline' if infoNCE_alpha == 0.0 else f'_slimelime'
+        file_path = os.path.join(folder_path, f'{file_name}.npy')
+        np.save(file_path, value)
+        
+def plot_boxplot(xlabel, baseline_array, slimelime_array=None):
     
     # Generate random data to test
     # numpy_array = np.random.normal(loc=0, scale=1, size=1000)
     # numpy_array2 = np.random.normal(loc=0.2, scale=1.2, size=1000)
-    
-    # Print the number of samples
-    print(f'Baseline samples: {len(baseline_array)}')
-    print(baseline_array)
     
     # Set the style of the visualization
     sns.set(style="whitegrid")
@@ -22,37 +29,50 @@ def plot_boxplot(file_name, baseline_array, slimelime_array=None):
     plt.figure(figsize=(10, 6))
     
     # Plot Baseline historgam and KDE
-    # sns.histplot(numpy_array, bins=bins, kde=True, color='blue', edgecolor='black', alpha=alpha)
+    print(f'Baseline samples: {len(baseline_array)}')
     sns.kdeplot(baseline_array, color='red', label='Baseline', linewidth=2, fill=True)
     plt.axvline(np.mean(baseline_array), color='r', linestyle='--')
     
     # Plot Slimelime histogram and KDE
     if slimelime_array is not None:
         print(f'Slimelime samples: {len(slimelime_array)}')
-        # sns.histplot(numpy_array2, bins=bins, kde=True, color="red", edgecolor='black', alpha=alpha)
         sns.kdeplot(slimelime_array, color='blue', label='Slimelime', linewidth=2, fill=True)
         plt.axvline(np.mean(slimelime_array), color='b', linestyle='--')
 
     # Configure the plot
-    plt.xlabel("Cosine Similarity Loss")
+    plt.xlabel(xlabel)
     plt.ylabel("Denisty")
     # plt.title('Cosine Similarity Boxplot')
     plt.legend()
     
     # Save the plot
-    plt.savefig(f"output/{file_name}.png")
+    save_path = os.path.join(folder_path, f"{xlabel.replace(' ', '_')}.png")
+    plt.savefig(save_path)
 
 
 if __name__ == "__main__":
     
-    # Define the file names
-    file_name = f"cosSimilarityLoss_baseline_24.4k_steps_baseline"
-    # Add the number of samples to the file name
-    # file_name += f'_{123}'
-    
-    # Load the cosine similarity values
-    cos_sims_np = np.load(f"output/{file_name}.npy")
-    cos_sims_np_fake = np.load(f"output/{file_name}.npy") * 1.2
+    # Define a list of tuples containing the parameters for plotting
+    plot_params = [
+        {
+            'title': 'Cosine Similarity Loss',
+            'baseline_file_name': 'custom_sim_loss_baseline_24.4k_steps_baseline.npy',
+            'clmodel_file_name': 'custom_sim_loss__slimelime.npy'
+        },
+        {
+            'title': 'Decoder Loss',
+            'baseline_file_name': 'custom_decoder_loss_baseline_24.4k_steps_baseline.npy',
+            'clmodel_file_name': 'custom_decoder_loss__slimelime.npy'
+        }
+    ]
 
-    # Call the function to plot the boxplot
-    plot_boxplot(file_name, cos_sims_np, cos_sims_np_fake)
+    # Iterate over plot_params list
+    for params in plot_params:
+        # Load the baseline and clmodel losses
+        baseline_path = os.path.join(folder_path, params['baseline_file_name'])
+        baseline_losses = np.load(baseline_path)
+        clmodel_path = os.path.join(folder_path, params['clmodel_file_name'])
+        clmodel_losses = np.load(clmodel_path)
+        
+        # Call the function to plot the boxplot
+        plot_boxplot(params['title'], baseline_losses, clmodel_losses)

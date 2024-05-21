@@ -1588,14 +1588,14 @@ class Trainer:
             outputs = []
             loss_dict = {}
             if not isinstance(self.optimizer, list) or isimplemented(self.model, "optimize"):
-                outputs, loss_dict, sim_loss = self._model_eval_step(batch, self.model, self.criterion) # NEW Add "sim_loss" as return
+                outputs, loss_dict, custom_return_dict = self._model_eval_step(batch, self.model, self.criterion) # NEW Add "custom_return_dict" as return
                 if outputs is None:
                     return None, None
             else:
                 outputs = [None] * len(self.optimizer)
                 for idx, _ in enumerate(self.optimizer):
                     criterion = self.criterion
-                    outputs_, loss_dict_new, sim_loss = self._model_eval_step(batch, self.model, criterion, idx) # NEW Add "sim_loss" as return
+                    outputs_, loss_dict_new, custom_return_dict = self._model_eval_step(batch, self.model, criterion, idx) # NEW Add "custom_return_dict" as return
                     if outputs_ is None:
                         return None, None
                     outputs[idx] = outputs_
@@ -1615,7 +1615,7 @@ class Trainer:
             if self.config.print_eval:
                 self.c_logger.print_eval_step(step, loss_dict, self.keep_avg_eval.avg_values)
 
-        return outputs, loss_dict, sim_loss # NEW Return "sim_loss"
+        return outputs, loss_dict, custom_return_dict # NEW Return "custom_return_dict"
 
     def eval_epoch(self) -> None:
         """Main entry point for the evaluation loop. Run evaluation on the all validation samples."""
@@ -1633,8 +1633,9 @@ class Trainer:
                 if self.config.run_eval
                 else None
             )
-            
-        cos_sims = [] # NEW Initialize "cos_sims" to contain cos_loss
+        
+        # NEW dict to contain collected losses
+        collected_losses = {}
 
         torch.set_grad_enabled(False)
         self.model.eval()
@@ -1647,8 +1648,16 @@ class Trainer:
             batch = self.format_batch(batch)
             loader_time = time.time() - loader_start_time
             self.keep_avg_eval.update_values({"avg_loader_time": loader_time})
-            outputs_, loss_dict, sim_loss = self.eval_step(batch, cur_step) # NEW Add "loss_dict" as return
-            cos_sims.append(sim_loss) # NEW Add to cos_sims
+            
+            outputs_, loss_dict, custom_return_dict = self.eval_step(batch, cur_step) # NEW Add "custom_return_dict" as return
+            
+            # NEW collect losses from custom_return_dict
+            for key, value in custom_return_dict.items():
+                if key not in collected_losses:
+                    collected_losses[key] = []
+                collected_losses[key].append(value)
+            ##########################################
+                        
             if outputs_ is None:
                 logger.info(" [!] `eval_step()` retuned `None` outputs. Skipping evaluation step.")
                 continue
@@ -1675,16 +1684,19 @@ class Trainer:
             self.dashboard_logger.eval_stats(self.total_steps_done, self.keep_avg_eval.avg_values)
         torch.cuda.empty_cache()
         
-        # NEW #
-        # Flatten and return cos_sims
-        # Flatten the list of lists into a single list of tensors
-        cos_sims = [tensor for sublist in cos_sims for tensor in sublist]
-        # Concatenate all tensors in the flattened list into a single tensor
-        cos_sims = torch.cat(cos_sims, dim=0)
-        # Convert to numpy
-        cos_sims = cos_sims.cpu().flatten().numpy()
+        # NEW Flatten and return collected_losses
+        for key, value in collected_losses.items():
+            if len(value) == 0: continue
+            # Flatten the list of lists into a single list of tensors
+            value = [tensor for sublist in value for tensor in sublist]
+            # Check and handle zero-dimensional tensors
+            value = [tensor if tensor.dim() > 0 else tensor.unsqueeze(0) for tensor in value]
+            # Concatenate all tensors in the flattened list into a single tensor
+            value = torch.cat(value, dim=0)
+            # Convert to numpy
+            collected_losses[key] = value.cpu().flatten().numpy()
         
-        return cos_sims # NEW Return "cos_sims"
+        return collected_losses # NEW Return "collected_losses"
         ##########################################
 
     ##################################
@@ -1773,11 +1785,11 @@ class Trainer:
         else:
             self.eval_samples = self.test_samples
 
-        cos_sims = self.eval_epoch() # NEW Return "cos_sims"
+        collected_losses = self.eval_epoch() # NEW Return "collected_losses"
         self.c_logger.print_epoch_end(self.epochs_done, self.keep_avg_eval.avg_values)
         self.eval_samples = eval_samples_cache
         
-        return cos_sims # NEW Return "cos_sims"
+        return collected_losses # NEW Return "collected_losses"
 
     ###################################
     # FIT FUNCTIONS
