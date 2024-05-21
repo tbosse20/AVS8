@@ -13,11 +13,11 @@ def save_collected_losses(collected_losses, checkpoint_run, infoNCE_alpha):
         file_name = ''
         file_name += f'{key}'
         file_name += f'_{os.path.basename(checkpoint_run)}'
-        file_name += f'_baseline' if infoNCE_alpha == 0.0 else f'_slimelime'
+        file_name += f'_baseline' if infoNCE_alpha == 0.0 else f'_clmodel'
         file_path = os.path.join(folder_path, f'{file_name}.npy')
         np.save(file_path, value)
         
-def plot_boxplot(xlabel, baseline_array, slimelime_array=None):
+def plot_boxplot(xlabel, baseline_array, clmodel_array=None):
     
     # Generate random data to test
     # numpy_array = np.random.normal(loc=0, scale=1, size=1000)
@@ -33,11 +33,11 @@ def plot_boxplot(xlabel, baseline_array, slimelime_array=None):
     sns.kdeplot(baseline_array, color='red', label='Baseline', linewidth=2, fill=True)
     plt.axvline(np.mean(baseline_array), color='r', linestyle='--')
     
-    # Plot Slimelime histogram and KDE
-    if slimelime_array is not None:
-        print(f'Slimelime samples: {len(slimelime_array)}')
-        sns.kdeplot(slimelime_array, color='blue', label='Slimelime', linewidth=2, fill=True)
-        plt.axvline(np.mean(slimelime_array), color='b', linestyle='--')
+    # Plot CLmodel histogram and KDE
+    if clmodel_array is not None:
+        print(f'CLmodel samples: {len(clmodel_array)}')
+        sns.kdeplot(clmodel_array, color='blue', label='CLmodel', linewidth=2, fill=True)
+        plt.axvline(np.mean(clmodel_array), color='b', linestyle='--')
 
     # Configure the plot
     plt.xlabel(xlabel)
@@ -57,12 +57,12 @@ if __name__ == "__main__":
         {
             'title': 'Cosine Similarity Loss',
             'baseline_file_name': 'custom_sim_loss_baseline_24.4k_steps_baseline.npy',
-            'clmodel_file_name': 'custom_sim_loss__slimelime.npy'
+            'clmodel_file_name': 'custom_sim_loss__clmodel.npy'
         },
         {
             'title': 'Decoder Loss',
             'baseline_file_name': 'custom_decoder_loss_baseline_24.4k_steps_baseline.npy',
-            'clmodel_file_name': 'custom_decoder_loss__slimelime.npy'
+            'clmodel_file_name': 'custom_decoder_loss__clmodel.npy'
         }
     ]
 
