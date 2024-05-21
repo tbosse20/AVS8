@@ -182,7 +182,7 @@ if args.train:
     trainer.fit()
 if args.test:
     collected_losses = trainer.test()
-    plot_funcs.save_collected_losses(collected_losses, args.checkpoint_run, tacotron2_config.infoNCE_alpha)
+    plot_funcs.save_collected_losses(collected_losses, tacotron2_config.infoNCE_alpha, args.checkpoint_run)
     
 if args.inference:
     print(len(test_samples))
