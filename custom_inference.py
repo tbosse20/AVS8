@@ -25,27 +25,32 @@ def inference(tacotron2: Tacotron2, samples: list, config, idx=0, checkpoint_run
     # Get batch from dataloader
     batch = next(iter(test_dataloader))
 
+    # Get model type
+    model_type = "Slimeline" if config.infoNCE_alpha > 0 else "Baseline"
     # Get raw text and format file name
     raw_text = batch["raw_text"][0]
     # Remove new lines and quotes
     text = raw_text
     for element in ["\n", '"', "'", "?", "!", ".", ",", ":", ";"]:
-        text = raw_text.replace(element, "")
+        text = text.replace(element, "")
+    
+    # Setup file name
+    file_name = model_type
     # Shorten text with dots
-    file_name = text[:10] + ".."
+    file_name += '_' + text[:10] + '..'
     # Add timestamp to file name
     file_name += "_" + datetime.now().strftime("%m%d_%H%M")
     # Add random numbers to file name
     file_name += "_" + "".join(["{}".format(randint(0, 9)) for num in range(0, 4)])
 
+    # Make folder for speaker output
+    folder_path = os.path.join("output", file_name)
+    os.makedirs(folder_path, exist_ok=True)
+
     # Get speaker name and id and add random numbers
     speaker_name = batch["speaker_names"][0]
     speaker_id = batch["speaker_ids"][0]
     speaker = f"{speaker_name}_({speaker_id})"
-
-    # Make folder for speaker output
-    folder_path = os.path.join("output", file_name)
-    os.makedirs(folder_path, exist_ok=True)
 
     # Display first sample as text and audio
     print(f"\nraw_text sample:\n> {raw_text}")
@@ -54,11 +59,12 @@ def inference(tacotron2: Tacotron2, samples: list, config, idx=0, checkpoint_run
     waveform = batch["waveform"][0].T
     input_file = os.path.join(folder_path, f"input.wav")
     torchaudio.save(input_file, waveform.cpu(), 22050)
-
+    
     # Save specific config elements in folder
     manual_dict = {
         "infoNCE_alpha": config.infoNCE_alpha,
         "similarity_loss_alpha": config.similarity_loss_alpha,
+        "model_type": model_type,
         "raw_text": batch["raw_text"][0],
         "weights": os.path.basename(checkpoint_run) if checkpoint_run else "None",
         "speaker": speaker,
@@ -80,31 +86,23 @@ def inference(tacotron2: Tacotron2, samples: list, config, idx=0, checkpoint_run
         output_path=os.path.join(folder_path),
     )
 
-    # Create a figure and axes for subplots
-    fig, axes = plt.subplots(1, 2, figsize=(12, 6))
-
     # Plot mel_input
-    im1 = axes[0].imshow(batch["mel_input"][0].numpy().T, aspect="auto", origin="lower")
-    axes[0].set_title("Ground truth Mel-Spectrogram")
-    axes[0].set_xlabel("Frame")
-    axes[0].set_ylabel("Mel Filter")
+    fig1, ax1 = plt.subplots(figsize=(6, 6))
+    im1 = ax1.imshow(batch["mel_input"][0].numpy().T, aspect="auto", origin="lower")
+    ax1.set_title("Ground truth Mel-Spectrogram")
+    ax1.set_xlabel("Frame")
+    ax1.set_ylabel("Mel Filter")
+    # Save the first subplot individually
+    plt.savefig(os.path.join(folder_path, f"ground_truth_mel_spectrogram.png"))
+    plt.close(fig1)  # Close the figure to free up resources
 
     # Plot model output
-    im2 = axes[1].imshow(
-        inference_outputs["model_outputs"][0].numpy().T, aspect="auto", origin="lower"
-    )
-    axes[1].set_title("Output Mel-Spectrogram")
-    axes[1].set_xlabel("Frame")
-    axes[1].set_ylabel("Mel Filter")
+    fig2, ax2 = plt.subplots(figsize=(6, 6))
+    im2 = ax2.imshow(inference_outputs["model_outputs"][0].numpy().T, aspect="auto", origin="lower")
+    ax2.set_title(f"{model_type} Mel-Spectrogram")
+    ax2.set_xlabel("Frame")
+    ax2.set_ylabel("Mel Filter")
+    # Save the second subplot individually
+    plt.savefig(os.path.join(folder_path, f"{model_type}_mel_spectrogram.png"))
+    plt.close(fig2)  # Close the figure to free up resources
 
-    # Create a colorbar in a separate axis
-    cax = fig.add_axes([0.92, 0.2, 0.02, 0.6])
-
-    # Use the colorbar from the first image
-    fig.colorbar(im1, cax=cax)
-
-    # Add a common title for the whole figure
-    plt.suptitle(f"Compare Input and Output Mel-Spectrograms - {file_name}")
-
-    # Save the figure
-    plt.savefig(os.path.join(folder_path, f"mel_spect_comp.png"))

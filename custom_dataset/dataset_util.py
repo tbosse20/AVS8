@@ -96,3 +96,6 @@ if __name__ == '__main__':
     
     ap, tokenizer, tacotron2_config = load_tacotron2_config(config)
     train_samples, eval_samples, test_samples = load_samples(dataset_configs, tacotron2_config)
+    
+    for sample in test_samples[:10]:
+        print(sample)

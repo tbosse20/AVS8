@@ -188,10 +188,11 @@ if args.test:
     np.save(f'output/{file_name}.npy', cos_sims)
     plot_funcs.plot_boxplot(cos_sims, file_name)
 if args.inference:
+    print(len(test_samples))
     custom_inference.inference(
         model,
         test_samples,
         tacotron2_config,
         checkpoint_run=args.checkpoint_run,
-        idx=20,
+        idx=34,
     )
