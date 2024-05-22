@@ -78,13 +78,31 @@ def inference(tacotron2: Tacotron2, samples: list, config, idx=0, checkpoint_run
     batch = tacotron2.format_batch(batch)
 
     # Perform inference one single sample
-    inference_outputs = tacotron2.inference(
-        text=batch["text_input"][0].clone().detach().unsqueeze(0),
-        aux_input={"speaker_ids": (batch["speaker_ids"][0])},
-        spk_emb1=(batch["spk_emb"][0]),
-        save_wav=True,
-        output_path=os.path.join(folder_path),
+    # inference_outputs = tacotron2.inference(
+    #     text=batch["text_input"][0].clone().detach().unsqueeze(0),
+    #     spk_emb1=(batch["spk_emb"][0]),
+    #     save_wav=True,
+    #     output_path=os.path.join(folder_path),
+    # )
+    
+    text_input = batch["text_input"]
+    text_lengths = batch["text_lengths"]
+    mel_input = batch["mel_input"]
+    mel_lengths = batch["mel_lengths"]
+    speaker_ids = batch["speaker_ids"]
+    d_vectors = batch["d_vectors"]
+    spk_emb1 = batch["spk_emb"]
+    aux_input = {"speaker_ids": speaker_ids, "d_vectors": d_vectors}
+    
+    inference_outputs = tacotron2.forward(
+        text_input, text_lengths, mel_input, mel_lengths, aux_input, spk_emb1
     )
+    
+    # NEW INFERENCE USING VOCODER#
+    waveform = tacotron2.vocoder.inference(inference_outputs['model_outputs'].permute(0, 2, 1))
+    os.makedirs(folder_path, exist_ok=True)
+    output_file = os.path.join(folder_path, f"output{idx}.wav")
+    torchaudio.save(output_file, waveform[0], 22050)
 
     # Plot mel_input
     fig1, ax1 = plt.subplots(figsize=(6, 6))
