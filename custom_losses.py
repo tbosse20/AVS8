@@ -421,10 +421,12 @@ class TacotronLoss(torch.nn.Module):
         if self.similarity_loss_alpha > 0 or force_sim_loss:
             spk_emb1 = torch.stack(spk_emb1, dim=0) # [4, 1, 512]
             sim_loss = self.criterion_spkemb(spk_emb1, spk_emb2)
-            normalized_sim_loss_sum = torch.sum(-(sim_loss - 1) / 2, dim=0)
+            normalized_sim_loss = -(sim_loss - 1) / 2
+            normalized_sim_loss_sum = torch.sum(normalized_sim_loss, dim=0)
             return_dict["similarity_loss"] = normalized_sim_loss_sum
             loss += self.similarity_loss_alpha * normalized_sim_loss_sum[0]
-            custom_return_dict['custom_sim_loss'].append(sim_loss) # NEW APPEND SIM LOSS TO CUSTOM RETURN DICT
+            # NEW APPEND SIM LOSS TO CUSTOM RETURN DICT
+            custom_return_dict['custom_sim_loss'].append(normalized_sim_loss)
 
         #NEW GET INFONCE LOSS
 
