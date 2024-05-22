@@ -4,7 +4,7 @@ import seaborn as sns
 import os
 from matplotlib.lines import Line2D
 
-folder_path = os.path.join("output", "collected_losses")
+folder_path = os.path.join("analysis", "collected_losses")
 
 
 def save_collected_losses(collected_losses, infoNCE_alpha, checkpoint_run=None):
@@ -33,12 +33,17 @@ def plot_boxplot(params):
     colors = ['r', 'b']
 
     # Make custom legend lines for versions with colors
-    legend_line = [Line2D([0], [0], color=color) for color in colors] + [
-        Line2D([0], [0], color="black", linestyle="-", alpha=1.0),
-        Line2D([0], [0], color="black", linestyle="--", alpha=0.5),
-    ]
+    legend_line = [Line2D([0], [0], color=color) for color in colors]
     # Make custom legend names for versions
-    legend_name = list(params['files'].keys()) + ['Trained', 'Untrained']
+    legend_name = list(params['files'].keys())
+    
+    # Add legend lines for trained and untrained versions if they exist
+    if len(params['files']['Baseline']) > 1:
+        legend_line += [
+            Line2D([0], [0], color="black", linestyle="-", alpha=1.0),
+            Line2D([0], [0], color="black", linestyle="--", alpha=0.5),
+        ]
+        legend_name += ['Trained', 'Untrained']
 
     # Set the style of the visualization
     sns.set(style="whitegrid")
@@ -78,12 +83,12 @@ if __name__ == "__main__":
             "title": "Cosine Similarity Loss",
             "files": {
                 "Baseline": [
-                    "custom_sim_loss_baseline_24.4k_steps_baseline.npy",
-                    "custom_sim_loss_None_baseline.npy",
+                    "custom_sim_loss__baseline.npy", # Trained
+                    # "custom_sim_loss_None_baseline.npy", # Untrained
                 ],
                 "CLmodel": [
-                    "custom_sim_loss_clmodel_8ksteps_clmodel.npy",  # Update the file name
-                    "custom_sim_loss_None_clmodel.npy",
+                    "custom_sim_loss__clmodel.npy", # Trained
+                    # "custom_sim_loss_None_clmodel.npy", # Untrained
                 ],
             },
         },
@@ -91,12 +96,12 @@ if __name__ == "__main__":
             "title": "Decoder Loss",
             "files": {
                 "Baseline": [
-                    "custom_decoder_loss_baseline_24.4k_steps_baseline.npy",
-                    "custom_decoder_loss_None_baseline.npy",
+                    "custom_decoder_loss__baseline.npy", # Trained
+                    # "custom_decoder_loss_None_baseline.npy", # Untrained
                 ],
                 "CLmodel": [
-                    "custom_decoder_loss_clmodel_8ksteps_clmodel.npy",  # Update the file name
-                    "custom_decoder_loss_None_clmodel.npy",
+                    "custom_decoder_loss__clmodel.npy", # Trained
+                    # "custom_decoder_loss_None_clmodel.npy", # Untrained
                 ],
             },
         },

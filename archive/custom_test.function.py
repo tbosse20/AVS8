@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-import analysis.plot_funcs as plot_funcs
+import collected_losses.plot_funcs as plot_funcs
 import gc
 from custom_tacotron2 import Tacotron2
 
