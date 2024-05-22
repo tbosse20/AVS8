@@ -5,13 +5,18 @@ import os
 import seaborn as sns
 import numpy as np
 
+
 # Concatenate the data for each run
 def concat_run_names(df: pd.DataFrame, run_names: list, key_name: str):
     collected = [
-                df[f"{run_name} - {key_name}"]
-                for run_name in run_names
-                if f"{run_name} - {key_name}" in df.columns
-            ]
+        df[f"{run_name} - {key_name}"]
+        for run_name in run_names
+        if f"{run_name} - {key_name}" in df.columns
+    ]
+
+    if len(collected) == 0:
+        return np.array([])
+
     return pd.concat(collected, axis=0, ignore_index=True).dropna().values
 
 
@@ -20,6 +25,7 @@ def plot_loss(
     key_names: list,
     smooth: int = 25,
     raw: bool = False,
+    ratio: bool = False,
     verbose: bool = False,
 ):
     """
@@ -46,14 +52,8 @@ def plot_loss(
     # Define line style
     linestyles = [
         "-",
-        "--",
-        "-.",
-        ":",
-        (0, (3, 1, 1, 1)),
-        (0, (5, 1)),
-        (0, (3, 5, 1, 5)),
-        (0, (3, 1, 1, 1, 1, 1)),
-        (0, (3, 5, 1, 5, 1, 5)),
+        (0, (5, 10)),
+        (0, (1, 10)),
     ]
 
     # Set the style of the visualization
@@ -68,6 +68,8 @@ def plot_loss(
 
     # Get dir files
     valid_key_names = []
+    # List to compare two versions
+    ratio = []
 
     # Iterate over given key names
     for key_name_idx, key_name in enumerate(key_names):
@@ -86,12 +88,15 @@ def plot_loss(
             # Concatenate the data for each run
             values = concat_run_names(df, run_names, key_name)
 
+            ratio.append(values)
+
             # Calculate and plot moving average smoothing
             smooth_values = pd.DataFrame(values).rolling(smooth).mean()
             plt.plot(
                 smooth_values,
                 color=colors[version_idx],
                 linestyle=linestyles[key_name_idx],
+                linewidth=1,
             )
 
             # Skip if raw line not selected
@@ -102,12 +107,33 @@ def plot_loss(
                     alpha=0.2,
                 )
 
-        # Add key names to legend with different line style
-        legend_line.append(
-            Line2D([0], [0], color="black", linestyle=linestyles[key_name_idx])
+        # Skip if only one key name
+        if len(key_names) > 1:
+            # Add key names to legend with different line style
+            legend_line.append(
+                Line2D([0], [0], color="black", linestyle=linestyles[key_name_idx], linewidth=0.9)
+            )
+            # Add key names to legend with capitalized
+            legend_name.append(key_name.capitalize().replace("_", " "))
+
+    # Plot loss ratio
+    if key_name[0] == "loss":
+        # Shorten to the shortest length
+        shortest = min(len(ratio[0]), len(ratio[1]))
+        ratio[0] = ratio[0][:shortest]
+        ratio[1] = ratio[1][:shortest]
+
+        # Plot loss ratio
+        plt.plot(
+            pd.DataFrame(ratio[0] / ratio[1]).rolling(smooth).mean(),
+            color="green",
+            linestyle=linestyles[1],
         )
-        # Add key names to legend with capitalized
-        legend_name.append(key_name.replace("_", " "))
+
+        # Add to legend with custom handles
+        legend_line.append(Line2D([0], [0], color="black", linestyle=linestyles[1]))
+        # Add to legend with custom name
+        legend_name.append("Loss Ratio")
 
     # Skip if no valid key names
     if len(valid_key_names) == 0:
@@ -145,19 +171,11 @@ def process_all_csv(version_run_names: dict, smooth: int = 25):
     """
 
     plot_together_list = [
-        [
-            "ga_loss",
-            "post_ssim_loss",
-            "postnet_diff_spec_loss",
-            "stopnet_loss",
-            "postnet_loss",
-        ],
-        [
-            "decoder_loss",
-            "decoder_ddc_loss",
-            "decoder_ssim_loss",
-            "decoder_diff_spec_loss",
-        ],
+        ["decoder_ssim_loss", "postnet_ssim_loss"],
+        ["ga_loss", "decoder_ddc_loss"],
+        ["decoder_loss"],
+        ["stopnet_loss", "decoder_diff_spec_loss"],
+        ["postnet_diff_spec_loss", "postnet_loss"],
         ["similarity_loss", "infonce_loss"],
     ]
 
@@ -165,8 +183,9 @@ def process_all_csv(version_run_names: dict, smooth: int = 25):
         print(f"Processing: {plot_together}")
         plot_loss(version_run_names, key_names=plot_together, smooth=smooth)
 
+
 def rename_csv_files(folder_name):
-    
+
     # Loop through all files in the folder
     for file_name in os.listdir(folder_name):
         # Skip if not a CSV file
@@ -175,7 +194,7 @@ def rename_csv_files(folder_name):
 
         # Get the file path
         file_path = os.path.join(folder_name, file_name)
-        
+
         # Read file
         df = pd.read_csv(file_path, sep=",", quotechar='"')
         # Get the second column name
@@ -185,7 +204,7 @@ def rename_csv_files(folder_name):
         # Rename the file
         print(f"Renaming: {file_name} -> {new_file_name}")
         os.rename(file_path, os.path.join(folder_name, new_file_name))
-    
+
 
 # Example usage
 if __name__ == "__main__":
@@ -197,7 +216,6 @@ if __name__ == "__main__":
             # "graceful-night-317",
             # "proud-plant-319",
             # "fast-field-321",
-            
             # Actual baseline runs
             "rare-snowball-314",
             "ethereal-feather-315",
@@ -207,10 +225,10 @@ if __name__ == "__main__":
             "breezy-haze-337",
             "quiet-flower-343",
             "quiet-haze-348",
-            "fanciful-lion-357", 
+            "fanciful-lion-357",
             "restful-grass-361",
             "atomic-moon-368",
-            "toasty-sound-371", # 24k steps
+            "toasty-sound-371",  # 24k steps
             # "lunar-capybara-372",
             # "clear-wildflower-374",
             # "expert-forest-388",
@@ -227,7 +245,6 @@ if __name__ == "__main__":
             # "fresh-totem-319",
             # "peachy-lake-322",
             # "good-breeze-347",
-            
             # Actual CLmodel runs
             "revived-durian-275",
             "worthy-water-353",
@@ -243,14 +260,14 @@ if __name__ == "__main__":
             "efficient-cherry-417",
             "celestial-moon-419",
             "autumn-salad-420",
-            "glorious-forest-429", # 24k steps
+            "glorious-forest-429",  # 24k steps
         ],
     }
-    
+
     rename_csv_files("analysis")
 
     # Process all files
-    # process_all_csv(version_run_names, smooth=100)
+    process_all_csv(version_run_names, smooth=2500)
 
     # Process singe file
-    # plot_loss(version_run_names, ["loss"], smooth=50, raw=True)
+    plot_loss(version_run_names, ["loss"], smooth=100, raw=True, ratio=True)
