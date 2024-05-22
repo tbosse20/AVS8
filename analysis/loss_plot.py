@@ -3,18 +3,16 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import os
 import seaborn as sns
-
+import numpy as np
 
 # Concatenate the data for each run
 def concat_run_names(df: pd.DataFrame, run_names: list, key_name: str):
-    return pd.concat(
-        [
-            df[f"{run_name} - {key_name}"]
-            for run_name in run_names
-            if f"{run_name} - {key_name}" in df.columns
-        ],
-        axis=0,
-    ).values
+    collected = [
+                df[f"{run_name} - {key_name}"]
+                for run_name in run_names
+                if f"{run_name} - {key_name}" in df.columns
+            ]
+    return pd.concat(collected, axis=0, ignore_index=True).dropna().values
 
 
 def plot_loss(
@@ -77,7 +75,7 @@ def plot_loss(
         # Read CSV file into a DataFrame
         try:
             csv_path = os.path.join("analysis", f"wandb {key_name}.csv")
-            df = pd.read_csv(csv_path, sep=",", quotechar='"').dropna()
+            df = pd.read_csv(csv_path, sep=",", quotechar='"')
             valid_key_names.append(key_name)
         except FileNotFoundError:
             continue
@@ -97,21 +95,19 @@ def plot_loss(
             )
 
             # Skip if raw line not selected
-            if not raw:
-                continue
-            plt.plot(
-                values,
-                label=f"{version} - {key_name}",
-                color=colors[version_idx],
-                alpha=0.2,
-            )
+            if raw:
+                plt.plot(
+                    values,
+                    color=colors[version_idx],
+                    alpha=0.2,
+                )
 
         # Add key names to legend with different line style
         legend_line.append(
             Line2D([0], [0], color="black", linestyle=linestyles[key_name_idx])
         )
         # Add key names to legend with capitalized
-        legend_name.append(key_name.capitalize().replace("_", ""))
+        legend_name.append(key_name.replace("_", " "))
 
     # Skip if no valid key names
     if len(valid_key_names) == 0:
@@ -169,6 +165,27 @@ def process_all_csv(version_run_names: dict, smooth: int = 25):
         print(f"Processing: {plot_together}")
         plot_loss(version_run_names, key_names=plot_together, smooth=smooth)
 
+def rename_csv_files(folder_name):
+    
+    # Loop through all files in the folder
+    for file_name in os.listdir(folder_name):
+        # Skip if not a CSV file
+        if not (file_name.endswith(".csv") and file_name.startswith("wandb_")):
+            continue
+
+        # Get the file path
+        file_path = os.path.join(folder_name, file_name)
+        
+        # Read file
+        df = pd.read_csv(file_path, sep=",", quotechar='"')
+        # Get the second column name
+        column_name = df.columns[1].split(" ")[-1]
+        # Get the new file name
+        new_file_name = f'{file_name.split("_")[0]} {column_name}.csv'
+        # Rename the file
+        print(f"Renaming: {file_name} -> {new_file_name}")
+        os.rename(file_path, os.path.join(folder_name, new_file_name))
+    
 
 # Example usage
 if __name__ == "__main__":
@@ -177,9 +194,10 @@ if __name__ == "__main__":
     version_run_names = {
         "Baseline": [
             # Testing baseline runs
-            "graceful-night-317",
-            "proud-plant-319",
-            "fast-field-321",
+            # "graceful-night-317",
+            # "proud-plant-319",
+            # "fast-field-321",
+            
             # Actual baseline runs
             "rare-snowball-314",
             "ethereal-feather-315",
@@ -189,24 +207,29 @@ if __name__ == "__main__":
             "breezy-haze-337",
             "quiet-flower-343",
             "quiet-haze-348",
-            "fanciful-lion-357",
+            "fanciful-lion-357", 
             "restful-grass-361",
             "atomic-moon-368",
-            "toasty-sound-371",
-            "lunar-capybara-372",
-            "clear-wildflower-374",
-            "expert-forest-388",
+            "toasty-sound-371", # 24k steps
+            # "lunar-capybara-372",
+            # "clear-wildflower-374",
+            # "expert-forest-388",
+            # "wandering-moon-412",
+            # "sage-meadow-418",
+            # "toasty-galaxy-420",
+            # "summer-snowball-434",
         ],
         "CLmodel": [
             # Testing baseline runs
-            "breezy-elevator-264",
-            "copper-sun-265",
-            "revived-durian-275",
-            "lunar-grass-318",
-            "fresh-totem-319",
-            "peachy-lake-322",
+            # "breezy-elevator-264",
+            # "copper-sun-265",
+            # "lunar-grass-318",
+            # "fresh-totem-319",
+            # "peachy-lake-322",
+            # "good-breeze-347",
+            
             # Actual CLmodel runs
-            "good-breeze-347",
+            "revived-durian-275",
             "worthy-water-353",
             "cosmic-sky-356",
             "spring-sun-358",
@@ -216,11 +239,18 @@ if __name__ == "__main__":
             "light-water-372",
             "youthful-sea-374",
             "denim-capybara-388",
+            "wandering-vortex-412",
+            "efficient-cherry-417",
+            "celestial-moon-419",
+            "autumn-salad-420",
+            "glorious-forest-429", # 24k steps
         ],
     }
+    
+    rename_csv_files("analysis")
 
     # Process all files
-    process_all_csv(version_run_names, smooth=100)
+    # process_all_csv(version_run_names, smooth=100)
 
     # Process singe file
-    plot_loss(version_run_names, ["loss"], smooth=25, raw=True)
+    # plot_loss(version_run_names, ["loss"], smooth=50, raw=True)
