@@ -469,6 +469,7 @@ class Tacotron2(BaseTacotron):
                 spk_emb1,
                 outputs["spk_emb2"],
                 pos_emb,
+                self.training,
                 #####
             )
         gc.collect() # NEW
