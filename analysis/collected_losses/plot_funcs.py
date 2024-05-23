@@ -62,6 +62,14 @@ def plot_boxplot(params):
                 linestyle=["-", "--"][trained_bool],
                 alpha=[1.0, 0.5][trained_bool],
             )
+            
+            # Print mean and std
+            mean = np.mean(values)
+            std = np.std(values)
+            print(f"{key} {'Trained' if trained_bool == 0 else 'Untrained'} {xlabel}:")
+            print(f"Mean: {mean:.3f}")
+            print(f"Std: {std:.3f}")
+            print()
 
     # Add legend with custom handles
     plt.legend(legend_line, legend_name, loc="upper right")
@@ -83,11 +91,11 @@ if __name__ == "__main__":
             "title": "Cosine Similarity Loss",
             "files": {
                 "Baseline": [
-                    "custom_sim_loss__baseline.npy", # Trained
+                    "custom_sim_loss__baseline_full.npy", # Trained
                     # "custom_sim_loss_None_baseline.npy", # Untrained
                 ],
                 "CLmodel": [
-                    "custom_sim_loss__clmodel.npy", # Trained
+                    "custom_sim_loss__clmodel_full.npy", # Trained
                     # "custom_sim_loss_None_clmodel.npy", # Untrained
                 ],
             },
@@ -96,11 +104,11 @@ if __name__ == "__main__":
             "title": "Decoder Loss",
             "files": {
                 "Baseline": [
-                    "custom_decoder_loss__baseline.npy", # Trained
+                    "custom_decoder_loss__baseline_full.npy", # Trained
                     # "custom_decoder_loss_None_baseline.npy", # Untrained
                 ],
                 "CLmodel": [
-                    "custom_decoder_loss__clmodel.npy", # Trained
+                    "custom_decoder_loss__clmodel_full.npy", # Trained
                     # "custom_decoder_loss_None_clmodel.npy", # Untrained
                 ],
             },
