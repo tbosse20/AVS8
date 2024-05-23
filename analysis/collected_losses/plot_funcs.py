@@ -72,7 +72,7 @@ def plot_boxplot(params):
 
     # Save the plot
     save_path = os.path.join(folder_path, f"{xlabel.replace(' ', '_')}.png")
-    plt.savefig(save_path)
+    plt.savefig(save_path, bbox_inches='tight', dpi=300)
 
 
 if __name__ == "__main__":
