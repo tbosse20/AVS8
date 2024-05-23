@@ -425,7 +425,7 @@ class TacotronLoss(torch.nn.Module):
             normalized_sim_loss = -(sim_loss - 1) / 2
             normalized_sim_loss_sum = torch.sum(normalized_sim_loss, dim=0)
             return_dict["similarity_loss"] = normalized_sim_loss_sum
-            loss += (self.similarity_loss_alpha if not training else 1) * normalized_sim_loss_sum[0]
+            loss += (self.similarity_loss_alpha if not training else 0.25) * normalized_sim_loss_sum[0]
             # NEW APPEND SIM LOSS TO CUSTOM RETURN DICT
             custom_return_dict['custom_sim_loss'].append(normalized_sim_loss)
 
@@ -459,7 +459,7 @@ class TacotronLoss(torch.nn.Module):
             
             return_dict["infonce_loss"] = infonce_loss_output
             custom_return_dict['custom_infonce_loss'].append(infonce_loss_output)
-            loss += (self.infoNCE_alpha if not training else 1) * infonce_loss_output
+            loss += (self.infoNCE_alpha if not training else 0.25) * infonce_loss_output
         #####
                 
         if self.use_capacitron_vae:
