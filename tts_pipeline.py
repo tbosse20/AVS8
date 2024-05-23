@@ -20,6 +20,7 @@ parser.add_argument("--checkpoint_run", type=str,               help="Path to ru
 parser.add_argument("--dev",            action="store_true",    help="Enable development mode")
 parser.add_argument("--base",           action="store_true",    help="Model baseline mode")
 parser.add_argument("--unstaff",        action="store_true",    help="Disable workers")
+parser.add_argument("--limit_decoder",  action="store_true",    help="Limit 'max_decoder_steps' to 1000")
 
 # Select mode of operation
 parser.add_argument("--train",          action="store_true",    help="Train model only")
@@ -144,6 +145,10 @@ if args.checkpoint_run:
         tacotron2_config.num_loader_workers = 0
         tacotron2_config.num_eval_loader_workers = 0
         tacotron2_config.precompute_num_workers = 0
+    
+    # Update 'max_decoder_steps' to 1000
+    if args.limit_decoder:
+        tacotron2_config.max_decoder_steps = 1000
 
     # Update 'speaker.pth' path automatically
     tacotron2_config.speakers_file = os.path.join(args.checkpoint_run, 'speakers.pth')
@@ -190,5 +195,5 @@ if args.inference:
         test_samples,
         tacotron2_config,
         checkpoint_run=args.checkpoint_run,
-        idx=35,
+        idx=25,
     )
