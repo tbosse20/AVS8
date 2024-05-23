@@ -385,6 +385,7 @@ class TacotronLoss(torch.nn.Module):
         spk_emb1,
         spk_emb2,
         pos_emb,
+        training,
         #####
     ):
         # decoder outputs linear or mel spectrograms for Tacotron and Tacotron2
@@ -395,6 +396,7 @@ class TacotronLoss(torch.nn.Module):
         custom_return_dict = { # NEW CUSTOM RETURN DICT
             "custom_sim_loss": [], # NEW LIST TO STORE SIMILARITY LOSS VALUES
             "custom_decoder_loss": [], # NEW LIST TO STORE DECODER LOSS VALUES
+            "custom_infonce_loss": [], # NEW LIST TO STORE DECODER LOSS VALUES
         }
         
         # remove lengths if no masking is applied
@@ -417,8 +419,7 @@ class TacotronLoss(torch.nn.Module):
         custom_return_dict['custom_decoder_loss'].append(decoder_loss) # NEW APPEND DECODER LOSS TO CUSTOM RETURN DICT
         
         #NEW GET COS SIM LOSS
-        force_sim_loss = True # NEW FORCE SIM LOSS (get sim loss)
-        if self.similarity_loss_alpha > 0 or force_sim_loss:
+        if self.similarity_loss_alpha > 0 or not training:
             spk_emb1 = torch.stack(spk_emb1, dim=0) # [4, 1, 512]
             sim_loss = self.criterion_spkemb(spk_emb1, spk_emb2)
             normalized_sim_loss = -(sim_loss - 1) / 2
@@ -435,7 +436,7 @@ class TacotronLoss(torch.nn.Module):
             pos_emb = torch.squeeze(pos_emb, 1)
             spk_emb2 = torch.squeeze(spk_emb2, 1)
 
-        if self.infoNCE_alpha > 0:
+        if self.infoNCE_alpha > 0 or not training:
             batch_neg_embs = []
             for sample in spk_emb2:
                 for key, value in speaker_emb_dict.items():
@@ -457,6 +458,7 @@ class TacotronLoss(torch.nn.Module):
             # wandb.log({"pos_emb": wandb.Image(pos_emb.detach().cpu().numpy())})
             
             return_dict["infonce_loss"] = infonce_loss_output
+            custom_return_dict['custom_infonce_loss'].append(infonce_loss_output)
             loss += infonce_loss_output * self.infoNCE_alpha
         #####
                 

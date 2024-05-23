@@ -25,7 +25,7 @@ def plot_loss(
     key_names: list,
     smooth: int = 25,
     raw: bool = False,
-    ratio: bool = False,
+    show_ratio: bool = False,
     verbose: bool = False,
 ):
     """
@@ -117,7 +117,7 @@ def plot_loss(
             legend_name.append(key_name.capitalize().replace("_", " "))
 
     # Plot loss ratio
-    if key_name[0] == "loss":
+    if show_ratio:
         # Shorten to the shortest length
         shortest = min(len(ratio[0]), len(ratio[1]))
         ratio[0] = ratio[0][:shortest]
@@ -127,11 +127,10 @@ def plot_loss(
         plt.plot(
             pd.DataFrame(ratio[0] / ratio[1]).rolling(smooth).mean(),
             color="green",
-            linestyle=linestyles[1],
         )
 
         # Add to legend with custom handles
-        legend_line.append(Line2D([0], [0], color="black", linestyle=linestyles[1]))
+        legend_line.append(Line2D([0], [0], color="green"))
         # Add to legend with custom name
         legend_name.append("Loss Ratio")
 
@@ -264,10 +263,10 @@ if __name__ == "__main__":
         ],
     }
 
-    rename_csv_files("analysis")
+    # rename_csv_files("analysis")
 
     # Process all files
     process_all_csv(version_run_names, smooth=2500)
 
     # Process singe file
-    plot_loss(version_run_names, ["loss"], smooth=100, raw=True, ratio=True)
+    plot_loss(version_run_names, ["loss"], smooth=100, raw=True, show_ratio=True)
