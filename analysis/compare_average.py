@@ -61,13 +61,13 @@ sns.set(style="whitegrid")
 df_melted = df.melt(id_vars='Metric', value_vars=['CLmodel', 'Baseline'], var_name='Model', value_name='Value')
 sns.barplot(x='Value', y='Metric', hue='Model', data=df_melted, palette=palette)
 
-# Add lines to show differences
-for index, row in df.iterrows():
-    x1, x2 = row['CLmodel'], row['Baseline']
-    y = index
-    color = 'green' if row['Difference'] < 0 else 'red'
-    plt.plot([x1, x2], [y, y], color=color, lw=5, solid_capstyle='butt')
-    plt.text(max(x1, x2) + 0.15, y + 0.1, f"{row['Difference']:.2f}", color='black', ha='center')
+# # Add lines to show differences
+# for index, row in df.iterrows():
+#     x1, x2 = row['CLmodel'], row['Baseline']
+#     y = index
+#     color = 'green' if row['Difference'] < 0 else 'red'
+#     plt.plot([x1, x2], [y, y], color=color, lw=5, solid_capstyle='butt')
+#     plt.text(max(x1, x2) + 0.15, y + 0.1, f"{row['Difference']:.2f}", color='black', ha='center')
 
 plt.title('Performance Comparison: CLmodel vs Baseline')
 plt.xlabel('Values')
@@ -75,4 +75,4 @@ plt.ylabel('Metrics')
 plt.legend(loc='best')
 plt.tight_layout()
 
-plt.savefig('analysis/compare_average.png')
+plt.savefig('analysis/compare_average.png', bbox_inches='tight', dpi=300)
