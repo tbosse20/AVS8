@@ -4,7 +4,7 @@ import seaborn as sns
 import os
 from matplotlib.lines import Line2D
 
-folder_path = os.path.join("/home/putak/university/8semester/Project/normalized_tests", "collected_losses")
+folder_path = os.path.join("/home/student.aau.dk/lk83xy/avs8/AVS8/output/baseline_50k", "collected_losses")
 
 
 def save_collected_losses(collected_losses, infoNCE_alpha, checkpoint_run=None):
