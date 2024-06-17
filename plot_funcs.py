@@ -4,10 +4,13 @@ import seaborn as sns
 import os
 from matplotlib.lines import Line2D
 
+<<<<<<< HEAD
 folder_path = os.path.join("/home/student.aau.dk/lk83xy/avs8/AVS8/output/baseline_50k", "collected_losses")
+=======
+>>>>>>> 634fd0e545f6cd2d16846e164e094790637489e3
 
 
-def save_collected_losses(collected_losses, infoNCE_alpha, checkpoint_run=None):
+def save_collected_losses(collected_losses, infoNCE_alpha, checkpoint_run=None, folder_path=folder_path):
 
     os.makedirs(folder_path, exist_ok=True)
 

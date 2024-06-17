@@ -187,7 +187,7 @@ if args.train:
     trainer.fit()
 if args.test:
     collected_losses = trainer.test()
-    plot_funcs.save_collected_losses(collected_losses, tacotron2_config.infoNCE_alpha, args.checkpoint_run)
+    plot_funcs.save_collected_losses(collected_losses, tacotron2_config.infoNCE_alpha, args.checkpoint_run, folder_path="/home/student.aau.dk/lk83xy/avs8/AVS8/output/baseline_50k/collected_losses/")
     
 if args.inference:
     custom_inference.inference(
