@@ -4,10 +4,10 @@ import seaborn as sns
 import os
 from matplotlib.lines import Line2D
 
-folder_path = os.path.join("/home/putak/university/8semester/Project/normalized_tests", "collected_losses")
+folder_path = os.path.join(".", "collected_losses")
 
 
-def save_collected_losses(collected_losses, infoNCE_alpha, checkpoint_run=None):
+def save_collected_losses(collected_losses, infoNCE_alpha, checkpoint_run=None, folder_path=folder_path):
 
     os.makedirs(folder_path, exist_ok=True)
 
