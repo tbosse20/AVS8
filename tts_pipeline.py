@@ -9,7 +9,7 @@ import custom_dataset.dataset_util as dataset_util
 import gc
 import re
 import custom_inference
-import analysis.collected_losses.plot_funcs as plot_funcs
+import plot_funcs
 import numpy as np
 import random
 
