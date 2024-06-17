@@ -3,12 +3,8 @@ Semester project
 Computer Engineering - AI, Vision & Sound - 8. semester (CE-AVS8)
 Group 841, Aalborg University 2024
 
-## Description
-
-
 ## Contributors:
 - Marko Putak
-- Yu-ling Cheng
 - Sameer Aqib Hashmi
 - Tonko Bossen
 

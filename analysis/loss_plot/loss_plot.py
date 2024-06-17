@@ -5,6 +5,7 @@ import os
 import seaborn as sns
 import numpy as np
 
+folder_path = os.path.join("analysis", "loss_plot")
 
 # Concatenate the data for each run
 def concat_run_names(df: pd.DataFrame, run_names: list, key_name: str):
@@ -66,29 +67,28 @@ def plot_loss(
     # Make custom legend names for versions
     legend_name = list(version_run_names.keys())
 
-    # Get dir files
-    valid_key_names = []
     # List to compare two versions
-    ratio = []
-
+    ratio_list = []
+    
     # Iterate over given key names
     for key_name_idx, key_name in enumerate(key_names):
 
         # Read CSV file into a DataFrame
-        try:
-            csv_path = os.path.join("analysis", f"wandb {key_name}.csv")
-            df = pd.read_csv(csv_path, sep=",", quotechar='"')
-            valid_key_names.append(key_name)
-        except FileNotFoundError:
-            continue
+        csv_path = os.path.join(folder_path, f"wandb {key_name}.csv")
+        df = pd.read_csv(csv_path, sep=",", quotechar='"')
 
         # Plot lines for each series
         for version_idx, (version, run_names) in enumerate(version_run_names.items()):
 
             # Concatenate the data for each run
             values = concat_run_names(df, run_names, key_name)
+            
+            # Limit plot to 24k steps
+            values = values[:24000]
 
-            ratio.append(values)
+            # Plot values to ratio
+            if show_ratio:
+                ratio_list.append(values)
 
             # Calculate and plot moving average smoothing
             smooth_values = pd.DataFrame(values).rolling(smooth).mean()
@@ -111,7 +111,13 @@ def plot_loss(
         if len(key_names) > 1:
             # Add key names to legend with different line style
             legend_line.append(
-                Line2D([0], [0], color="black", linestyle=linestyles[key_name_idx], linewidth=0.9)
+                Line2D(
+                    [0],
+                    [0],
+                    color="black",
+                    linestyle=linestyles[key_name_idx],
+                    linewidth=0.9,
+                )
             )
             # Add key names to legend with capitalized
             legend_name.append(key_name.capitalize().replace("_", " "))
@@ -119,31 +125,35 @@ def plot_loss(
     # Plot loss ratio
     if show_ratio:
         # Shorten to the shortest length
-        shortest = min(len(ratio[0]), len(ratio[1]))
-        ratio[0] = ratio[0][:shortest]
-        ratio[1] = ratio[1][:shortest]
+        shortest = min(len(ratio_list[0]), len(ratio_list[1]))
+        ratio_list[0] = ratio_list[0][:shortest]
+        ratio_list[1] = ratio_list[1][:shortest]
+        ratio = ratio_list[0] / ratio_list[1]
+        smooth_ratio = pd.DataFrame(ratio).rolling(smooth).mean()
 
         # Plot loss ratio
-        plt.plot(
-            pd.DataFrame(ratio[0] / ratio[1]).rolling(smooth).mean(),
-            color="green",
-        )
-
+        plt.plot(smooth_ratio, color="green")
         # Add to legend with custom handles
         legend_line.append(Line2D([0], [0], color="green"))
         # Add to legend with custom name
         legend_name.append("Loss Ratio")
-
-    # Skip if no valid key names
-    if len(valid_key_names) == 0:
-        return
-
-    # Update key names with valid key names
-    key_names = valid_key_names
-
+        
+        # Annotate the plot with the values
+        for i in range(0, len(smooth_ratio), 2500):
+            value = smooth_ratio.iloc[i]
+            plt.annotate(
+                f"{value[0]:.2f}",  # Format the number to 2 decimal places
+                (i, value),
+                textcoords="offset points",
+                xytext=(0, 5),
+                ha="center",
+                fontsize=10,
+                color="black"
+            )
+                
     # Add legend with custom handles
     plt.legend(legend_line, legend_name, loc="upper right")
-
+        
     # Configure plot
     plt.xlabel("Step")
     plt.ylabel("Loss Value")
@@ -155,7 +165,8 @@ def plot_loss(
         plt.show()
 
     # Save plot
-    plt.savefig(f"analysis/{key_names}.png")
+    file_path = os.path.join(folder_path, f"{key_names}.png")
+    plt.savefig(file_path, bbox_inches='tight', dpi=300)
 
 
 def process_all_csv(version_run_names: dict, smooth: int = 25):
