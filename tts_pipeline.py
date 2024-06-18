@@ -9,7 +9,7 @@ import custom_dataset.dataset_util as dataset_util
 import gc
 import re
 import custom_inference
-import plot_funcs
+import analysis.plot_funcs as plot_funcs
 import numpy as np
 import random
 
@@ -195,5 +195,5 @@ if args.inference:
         test_samples,
         tacotron2_config,
         checkpoint_run=args.checkpoint_run,
-        idx=25,
+        idx=35,
     )
