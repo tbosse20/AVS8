@@ -195,5 +195,5 @@ if args.inference:
         test_samples,
         tacotron2_config,
         checkpoint_run=args.checkpoint_run,
-        idx=25,
+        idx=35,
     )
