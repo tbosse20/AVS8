@@ -91,12 +91,12 @@ if __name__ == "__main__":
             "title": "Cosine Similarity Loss",
             "files": {
                 "Baseline": [
-                    "custom_sim_loss__baseline_full.npy", # Trained
+                    "custom_sim_loss_50k_baseline_full.npy", # Trained
                     # "custom_sim_loss_None_baseline.npy", # Untrained
                 ],
                 "CLmodel": [
-                    "custom_sim_loss__clmodel_full.npy", # Trained
-                    # "custom_sim_loss_None_clmodel.npy", # Untrained
+                    "custom_sim_loss_46k_clmodel_full.npy",  # Trained
+                    # "custom_sim_loss_23_8k_steps_ours_clmodel.npy", # Untrained
                 ],
             },
         },
@@ -104,11 +104,11 @@ if __name__ == "__main__":
             "title": "Decoder Loss",
             "files": {
                 "Baseline": [
-                    "custom_decoder_loss__baseline_full.npy", # Trained
+                    "custom_decoder_loss_50k_baseline_full.npy", # Trained
                     # "custom_decoder_loss_None_baseline.npy", # Untrained
                 ],
                 "CLmodel": [
-                    "custom_decoder_loss__clmodel_full.npy", # Trained
+                    "custom_decoder_loss_46k_clmodel_full.npy",  # Trained
                     # "custom_decoder_loss_None_clmodel.npy", # Untrained
                 ],
             },
