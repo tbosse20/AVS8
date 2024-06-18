@@ -91,7 +91,7 @@ if __name__ == "__main__":
             "title": "Cosine Similarity Loss",
             "files": {
                 "Baseline": [
-                    "custom_sim_loss__baseline_full.npy", # Trained
+                    "custom_sim_loss_50k_baseline_full.npy", # Trained
                     # "custom_sim_loss_None_baseline.npy", # Untrained
                 ],
                 "CLmodel": [
@@ -104,7 +104,7 @@ if __name__ == "__main__":
             "title": "Decoder Loss",
             "files": {
                 "Baseline": [
-                    "custom_decoder_loss__baseline_full.npy", # Trained
+                    "custom_decoder_loss_50k_baseline_full.npy", # Trained
                     # "custom_decoder_loss_None_baseline.npy", # Untrained
                 ],
                 "CLmodel": [

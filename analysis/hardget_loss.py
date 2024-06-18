@@ -3,26 +3,28 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Path to the uploaded file
-file_path = 'slurm-baseline_20th_run_37800.out'
+file_path = 'analysis/slurm-16_6_clmodel.out'
 
-# Define the regex pattern to match loss values
+# Define the regex pattern
 pattern = re.compile(
-    r"decoder_loss: (\d+\.\d+).*\n.*"
-    r"postnet_loss: (\d+\.\d+).*\n.*"
-    r"stopnet_loss: (\d+\.\d+).*\n.*"
-    r"decoder_coarse_loss: (\d+\.\d+).*\n.*"
-    r"decoder_ddc_loss: (\d+\.\d+).*\n.*"
-    r"ga_loss: (\d+\.\d+).*\n.*"
-    r"decoder_diff_spec_loss: (\d+\.\d+).*\n.*"
-    r"postnet_diff_spec_loss: (\d+\.\d+).*\n.*"
-    r"decoder_ssim_loss: (\d+\.\d+).*\n.*"
-    r"postnet_ssim_loss: (\d+\.\d+).*\n.*"
-    r"loss: (\d+\.\d+).*\n.*"
-    r"align_error: (\d+\.\d+).*\n.*"
-    r"grad_norm: tensor\((\d+\.\d+),.*\n.*"
-    r"current_lr: (\d+\.\d+).*\n.*"
-    r"step_time: (\d+\.\d+).*\n.*"
-    r"loader_time: (\d+\.\d+)"
+    r"\s+\| > decoder_loss: (\d+\.\d+) \s+\(\d+\.\d+\)\n"
+    r"\s+\| > postnet_loss: (\d+\.\d+) \s+\(\d+\.\d+\)\n"
+    r"\s+\| > similarity_loss: (\d+\.\d+) \s+\(\d+\.\d+\)\n"
+    r"\s+\| > infonce_loss: (\d+\.\d+) \s+\(\d+\.\d+\)\n"
+    r"\s+\| > stopnet_loss: (\d+\.\d+) \s+\(\d+\.\d+\)\n"
+    r"\s+\| > decoder_coarse_loss: (\d+\.\d+) \s+\(\d+\.\d+\)\n"
+    r"\s+\| > decoder_ddc_loss: (\d+\.\d+) \s+\(\d+\.\d+\)\n"
+    r"\s+\| > ga_loss: (\d+\.\d+) \s+\(\d+\.\d+\)\n"
+    r"\s+\| > decoder_diff_spec_loss: (\d+\.\d+) \s+\(\d+\.\d+\)\n"
+    r"\s+\| > postnet_diff_spec_loss: (\d+\.\d+) \s+\(\d+\.\d+\)\n"
+    r"\s+\| > decoder_ssim_loss: (\d+\.\d+) \s+\(\d+\.\d+\)\n"
+    r"\s+\| > postnet_ssim_loss: (\d+\.\d+) \s+\(\d+\.\d+\)\n"
+    r"\s+\| > loss: (\d+\.\d+) \s+\(\d+\.\d+\)\n"
+    r"\s+\| > align_error: (\d+\.\d+) \s+\(\d+\.\d+\)\n"
+    r"\s+\| > grad_norm: tensor\((\d+\.\d+),\s*device='cuda:\d+'\)\s+\(tensor\(\d+\.\d+,\s*device='cuda:\d+'\)\)"
+    r"\s+\| > current_lr: (\d+\.\d+e[-+]?\d+)\s*\n"
+    r"\s+\| > step_time: (\d+\.\d+) \s+\(\d+\.\d+\)\n"
+    r"\s+\| > loader_time: (\d+\.\d+) \s+\(\d+\.\d+\)\n"
 )
 
 # Initialize an empty list to store the extracted data
@@ -35,11 +37,14 @@ with open(file_path, 'r', encoding='utf-8') as file:
     for match in matches:
         data.append([float(value) for value in match])
 
+assert len(data) != 0, "No loss values were found in the file."
+
 # Define column names
 columns = [
-    "decoder_loss", "postnet_loss", "stopnet_loss", "decoder_coarse_loss", "decoder_ddc_loss",
-    "ga_loss", "decoder_diff_spec_loss", "postnet_diff_spec_loss", "decoder_ssim_loss",
-    "postnet_ssim_loss", "loss", "align_error", "grad_norm", "current_lr", "step_time", "loader_time"
+    "decoder_loss", "postnet_loss", "similarity_loss", "infonce_loss", "stopnet_loss",
+    "decoder_coarse_loss", "decoder_ddc_loss", "ga_loss", "decoder_diff_spec_loss",
+    "postnet_diff_spec_loss", "decoder_ssim_loss", "postnet_ssim_loss", "loss",
+    "align_error", "grad_norm", "current_lr", "step_time", "loader_time"
 ]
 
 # Create a DataFrame
