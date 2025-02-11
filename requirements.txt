@@ -10,6 +10,6 @@ torch==2.2.1
 torchaudio==2.2.1
 torchvision==0.15.0.dev20230314
 tqdm==4.65.0
-transformers==4.33.3
+transformers==4.48.0
 TTS==0.22.0
 wandb==0.16.2
